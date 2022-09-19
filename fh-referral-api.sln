@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.ReferralApi.Infr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.ReferralApi.UnitTests", "tests\FamilyHubs.ReferralApi.UnitTests\FamilyHubs.ReferralApi.UnitTests.csproj", "{273A10A7-EBF4-463D-B112-41D26F163E81}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.ReferralApi.Common", "src\FamilyHubs.ReferralApi.Common\FamilyHubs.ReferralApi.Common.csproj", "{CEE1E8DA-4493-422E-B346-719DB8BBE303}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{273A10A7-EBF4-463D-B112-41D26F163E81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{273A10A7-EBF4-463D-B112-41D26F163E81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{273A10A7-EBF4-463D-B112-41D26F163E81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEE1E8DA-4493-422E-B346-719DB8BBE303}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEE1E8DA-4493-422E-B346-719DB8BBE303}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEE1E8DA-4493-422E-B346-719DB8BBE303}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEE1E8DA-4493-422E-B346-719DB8BBE303}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +52,7 @@ Global
 		{2BD94AB3-E375-4FE6-98F2-7D0F68FDE30C} = {21267970-8AE5-49E4-B100-6B43F69DB5A0}
 		{6E5B817C-426A-480C-9E76-DF179B46C559} = {21267970-8AE5-49E4-B100-6B43F69DB5A0}
 		{273A10A7-EBF4-463D-B112-41D26F163E81} = {0788655C-213C-4547-A557-2D394E8F19C0}
+		{CEE1E8DA-4493-422E-B346-719DB8BBE303} = {21267970-8AE5-49E4-B100-6B43F69DB5A0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ACB361F9-FDCF-422B-B802-49CB691A6BEA}
