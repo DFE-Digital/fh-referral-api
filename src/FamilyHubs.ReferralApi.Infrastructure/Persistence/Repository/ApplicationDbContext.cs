@@ -61,7 +61,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             //    entitiesWithEventsGuids.Add(Guid.Parse(t);
             //}
 
-            await _dispatcher.DispatchAndClearEvents(entitiesWithEvents);
+            //await _dispatcher.DispatchAndClearEvents(entitiesWithEvents);
         }
 
 #pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.

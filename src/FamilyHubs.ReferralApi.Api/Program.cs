@@ -1,5 +1,8 @@
+using FamilyHubs.ReferralApi.Api;
+using FamilyHubs.ReferralApi.Api.Endpoints;
 using FamilyHubs.ReferralApi.Core.Infrastructure;
 using FamilyHubs.ReferralApi.Infrastructure;
+using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
 using MassTransit;
 using Serilog;
 
@@ -99,7 +102,9 @@ Program.ServiceProvider = app.Services;
 
 app.Run();
 
+#pragma warning disable S1118 // Utility classes should not have public constructors
 public partial class Program
+#pragma warning restore S1118 // Utility classes should not have public constructors
 {
     public static IServiceProvider ServiceProvider { get; set; } = default!;
 }

@@ -1,4 +1,4 @@
-﻿using FamilyHubs.ServiceDirectoryCaseManagement.Core;
+﻿using FamilyHubs.ReferralApi.Core;
 using System.Security.Claims;
 
 namespace FamilyHubs.ReferralApi.Api;
