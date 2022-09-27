@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using FamilyHubs.ReferralApi.Common.Dto;
 using FamilyHubs.ReferralApi.Core.Entities;
 using FamilyHubs.ReferralApi.Core.Events;
 using FamilyHubs.ReferralApi.Core.Interfaces.Commands;
 using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
 using MediatR;
 
 namespace FamilyHubs.ReferralApi.Api.Commands.CreateReferral;
@@ -34,9 +34,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         try
         {
             var entity = _mapper.Map<Referral>(request.ReferralDto);
-#pragma warning disable S3236 // Caller information arguments should not be provided explicitly
             ArgumentNullException.ThrowIfNull(entity, nameof(entity));
-#pragma warning restore S3236 // Caller information arguments should not be provided explicitly
 
             entity.RegisterDomainEvent(new ReferralCreatedEvent(entity));
             _context.Referrals.Add(entity);
@@ -45,9 +43,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred creating referral. {exceptionMessage}", ex.Message);
-#pragma warning disable S112 // General exceptions should never be thrown
             throw new Exception(ex.Message, ex);
-#pragma warning restore S112 // General exceptions should never be thrown
         }
 
         if (request is not null && request.ReferralDto is not null)

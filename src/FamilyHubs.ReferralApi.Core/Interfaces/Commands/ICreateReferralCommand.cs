@@ -1,5 +1,4 @@
-﻿
-using FamilyHubs.ReferralApi.Common.Dto;
+﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
 
 namespace FamilyHubs.ReferralApi.Core.Interfaces.Commands;
 

@@ -1,7 +1,7 @@
 ﻿using Ardalis.GuardClauses;
-using FamilyHubs.ReferralApi.Common.Dto;
 using FamilyHubs.ReferralApi.Core.Entities;
 using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
