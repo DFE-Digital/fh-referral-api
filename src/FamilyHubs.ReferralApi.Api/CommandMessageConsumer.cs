@@ -1,6 +1,6 @@
 ﻿using FamilyHubs.ReferralApi.Api.Commands.CreateReferral;
-using FamilyHubs.ReferralApi.Common.Dto;
-using FamilyHubs.ReferralApi.Common.MassTransit;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
+using FamilyHubs.ServiceDirectory.Shared.Models.MassTransit;
 using MassTransit;
 using MediatR;
 using System.Text.Json;

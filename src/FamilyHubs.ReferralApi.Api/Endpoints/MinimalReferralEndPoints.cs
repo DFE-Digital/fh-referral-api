@@ -1,6 +1,6 @@
 ﻿using FamilyHubs.ReferralApi.Api.Commands.CreateReferral;
 using FamilyHubs.ReferralApi.Api.Queries.GetReferrals;
-using FamilyHubs.ReferralApi.Common.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;

@@ -1,8 +1,8 @@
 using AutoMapper;
 using FamilyHubs.ReferralApi.Api.Commands.CreateReferral;
 using FamilyHubs.ReferralApi.Api.Queries.GetReferrals;
-using FamilyHubs.ReferralApi.Common.Dto;
 using FamilyHubs.ReferralApi.Core;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
