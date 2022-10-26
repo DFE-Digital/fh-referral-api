@@ -1,12 +1,13 @@
 ﻿using FamilyHubs.SharedKernel;
 using FamilyHubs.SharedKernel.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace FamilyHubs.ReferralApi.Core.Entities;
 
 public class Referral : EntityBase<string>, IAggregateRoot
 {
     private Referral() { }
-    public Referral(string id, string organisationId, string serviceId, string serviceName, string serviceDescription, string serviceAsJson, string referrer, string fullName, string hasSpecialNeeds, string email, string phone, string reasonForSupport, ICollection<ReferralStatus> status)
+    public Referral(string id, string organisationId, string serviceId, string serviceName, string serviceDescription, string serviceAsJson, string referrer, string fullName, string? hasSpecialNeeds, string? email, string? phone, string? text, string reasonForSupport, ICollection<ReferralStatus> status)
     {
         Id = id;
         OrganisationId = organisationId;
@@ -19,6 +20,7 @@ public class Referral : EntityBase<string>, IAggregateRoot
         HasSpecialNeeds = hasSpecialNeeds;
         Email = email;
         Phone = phone;
+        Text = text;
         ReasonForSupport = reasonForSupport;
         Status = status;
     }
@@ -28,10 +30,15 @@ public class Referral : EntityBase<string>, IAggregateRoot
     public string ServiceDescription { get; set; } = default!;
     public string ServiceAsJson { get; set; } = default!;
     public string Referrer { get; set; } = default!;
+    [MaxLength(255)]
     public string FullName { get; set; } = default!;
-    public string HasSpecialNeeds { get; set; } = default!;
-    public string Email { get; set; } = default!;
-    public string Phone { get; set; } = default!;
+    public string? HasSpecialNeeds { get; set; } = default!;
+    [EmailAddress]
+    public string? Email { get; set; } = default!;
+    [Phone]
+    public string? Phone { get; set; } = default!;
+    public string? Text { get; set; } = default!;
+    [MaxLength(1000)]
     public string ReasonForSupport { get; set; } = default!;
     public virtual ICollection<ReferralStatus> Status { get; set; } = default!;
 

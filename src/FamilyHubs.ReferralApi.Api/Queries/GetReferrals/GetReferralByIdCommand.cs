@@ -52,9 +52,9 @@ public class GetReferralByIdCommandHandler : IRequestHandler<GetReferralByIdComm
            entity.ServiceAsJson,
            entity.Referrer,
            entity.FullName,
-           entity.HasSpecialNeeds,
-           entity.Email,
-           entity.Phone,
+           entity.HasSpecialNeeds ?? string.Empty,
+           entity.Email ?? string.Empty,
+           entity.Phone ?? string.Empty,
            entity.ReasonForSupport,
            referralStatusDtos
            );

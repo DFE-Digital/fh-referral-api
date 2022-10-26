@@ -9,6 +9,10 @@ public class ReferralConfiguration : IEntityTypeConfiguration<Referral>
     public void Configure(EntityTypeBuilder<Referral> builder)
     {
         builder.Property(t => t.FullName)
+            .HasMaxLength(255)
+            .IsRequired();
+        builder.Property(t => t.ReasonForSupport)
+            .HasMaxLength(1000)
             .IsRequired();
         builder.Property(t => t.ServiceId)
             .HasMaxLength(50)

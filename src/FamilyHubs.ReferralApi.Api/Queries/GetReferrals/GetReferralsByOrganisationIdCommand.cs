@@ -50,9 +50,9 @@ public class GetReferralsByOrganisationIdCommandHandler : IRequestHandler<GetRef
             x.ServiceAsJson,
             x.Referrer,
             x.FullName,
-            x.HasSpecialNeeds,
-            x.Email,
-            x.Phone,
+            x.HasSpecialNeeds ?? string.Empty,
+            x.Email ?? string.Empty,
+            x.Phone ?? string.Empty,
             x.ReasonForSupport,
             x.Status.Select(x => new ReferralStatusDto(x.Id, x.Status)).ToList()
             )).ToListAsync();
