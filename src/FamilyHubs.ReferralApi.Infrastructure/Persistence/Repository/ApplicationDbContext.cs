@@ -1,10 +1,13 @@
-﻿using FamilyHubs.ReferralApi.Core.Entities;
+﻿using EntityFrameworkCore.EncryptColumn.Extension;
+using EntityFrameworkCore.EncryptColumn.Interfaces;
+using EntityFrameworkCore.EncryptColumn.Util;
+using FamilyHubs.ReferralApi.Core.Entities;
 using FamilyHubs.ReferralApi.Core.Infrastructure;
 using FamilyHubs.ReferralApi.Infrastructure.Persistence.Interceptors;
 using FamilyHubs.SharedKernel;
 using FamilyHubs.SharedKernel.Interfaces;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System.Reflection;
 
 namespace FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
@@ -13,21 +16,27 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
     private readonly IDomainEventDispatcher _dispatcher;
     private readonly AuditableEntitySaveChangesInterceptor _auditableEntitySaveChangesInterceptor;
+    private readonly IEncryptionProvider _encryptionProvider;
+    private readonly IConfiguration _configuration;
 
     public ApplicationDbContext
         (
             DbContextOptions<ApplicationDbContext> options,
             IDomainEventDispatcher dispatcher,
-            AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor
+            AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor,
+            IConfiguration configuration
         )
         : base(options)
     {
         _dispatcher = dispatcher;
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
+        _configuration = configuration;
+        _encryptionProvider = new GenerateEncryptionProvider(_configuration["DbKey"]);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.UseEncryption(_encryptionProvider);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         base.OnModelCreating(modelBuilder);
@@ -50,8 +59,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             .Where(e => e?.DomainEvents != null && e.DomainEvents.Any())
             .ToArray();
 
-
-#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
         if (entitiesWithEvents != null && entitiesWithEvents.Any())
         {
             //var entitiesWithEventsGuids = new List<EntityBase<Guid>>();
@@ -63,8 +70,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
             //await _dispatcher.DispatchAndClearEvents(entitiesWithEvents);
         }
-
-#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
 
         return result;
     }

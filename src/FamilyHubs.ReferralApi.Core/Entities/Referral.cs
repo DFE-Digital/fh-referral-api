@@ -1,4 +1,5 @@
-﻿using FamilyHubs.SharedKernel;
+﻿using EntityFrameworkCore.EncryptColumn.Attribute;
+using FamilyHubs.SharedKernel;
 using FamilyHubs.SharedKernel.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
@@ -28,16 +29,25 @@ public class Referral : EntityBase<string>, IAggregateRoot
     public string ServiceId { get; set; } = default!;
     public string ServiceName { get; set; } = default!;
     public string ServiceDescription { get; set; } = default!;
+    [EncryptColumn]
     public string ServiceAsJson { get; set; } = default!;
     public string Referrer { get; set; } = default!;
     [MaxLength(255)]
     public string FullName { get; set; } = default!;
     public string? HasSpecialNeeds { get; set; } = default!;
+    [EncryptColumn]
     [EmailAddress]
+    [MaxLength(255)]
     public string? Email { get; set; } = default!;
+    [EncryptColumn]
     [Phone]
+    [MaxLength(50)]
     public string? Phone { get; set; } = default!;
+    [EncryptColumn]
+    [Phone]
+    [MaxLength(50)]
     public string? Text { get; set; } = default!;
+    [EncryptColumn]
     [MaxLength(1000)]
     public string ReasonForSupport { get; set; } = default!;
     public virtual ICollection<ReferralStatus> Status { get; set; } = default!;

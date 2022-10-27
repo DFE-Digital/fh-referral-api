@@ -3,6 +3,7 @@ using FamilyHubs.ReferralApi.Infrastructure.Persistence.Interceptors;
 using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
 using FamilyHubs.SharedKernel.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
@@ -18,9 +19,15 @@ public abstract class BaseEfRepositoryTestFixture
         var mockEventDispatcher = new Mock<IDomainEventDispatcher>();
         var mockDateTime = new Mock<IDateTime>();
         var mockCurrentUserService = new Mock<ICurrentUserService>();
+        var inMemorySettings = new Dictionary<string, string> {
+            {"DbKey", "kljsdkkdlo4454GG00155sajuklmbkdl" }
+        };
+        IConfiguration configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(inMemorySettings)
+            .Build();
         var auditableEntitySaveChangesInterceptor = new AuditableEntitySaveChangesInterceptor(mockCurrentUserService.Object, mockDateTime.Object);
 
-        DbContext = new ApplicationDbContext(options, mockEventDispatcher.Object, auditableEntitySaveChangesInterceptor);
+        DbContext = new ApplicationDbContext(options, mockEventDispatcher.Object, auditableEntitySaveChangesInterceptor, configuration);
     }
 
     protected static DbContextOptions<ApplicationDbContext> CreateNewContextOptions()
