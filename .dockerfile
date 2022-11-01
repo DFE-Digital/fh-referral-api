@@ -35,3 +35,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "FamilyHubs.ReferralApi.Api.dll"]
+
+# Export image to tar 
+WORKDIR /app/publish
+CMD $ docker save --output $(pipeline.workspace)/referralapi.image.tar $(imagename):$(build.buildid)
