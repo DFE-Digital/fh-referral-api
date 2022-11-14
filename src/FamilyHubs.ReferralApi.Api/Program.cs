@@ -2,6 +2,7 @@ using FamilyHubs.ReferralApi.Api;
 using FamilyHubs.ReferralApi.Api.Endpoints;
 using FamilyHubs.ReferralApi.Core.Infrastructure;
 using FamilyHubs.ReferralApi.Infrastructure;
+using FamilyHubs.ServiceDirectory.Shared.Extensions;
 using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
 using MassTransit;
 using Serilog;
@@ -13,7 +14,7 @@ Log.Logger = new LoggerConfiguration()
 Log.Information("Starting up");
 
 var builder = WebApplication.CreateBuilder(args);
-
+RegisterComponents(builder.Services, builder.Configuration);
 builder.Host.UseSerilog((ctx, lc) => lc
         .WriteTo.Console()
         .ReadFrom.Configuration(ctx.Configuration));
@@ -102,6 +103,10 @@ Program.ServiceProvider = app.Services;
 
 app.Run();
 
+static void RegisterComponents(IServiceCollection builder, IConfiguration configuration)
+{
+    builder.AddApplicationInsights(configuration, "fh_referral_api.api");
+}
 #pragma warning disable S1118 // Utility classes should not have public constructors
 public partial class Program
 #pragma warning restore S1118 // Utility classes should not have public constructors

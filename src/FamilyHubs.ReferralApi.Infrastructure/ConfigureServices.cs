@@ -29,14 +29,12 @@ public static class ConfigureServices
 
             case "UseSqlServerDatabase":
                 services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("ReferralConnection"),
-                    builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+                options.UseSqlServer(configuration.GetConnectionString("ReferralConnection") ?? String.Empty));
                 break;
 
             case "UsePostgresDatabase":
                 services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("ReferralConnection"),
-                    builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+                options.UseNpgsql(configuration.GetConnectionString("ReferralConnection") ?? String.Empty));
                 break;  
                 
             default:
