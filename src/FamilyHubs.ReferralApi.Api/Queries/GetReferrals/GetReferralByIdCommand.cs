@@ -55,6 +55,7 @@ public class GetReferralByIdCommandHandler : IRequestHandler<GetReferralByIdComm
            entity.HasSpecialNeeds,
            entity.Email,
            entity.Phone,
+           string.Empty,
            entity.ReasonForSupport,
            referralStatusDtos
            );

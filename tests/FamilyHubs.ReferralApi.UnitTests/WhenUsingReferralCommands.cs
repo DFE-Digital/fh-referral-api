@@ -126,6 +126,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
                 "No",
                 "Robert.Brown@yahoo.co.uk",
                 "0131 222 3333",
+                "",
                 "Requires help with child",
                 new List<ReferralStatusDto> { new ReferralStatusDto("aa0be0f8-c218-401d-9237-aa75b6e38f01", "Inital-Referral") }
                 );

@@ -18,22 +18,31 @@ public static class ConfigureServices
         services.AddTransient<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddScoped<AuditableEntitySaveChangesInterceptor>();
 
-        if (configuration.GetValue<bool>("UseInMemoryDatabase"))
+        string useDbType = configuration.GetValue<string>("UseDbType");
+
+        switch (useDbType)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
+            case "UseInMemoryDatabase":
+                services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseInMemoryDatabase("ReferralDb"));
-        }
-        else if (configuration.GetValue<bool>("UseSqlServerDatabase"))
-        {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
-                    builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
-        }
-        else
-        {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
-                    builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+                break;
+
+            case "UseSqlServerDatabase":
+                services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("ReferralConnection") ?? String.Empty));
+                break;
+
+            case "UsePostgresDatabase":
+                services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseNpgsql(configuration.GetConnectionString("ReferralConnection") ?? String.Empty));
+                break;  
+                
+            default:
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseInMemoryDatabase("ReferralDb"));
+                break;
+
+
         }
 
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
