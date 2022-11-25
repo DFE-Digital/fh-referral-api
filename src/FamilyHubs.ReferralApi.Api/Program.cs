@@ -6,6 +6,9 @@ using FamilyHubs.ServiceDirectory.Shared.Extensions;
 using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
 using MassTransit;
 using Serilog;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -18,6 +21,41 @@ RegisterComponents(builder.Services, builder.Configuration);
 builder.Host.UseSerilog((ctx, lc) => lc
         .WriteTo.Console()
         .ReadFrom.Configuration(ctx.Configuration));
+
+// Adding Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+
+// Adding Jwt Bearer
+.AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JWT:ValidAudience"],
+        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"] ?? "JWTAuthenticationHIGHsecuredPasswordVVVp1OH7Xzyr"))
+    };
+});
+
+//https://www.youtube.com/watch?v=cbtK3U2aOlg
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Referrer", policy =>
+                    policy.RequireAssertion(context =>
+                                context.User.IsInRole("VCSAdmin") ||
+                                context.User.IsInRole("Professional")));
+});
+
+
 
 // Add services to the container.
 
@@ -66,6 +104,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -2,6 +2,7 @@
 using FamilyHubs.ReferralApi.Api.Queries.GetReferrals;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -11,7 +12,7 @@ public class MinimalReferralEndPoints
 {
     public void RegisterReferralEndPoints(WebApplication app)
     {
-        app.MapPost("api/referrals", async ([FromBody] ReferralDto request, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapPost("api/referrals", [Authorize(Policy = "Referrer")] async ([FromBody] ReferralDto request, CancellationToken cancellationToken, ISender _mediator) =>
         {
             try
             {
@@ -26,7 +27,7 @@ public class MinimalReferralEndPoints
             }
         }).WithMetadata(new SwaggerOperationAttribute("Referrals", "Create Referral") { Tags = new[] { "Referrals" } });
 
-        app.MapGet("api/referrals/{referrer}", async (string referrer, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapGet("api/referrals/{referrer}", [Authorize(Policy = "Referrer")] async (string referrer, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
         {
             try
             {
@@ -41,7 +42,7 @@ public class MinimalReferralEndPoints
             }
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Referrer") { Tags = new[] { "Referrals" } });
 
-        app.MapGet("api/organisationreferrals/{organisationid}", async (string organisationId, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapGet("api/organisationreferrals/{organisationid}", [Authorize(Policy = "Referrer")] async (string organisationId, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
         {
             try
             {
@@ -56,7 +57,7 @@ public class MinimalReferralEndPoints
             }
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Organisation Id") { Tags = new[] { "Referrals" } });
 
-        app.MapGet("api/referral/{id}", async (string id, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapGet("api/referral/{id}", [Authorize(Policy = "Referrer")] async (string id, CancellationToken cancellationToken, ISender _mediator) =>
         {
             try
             {
