@@ -1,6 +1,7 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
 using FamilyHubs.SharedKernel;
 using FluentAssertions;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Json;
 
@@ -24,6 +25,8 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             Method = HttpMethod.Get,
             RequestUri = new Uri(_client.BaseAddress + "api/referrals/CurrentUser?pageNumber=1&pageSize=10"),
         };
+
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
 
         using var response = await _client.SendAsync(request);
 
@@ -64,6 +67,8 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json"),
         };
 
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+
         using var response = await _client.SendAsync(request);
 
         response.EnsureSuccessStatusCode();
@@ -83,6 +88,8 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             Method = HttpMethod.Get,
             RequestUri = new Uri(_client.BaseAddress + "api/organisationreferrals/ba1cca90-b02a-4a0b-afa0-d8aed1083c0d?pageNumber=1&pageSize=10"),
         };
+
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
 
         using var response = await _client.SendAsync(request);
 
@@ -105,6 +112,8 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             Method = HttpMethod.Get,
             RequestUri = new Uri(_client.BaseAddress + "api/referral/24572563-7d73-4127-b348-8d2bf646e7fe"),
         };
+
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
 
         using var response = await _client.SendAsync(request);
 
