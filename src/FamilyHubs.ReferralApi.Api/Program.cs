@@ -49,10 +49,18 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("Referrer", policy =>
-                    policy.RequireAssertion(context =>
-                                context.User.IsInRole("VCSAdmin") ||
-                                context.User.IsInRole("Professional")));
+    if (builder.Environment.IsProduction())
+    {
+        options.AddPolicy("Referrer", policy =>
+            policy.RequireAssertion(context =>
+                context.User.IsInRole("VCSAdmin") ||
+                context.User.IsInRole("Professional")));
+    }
+    else //LocalHost, Dev, Test, PP, disable Authorisation
+    {
+        options.AddPolicy("Referrer", policy =>
+            policy.RequireAssertion(_ => true));
+    }
 });
 
 
