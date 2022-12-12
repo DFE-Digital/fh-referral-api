@@ -84,12 +84,13 @@ using (var scope = app.Services.CreateScope())
     {
         var db = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
 
-
-        // Seed Database
-        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
-        await initialiser.InitialiseAsync(builder.Configuration);
-        await initialiser.SeedAsync();
-
+        if (!builder.Environment.IsProduction())
+        {
+            // Seed Database
+            var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+            await initialiser.InitialiseAsync(builder.Configuration);
+            await initialiser.SeedAsync();
+        }
     }
     catch (Exception ex)
     {
