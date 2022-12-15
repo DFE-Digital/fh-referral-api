@@ -8,6 +8,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+		<PackageReference Include="EncryptColumn.Core" Version="1.0.0" />
 		<PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="1.1.8" />
 		<PackageReference Include="FamilyHubs.SharedKernel" Version="1.0.4" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.1.0" />

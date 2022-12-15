@@ -6,6 +6,11 @@ using FamilyHubs.SharedKernel.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using Microsoft.Extensions.Configuration;
+using EncryptColumn.Core.Interfaces;
+using EncryptColumn.Core.Util;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using EncryptColumn.Core.Extension;
 
 namespace FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
 
@@ -13,22 +18,27 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
     private readonly IDomainEventDispatcher _dispatcher;
     private readonly AuditableEntitySaveChangesInterceptor _auditableEntitySaveChangesInterceptor;
+    private readonly IEncryptionProvider _provider;
 
     public ApplicationDbContext
         (
             DbContextOptions<ApplicationDbContext> options,
             IDomainEventDispatcher dispatcher,
-            AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor
+            AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor,
+            IConfiguration configuration
         )
         : base(options)
     {
         _dispatcher = dispatcher;
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
+        this._provider = new GenerateEncryptionProvider(configuration.GetValue<string>("DatabaseKey"));
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        modelBuilder.UseEncryption(this._provider);
 
         base.OnModelCreating(modelBuilder);
     }
