@@ -1,11 +1,14 @@
 using AutoMapper;
 using FamilyHubs.ReferralApi.Api.Commands.CreateReferral;
+using FamilyHubs.ReferralApi.Api.Commands.SetReferralStatus;
+using FamilyHubs.ReferralApi.Api.Commands.UpdateReferral;
 using FamilyHubs.ReferralApi.Api.Queries.GetReferrals;
 using FamilyHubs.ReferralApi.Core;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace FamilyHubs.ReferralApi.UnitTests
 {
@@ -30,6 +33,37 @@ namespace FamilyHubs.ReferralApi.UnitTests
             var result = await handler.Handle(command, new System.Threading.CancellationToken());
 
             //Assert
+            result.Should().NotBeNull();
+            result.Should().Be(testReferral.Id);
+        }
+
+        [Fact]
+        public async Task ThenUpdateReferral()
+        {
+            //Arange
+            var myProfile = new AutoMappingProfiles();
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            IMapper mapper = new Mapper(configuration);
+            var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
+            var mockApplicationDbContext = GetApplicationDbContext();
+            var testReferral = GetReferralDto();
+            CreateReferralCommand createCommand = new(testReferral);
+            CreateReferralCommandHandler createHandler = new(mockApplicationDbContext, mapper, logger.Object);
+            var setResult = await createHandler.Handle(createCommand, new System.Threading.CancellationToken());
+            testReferral.FullName = testReferral.FullName + " Test";
+            testReferral.Email = testReferral.Email + " Test";
+            testReferral.Phone = testReferral.Phone + " Test";
+            testReferral.Text = testReferral.Text + " Test";
+            testReferral.ReasonForSupport = testReferral.ReasonForSupport + " Test";
+            UpdateReferralCommand command = new(testReferral.Id, testReferral);
+            UpdateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, new Mock<ILogger<UpdateReferralCommandHandler>>().Object);
+
+            //Act
+            var result = await handler.Handle(command, new System.Threading.CancellationToken());
+
+            //Assert
+            setResult.Should().NotBeNull();
+            setResult.Should().Be(testReferral.Id);
             result.Should().NotBeNull();
             result.Should().Be(testReferral.Id);
         }
@@ -130,6 +164,33 @@ namespace FamilyHubs.ReferralApi.UnitTests
                 "Requires help with child",
                 new List<ReferralStatusDto> { new ReferralStatusDto("aa0be0f8-c218-401d-9237-aa75b6e38f01", "Inital-Referral") }
                 );
+        }
+
+        [Fact]
+        public async Task ThenUpdateStatusOfReferral()
+        {
+            //Arange
+            var myProfile = new AutoMappingProfiles();
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            IMapper mapper = new Mapper(configuration);
+            var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
+            var mockApplicationDbContext = GetApplicationDbContext();
+            var testReferral = GetReferralDto();
+            CreateReferralCommand createCommand = new(testReferral);
+            CreateReferralCommandHandler createHandler = new(mockApplicationDbContext, mapper, logger.Object);
+            var setupresult = await createHandler.Handle(createCommand, new System.Threading.CancellationToken());
+            SetReferralStatusCommand command = new(testReferral.Id, "Accept Connection");
+            CreateReferralStatusCommandHandler handler = new(mockApplicationDbContext, new Mock<ILogger<CreateReferralStatusCommandHandler>>().Object);
+
+            //Act
+            var result = await handler.Handle(command, new System.Threading.CancellationToken());
+
+            //Assert
+            setupresult.Should().NotBeNull();
+            setupresult.Should().Be(testReferral.Id);
+            result.Should().NotBeNull();
+            result.Should().Be("Accept Connection");
+
         }
     }
 }
