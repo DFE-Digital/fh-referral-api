@@ -21,7 +21,9 @@ public class ReferralSeedData
                 "No",
                 "John.Smith@yahoo.co.uk",
                 "0131 111 2222",
+                "0131 111 2222",
                 "Requires help with child",
+                null,
                 new List<ReferralStatus> { new ReferralStatus("60abfe12-be36-4d4c-ae61-d039589f7318", "Initial Connection", "24572563-7d73-4127-b348-8d2bf646e7fe") }
                 )
         };
