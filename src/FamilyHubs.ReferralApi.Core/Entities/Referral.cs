@@ -1,4 +1,5 @@
-﻿using FamilyHubs.SharedKernel;
+﻿using EncryptColumn.Core.Attribute;
+using FamilyHubs.SharedKernel;
 using FamilyHubs.SharedKernel.Interfaces;
 
 namespace FamilyHubs.ReferralApi.Core.Entities;
@@ -6,7 +7,7 @@ namespace FamilyHubs.ReferralApi.Core.Entities;
 public class Referral : EntityBase<string>, IAggregateRoot
 {
     private Referral() { }
-    public Referral(string id, string organisationId, string serviceId, string serviceName, string serviceDescription, string serviceAsJson, string referrer, string fullName, string hasSpecialNeeds, string email, string phone, string reasonForSupport, ICollection<ReferralStatus> status)
+    public Referral(string id, string organisationId, string serviceId, string serviceName, string serviceDescription, string serviceAsJson, string referrer, string fullName, string hasSpecialNeeds, string? email, string? phone, string? text, string reasonForSupport, string? reasonForRejection, ICollection<ReferralStatus> status)
     {
         Id = id;
         OrganisationId = organisationId;
@@ -19,7 +20,9 @@ public class Referral : EntityBase<string>, IAggregateRoot
         HasSpecialNeeds = hasSpecialNeeds;
         Email = email;
         Phone = phone;
+        Text = text;
         ReasonForSupport = reasonForSupport;
+        ReasonForRejection = reasonForRejection;
         Status = status;
     }
     public string OrganisationId { get; set; } = default!;
@@ -29,10 +32,18 @@ public class Referral : EntityBase<string>, IAggregateRoot
     public string ServiceAsJson { get; set; } = default!;
     public string Referrer { get; set; } = default!;
     public string FullName { get; set; } = default!;
+    [EncryptColumn]
     public string HasSpecialNeeds { get; set; } = default!;
-    public string Email { get; set; } = default!;
-    public string Phone { get; set; } = default!;
+    [EncryptColumn]
+    public string? Email { get; set; } = default!;
+    [EncryptColumn]
+    public string? Phone { get; set; } = default!;
+    [EncryptColumn]
+    public string? Text { get; set; } = default!;
+    [EncryptColumn]
     public string ReasonForSupport { get; set; } = default!;
+    [EncryptColumn]
+    public string? ReasonForRejection { get; set; } = default!;
     public virtual ICollection<ReferralStatus> Status { get; set; } = default!;
 
 }

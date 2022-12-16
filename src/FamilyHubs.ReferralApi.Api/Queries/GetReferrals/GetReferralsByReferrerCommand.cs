@@ -56,6 +56,7 @@ public class GetReferralsByReferrerCommandHandler : IRequestHandler<GetReferrals
             x.Phone,
             string.Empty,
             x.ReasonForSupport,
+            x.ReasonForRejection,
             x.Status.Select(x => new ReferralStatusDto(x.Id, x.Status)).ToList()
             )).ToListAsync();
 

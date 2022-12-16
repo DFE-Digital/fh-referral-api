@@ -59,6 +59,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 "0131 222 3333",
                 "text",
                 "Requires help with child",
+                null,
                 new List<ReferralStatusDto> { new ReferralStatusDto("1d2c41ac-fade-4933-a810-d8a040f0b9ee", "Inital-Referral") }
                 );
 
@@ -90,7 +91,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Get,
-            RequestUri = new Uri(_client.BaseAddress + "api/organisationreferrals/ba1cca90-b02a-4a0b-afa0-d8aed1083c0d?pageNumber=1&pageSize=10"),
+            RequestUri = new Uri(_client.BaseAddress + "api/organisationreferrals/72e653e8-1d05-4821-84e9-9177571a6013?pageNumber=1&pageSize=10"),
         };
 
         //request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
@@ -148,6 +149,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 phone: "0131 111 5555",
                 text: "0131 111 5555",
                 reasonForSupport: "Requires help with child Test",
+                reasonForRejection: null,
                 new List<ReferralStatusDto> { new ReferralStatusDto("60abfe12-be36-4d4c-ae61-d039589f7318", "Initial Connection") }
                 );
 
