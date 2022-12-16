@@ -91,7 +91,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Get,
-            RequestUri = new Uri(_client.BaseAddress + "api/organisationreferrals/ba1cca90-b02a-4a0b-afa0-d8aed1083c0d?pageNumber=1&pageSize=10"),
+            RequestUri = new Uri(_client.BaseAddress + "api/organisationreferrals/72e653e8-1d05-4821-84e9-9177571a6013?pageNumber=1&pageSize=10"),
         };
 
         //request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
