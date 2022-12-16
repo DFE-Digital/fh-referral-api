@@ -59,6 +59,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 "0131 222 3333",
                 "text",
                 "Requires help with child",
+                null,
                 new List<ReferralStatusDto> { new ReferralStatusDto("1d2c41ac-fade-4933-a810-d8a040f0b9ee", "Inital-Referral") }
                 );
 
@@ -148,6 +149,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 phone: "0131 111 5555",
                 text: "0131 111 5555",
                 reasonForSupport: "Requires help with child Test",
+                reasonForRejection: null,
                 new List<ReferralStatusDto> { new ReferralStatusDto("60abfe12-be36-4d4c-ae61-d039589f7318", "Initial Connection") }
                 );
 

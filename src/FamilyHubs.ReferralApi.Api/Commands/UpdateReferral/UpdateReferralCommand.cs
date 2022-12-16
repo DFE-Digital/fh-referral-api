@@ -51,7 +51,9 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
             entity.HasSpecialNeeds = request.ReferralDto.HasSpecialNeeds;
             entity.Email = request.ReferralDto.Email ?? string.Empty;
             entity.Phone = request.ReferralDto.Phone ?? string.Empty;
+            entity.Text = request.ReferralDto.Text ?? string.Empty;
             entity.ReasonForSupport = request.ReferralDto.ReasonForSupport;
+            entity.ReasonForRejection = request.ReferralDto.ReasonForRejection;
 
             await _context.SaveChangesAsync(cancellationToken);
         }
