@@ -16,7 +16,7 @@ public class ReferralSeedData
                 "Test Organisation for Children with Tracheostomies",
                 "Test Organisation for for Children with Tracheostomies is a national self help group operating as a registered charity and is run by parents of children with a tracheostomy and by people who sympathise with the needs of such families. ACT as an organisation is non profit making, it links groups and individual members throughout Great Britain and Northern Ireland.",
                 JsonService,
-                "CurrentUser",
+                "BtlPro@email.com",
                 "Mr John Smith",
                 "No",
                 "John.Smith@yahoo.co.uk",

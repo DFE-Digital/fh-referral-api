@@ -23,7 +23,7 @@ public abstract class BaseEfRepositoryTestFixture
 
         IEnumerable<KeyValuePair<string, string?>>? inMemorySettings = new List<KeyValuePair<string, string?>>()
         {
-            new KeyValuePair<string, string?>("DatabaseKey", "kljsdkkdlo4454GG")
+            new KeyValuePair<string, string?>("DbKey", "kljsdkkdlo4454GG00155sajuklmbkdl")
         };
 
         IConfiguration configuration = new ConfigurationBuilder()

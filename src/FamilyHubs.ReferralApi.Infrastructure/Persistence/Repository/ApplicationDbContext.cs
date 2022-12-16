@@ -31,7 +31,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
         _dispatcher = dispatcher;
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
-        this._provider = new GenerateEncryptionProvider(configuration.GetValue<string>("DatabaseKey"));
+        this._provider = new GenerateEncryptionProvider(configuration.GetValue<string>("DbKey"));
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
