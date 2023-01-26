@@ -1,9 +1,6 @@
-﻿using FamilyHubs.ReferralApi.Core.Entities;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
+﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
 using FamilyHubs.SharedKernel;
 using FluentAssertions;
-using FluentAssertions.Common;
-using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Json;
 
