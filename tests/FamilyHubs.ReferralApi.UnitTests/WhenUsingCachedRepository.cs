@@ -389,6 +389,26 @@ public class WhenUsingCachedRepository : BaseCreateDbUnitTest
         ApplicationDbContext appDbContext = GetApplicationDbContext();
         var mockSourceRepository = new Mock<EfRepository<TestEntity>>(appDbContext);
         var repository = new CachedRepository<TestEntity>(myCache, mockLogger.Object, mockSourceRepository.Object);
+
+        // Act
+        Func<Task> act = () => repository.CountAsync();
+
+        // Assert
+        var exception = await Assert.ThrowsAsync<NotImplementedException>(act);
+        myCache.Dispose();
+    }
+
+    [Fact]
+    public async Task ThenLCountAsyncWithSpecification_ShouldReturnCorrectCountFromCache()
+    {
+        // Arrange
+        var entity = new TestEntity { Id = 1, Name = "Test" };
+        MemoryCache myCache = new MemoryCache(new MemoryCacheOptions());
+        myCache.CreateEntry(entity);
+        var mockLogger = new Mock<ILogger<CachedRepository<TestEntity>>>();
+        ApplicationDbContext appDbContext = GetApplicationDbContext();
+        var mockSourceRepository = new Mock<EfRepository<TestEntity>>(appDbContext);
+        var repository = new CachedRepository<TestEntity>(myCache, mockLogger.Object, mockSourceRepository.Object);
         CancellationTokenSource source = new CancellationTokenSource();
         ISpecification<TestEntity> spec = default!;
 
