@@ -75,7 +75,10 @@ public class CachedRepository<T> : IReadRepository<T> where T : class, IAggregat
         _logger.LogInformation("Checking cache for " + key);
         return _cache.GetOrCreate(key, entry =>
         {
-            entry.SetOptions(_cacheOptions);
+            if (entry != null && _cacheOptions != null)
+            {
+                entry.SetOptions(_cacheOptions);
+            }
             _logger.LogWarning("Fetching source data for " + key);
             return _sourceRepository.GetByIdAsync(id, cancellationToken);
         });

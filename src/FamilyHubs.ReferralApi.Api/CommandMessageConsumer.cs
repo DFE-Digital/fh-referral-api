@@ -3,10 +3,12 @@ using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
 using FamilyHubs.ServiceDirectory.Shared.Models.MassTransit;
 using MassTransit;
 using MediatR;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
 namespace FamilyHubs.ReferralApi.Api;
 
+[ExcludeFromCodeCoverage]
 public class CommandMessageConsumer : IConsumer<CommandMessage>
 {
     public async Task Consume(ConsumeContext<CommandMessage> context)

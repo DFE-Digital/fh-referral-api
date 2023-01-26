@@ -146,7 +146,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             result.Should().BeEquivalentTo(testReferral);
         }
 
-        private static ReferralDto GetReferralDto()
+        public static ReferralDto GetReferralDto()
         {
             return new ReferralDto(
                 "212fecf5-0db2-4e05-b28c-8cacaebba840",
