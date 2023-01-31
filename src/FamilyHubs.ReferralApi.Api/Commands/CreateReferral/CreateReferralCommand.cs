@@ -34,7 +34,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         try
         {
             var entity = _mapper.Map<Referral>(request.ReferralDto);
-            ArgumentNullException.ThrowIfNull(entity, nameof(entity));
+            ArgumentNullException.ThrowIfNull(entity);
 
             if (entity.Status != null)
             {
@@ -56,7 +56,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred creating referral. {exceptionMessage}", ex.Message);
-            throw new Exception(ex.Message, ex);
+            throw;
         }
 
         if (request is not null && request.ReferralDto is not null)

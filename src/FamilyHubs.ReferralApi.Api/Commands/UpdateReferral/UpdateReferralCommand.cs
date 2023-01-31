@@ -60,7 +60,7 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred creating referral. {exceptionMessage}", ex.Message);
-            throw new Exception(ex.Message, ex);
+            throw;
         }
 
         if (request is not null && request.ReferralDto is not null)
