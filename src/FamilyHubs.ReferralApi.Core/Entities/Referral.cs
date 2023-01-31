@@ -1,12 +1,14 @@
 ﻿using EncryptColumn.Core.Attribute;
 using FamilyHubs.SharedKernel;
 using FamilyHubs.SharedKernel.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FamilyHubs.ReferralApi.Core.Entities;
 
 public class Referral : EntityBase<string>, IAggregateRoot
 {
     private Referral() { }
+    [SuppressMessage("SonarLint", "S107", Justification = "Ignored intentionally as this is a database object")]
     public Referral(string id, string organisationId, string serviceId, string serviceName, string serviceDescription, string serviceAsJson, string referrer, string fullName, string hasSpecialNeeds, string? email, string? phone, string? text, string reasonForSupport, string? reasonForRejection, ICollection<ReferralStatus> status)
     {
         Id = id;

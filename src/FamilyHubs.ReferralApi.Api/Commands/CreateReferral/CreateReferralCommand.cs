@@ -33,36 +33,41 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
     {
         try
         {
-            var entity = _mapper.Map<Referral>(request.ReferralDto);
-            ArgumentNullException.ThrowIfNull(entity, nameof(entity));
-
-            if (entity.Status != null)
-            {
-                for (int i = entity.Status.Count - 1; i >= 0; i--)
-                {
-                    var referralStatus = _context.ReferralStatuses.FirstOrDefault(x => x.Id == entity.Status.ElementAt(i).Id);
-                    if (referralStatus != null)
-                    {
-                        entity.Status.Remove(entity.Status.ElementAt(i));
-                        entity.Status.Add(referralStatus);
-                    }
-                }
-            }
-
-            entity.RegisterDomainEvent(new ReferralCreatedEvent(entity));
-            _context.Referrals.Add(entity);
+            CreateReferral(request);
             await _context.SaveChangesAsync(cancellationToken);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred creating referral. {exceptionMessage}", ex.Message);
-            throw new Exception(ex.Message, ex);
+            throw;
         }
 
         if (request is not null && request.ReferralDto is not null)
             return request.ReferralDto.Id;
         else
             return string.Empty;
+    }
+
+    private void CreateReferral(CreateReferralCommand request)
+    {
+        var entity = _mapper.Map<Referral>(request.ReferralDto);
+        ArgumentNullException.ThrowIfNull(entity);
+
+        if (entity.Status != null)
+        {
+            for (int i = entity.Status.Count - 1; i >= 0; i--)
+            {
+                var referralStatus = _context.ReferralStatuses.FirstOrDefault(x => x.Id == entity.Status.ElementAt(i).Id);
+                if (referralStatus != null)
+                {
+                    entity.Status.Remove(entity.Status.ElementAt(i));
+                    entity.Status.Add(referralStatus);
+                }
+            }
+        }
+
+        entity.RegisterDomainEvent(new ReferralCreatedEvent(entity));
+        _context.Referrals.Add(entity);
     }
 }
 

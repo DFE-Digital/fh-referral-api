@@ -21,6 +21,6 @@ public class WhenConfiguringServices
         services.AddApplicationServices();
 
         //Assert
-        services.Count().Should().BeGreaterThanOrEqualTo(24);
+        services.Count.Should().BeGreaterThanOrEqualTo(24);
     }
 }

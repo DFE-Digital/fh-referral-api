@@ -16,7 +16,6 @@ public abstract class BaseEfRepositoryTestFixture
     protected BaseEfRepositoryTestFixture()
     {
         var options = CreateNewContextOptions();
-        var mockEventDispatcher = new Mock<IDomainEventDispatcher>();
         var mockDateTime = new Mock<IDateTime>();
         var mockCurrentUserService = new Mock<ICurrentUserService>();
         var auditableEntitySaveChangesInterceptor = new AuditableEntitySaveChangesInterceptor(mockCurrentUserService.Object, mockDateTime.Object);
@@ -30,7 +29,11 @@ public abstract class BaseEfRepositoryTestFixture
             .AddInMemoryCollection(inMemorySettings)
             .Build();
 
-        DbContext = new ApplicationDbContext(options, mockEventDispatcher.Object, auditableEntitySaveChangesInterceptor, configuration);
+#if _USE_EVENT_DISPATCHER
+        DbContext = new ApplicationDbContext(options, new Mock<IDomainEventDispatcher>().Object, auditableEntitySaveChangesInterceptor, configuration);
+#else
+        DbContext = new ApplicationDbContext(options, auditableEntitySaveChangesInterceptor, configuration);
+#endif
     }
 
     protected static DbContextOptions<ApplicationDbContext> CreateNewContextOptions()

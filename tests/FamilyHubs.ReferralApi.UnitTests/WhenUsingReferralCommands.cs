@@ -56,7 +56,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             testReferral.Text = testReferral.Text + " Test";
             testReferral.ReasonForSupport = testReferral.ReasonForSupport + " Test";
             UpdateReferralCommand command = new(testReferral.Id, testReferral);
-            UpdateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, new Mock<ILogger<UpdateReferralCommandHandler>>().Object);
+            UpdateReferralCommandHandler handler = new(mockApplicationDbContext, new Mock<ILogger<UpdateReferralCommandHandler>>().Object);
 
             //Act
             var result = await handler.Handle(command, new System.Threading.CancellationToken());

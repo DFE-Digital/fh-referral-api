@@ -32,7 +32,7 @@ public class CommandMessageConsumer : IConsumer<CommandMessage>
                         var mediator = scope.ServiceProvider.GetService<ISender>();
                         if (mediator != null)
                         {
-                            var result = await mediator.Send(command, new CancellationToken());
+                            await mediator.Send(command, new CancellationToken());
                         }
                     }
                 }

@@ -45,7 +45,7 @@ public class CreateReferralStatusCommandHandler : IRequestHandler<SetReferralSta
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred creating referral. {exceptionMessage}", ex.Message);
-            throw new Exception(ex.Message, ex);
+            throw;
         }
 
         if (request is not null && request.Status is not null)

@@ -11,10 +11,9 @@ namespace FamilyHubs.ReferralApi.UnitTests;
 
 public class BaseCreateDbUnitTest
 {
-    protected ApplicationDbContext GetApplicationDbContext()
+    protected static ApplicationDbContext GetApplicationDbContext()
     {
         var options = CreateNewContextOptions();
-        var mockEventDispatcher = new Mock<IDomainEventDispatcher>();
         var mockDateTime = new Mock<IDateTime>();
         var mockCurrentUserService = new Mock<ICurrentUserService>();
         var auditableEntitySaveChangesInterceptor = new AuditableEntitySaveChangesInterceptor(mockCurrentUserService.Object, mockDateTime.Object);
@@ -28,8 +27,11 @@ public class BaseCreateDbUnitTest
             .AddInMemoryCollection(inMemorySettings)
             .Build();
 
-        var mockApplicationDbContext = new ApplicationDbContext(options, mockEventDispatcher.Object, auditableEntitySaveChangesInterceptor, configuration);
-
+#if _USE_EVENT_DISPATCHER
+        var mockApplicationDbContext = new ApplicationDbContext(options, new Mock<IDomainEventDispatcher>().Object, auditableEntitySaveChangesInterceptor, configuration);
+#else
+        var mockApplicationDbContext = new ApplicationDbContext(options,  auditableEntitySaveChangesInterceptor, configuration);
+#endif
         return mockApplicationDbContext;
     }
 

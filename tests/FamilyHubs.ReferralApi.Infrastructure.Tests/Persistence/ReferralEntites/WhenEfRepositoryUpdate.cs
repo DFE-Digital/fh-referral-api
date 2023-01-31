@@ -15,10 +15,10 @@ public class WhenEfRepositoryUpdate : BaseEfRepositoryTestFixture
     {
         // Arrange
         var referralItem = _fixture.Create<Referral>();
-        ArgumentNullException.ThrowIfNull(referralItem, nameof(referralItem));
+        ArgumentNullException.ThrowIfNull(referralItem);
 
         var repository = GetRepository<Referral>();
-        ArgumentNullException.ThrowIfNull(repository, nameof(repository));
+        ArgumentNullException.ThrowIfNull(repository);
         await repository.AddAsync(referralItem);
 
         DbContext.Entry(referralItem).State = EntityState.Detached;             // detach the item so we get a different instance
@@ -40,7 +40,7 @@ public class WhenEfRepositoryUpdate : BaseEfRepositoryTestFixture
 
         // Assert
         updatedOpenReferralOrganisation.Should().NotBeNull();
-        ArgumentNullException.ThrowIfNull(referralItem, nameof(referralItem));
+        ArgumentNullException.ThrowIfNull(referralItem);
         referralItem.ServiceName.Should().NotBeSameAs(updatedOpenReferralOrganisation?.ServiceName);
         referralItem.Id.Should().BeEquivalentTo(updatedOpenReferralOrganisation?.Id);
     }

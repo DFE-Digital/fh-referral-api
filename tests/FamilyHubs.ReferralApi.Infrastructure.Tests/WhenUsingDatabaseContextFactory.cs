@@ -16,7 +16,7 @@ public  class WhenUsingDatabaseContextFactory
     {
         //Arrange
         DatabaseContextFactory databaseContextFactory = new DatabaseContextFactory();
-        string[] args = new string[0];
+        string[] args = Array.Empty<string>();
 
         //Act
         var result = databaseContextFactory.CreateDbContext(args);
