@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json.schemastore.org/sarif-1.0.0",
+  "version": "1.0.0",
+  "runs": [
+    {
+      "tool": {
+        "name": "Microsoft (R) Visual C# Compiler",
+        "version": "4.4.0.0",
+        "fileVersion": "4.4.0-4.22520.11 (9e075f03)",
+        "semanticVersion": "4.4.0",
+        "language": "en-GB"
+      },
+      "results": [
+        {
+          "ruleId": "S107",
+          "level": "warning",
+          "message": "Constructor has 15 parameters, which is greater than the 7 authorized.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Projects/FamilyHubs/fh-referral-api/src/FamilyHubs.ReferralApi.Core/Entities/Referral.cs",
+                "region": {
+                  "startLine": 10,
+                  "startColumn": 20,
+                  "endLine": 10,
+                  "endColumn": 332
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        }
+      ],
+      "rules": {
+        "S107": {
+          "id": "S107",
+          "shortDescription": "Methods should not have too many parameters",
+          "fullDescription": "A long parameter list can indicate that a new structure should be created to wrap the numerous parameters or that the function is doing too many things.",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-107",
+          "properties": {
+            "category": "Major Code Smell",
+            "isEnabledByDefault": false,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

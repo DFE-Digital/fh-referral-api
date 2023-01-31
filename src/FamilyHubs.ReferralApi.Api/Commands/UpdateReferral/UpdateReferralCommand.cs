@@ -23,13 +23,11 @@ public class UpdateReferralCommand : IRequest<string>, IUpdateReferralCommand
 public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralCommand, string>
 {
     private readonly ApplicationDbContext _context;
-    private readonly IMapper _mapper;
     private readonly ILogger<UpdateReferralCommandHandler> _logger;
-    public UpdateReferralCommandHandler(ApplicationDbContext context, IMapper mapper, ILogger<UpdateReferralCommandHandler> logger)
+    public UpdateReferralCommandHandler(ApplicationDbContext context, ILogger<UpdateReferralCommandHandler> logger)
     {
         _logger = logger;
         _context = context;
-        _mapper = mapper;
     }
     public async Task<string> Handle(UpdateReferralCommand request, CancellationToken cancellationToken)
     {

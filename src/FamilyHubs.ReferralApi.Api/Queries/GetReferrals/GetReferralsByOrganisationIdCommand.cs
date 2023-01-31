@@ -57,7 +57,7 @@ public class GetReferralsByOrganisationIdCommandHandler : IRequestHandler<GetRef
             x.ReasonForSupport,
             x.ReasonForRejection,
             x.Status.Select(x => new ReferralStatusDto(x.Id, x.Status)).ToList()
-            )).ToListAsync();
+            )).ToListAsync(cancellationToken);
 
         if (request != null)
         {

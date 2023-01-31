@@ -30,7 +30,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests
 
     }
 
-    private JwtSecurityToken CreateToken(List<Claim> authClaims, IConfiguration configuration)
+    private static JwtSecurityToken CreateToken(List<Claim> authClaims, IConfiguration configuration)
     {
         string secret = configuration["JWT:Secret"] ?? "JWTAuthenticationHIGHsecuredPasswordVVVp1OH7Xzyr";
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));

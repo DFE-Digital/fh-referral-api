@@ -1,0 +1,6 @@
+projectKey=fh-referral-api
+serverUrl=http://localhost:9000
+serverVersion=9.8.0.63668
+dashboardUrl=http://localhost:9000/dashboard?id=fh-referral-api
+ceTaskId=AYYG_Y6DPcC0iwUvSCfJ
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AYYG_Y6DPcC0iwUvSCfJ

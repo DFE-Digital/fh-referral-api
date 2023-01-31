@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json.schemastore.org/sarif-1.0.0",
+  "version": "1.0.0",
+  "runs": [
+    {
+      "tool": {
+        "name": "Microsoft (R) Visual C# Compiler",
+        "version": "4.4.0.0",
+        "fileVersion": "4.4.0-4.22520.11 (9e075f03)",
+        "semanticVersion": "4.4.0",
+        "language": "en-GB"
+      },
+      "results": [
+        {
+          "ruleId": "CA1825",
+          "level": "note",
+          "message": "Avoid unnecessary zero-length array allocations.  Use Array.Empty<string>() instead.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Projects/FamilyHubs/fh-referral-api/tests/FamilyHubs.ReferralApi.Infrastructure.Tests/WhenUsingDatabaseContextFactory.cs",
+                "region": {
+                  "startLine": 19,
+                  "startColumn": 25,
+                  "endLine": 19,
+                  "endColumn": 38
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        }
+      ],
+      "rules": {
+        "CA1825": {
+          "id": "CA1825",
+          "shortDescription": "Avoid zero-length array allocations",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1825",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

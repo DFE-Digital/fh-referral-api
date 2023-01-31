@@ -10,7 +10,7 @@ public class CachedRepository<T> : IReadRepository<T> where T : class, IAggregat
     private readonly IMemoryCache _cache;
     private readonly ILogger<CachedRepository<T>> _logger;
     private readonly EfRepository<T> _sourceRepository;
-    private MemoryCacheEntryOptions _cacheOptions;
+    private readonly MemoryCacheEntryOptions _cacheOptions;
 
     public CachedRepository(IMemoryCache cache,
         ILogger<CachedRepository<T>> logger,
@@ -72,14 +72,14 @@ public class CachedRepository<T> : IReadRepository<T> where T : class, IAggregat
     public Task<T?> GetByIdAsync<TId>(TId id, CancellationToken cancellationToken = default) where TId : notnull
     {
         string? key = $"{typeof(T).Name}-{id}";
-        _logger.LogInformation("Checking cache for " + key);
+        _logger.LogInformation("Checking cache for {key}", key);
         return _cache.GetOrCreate(key, entry =>
         {
             if (entry != null && _cacheOptions != null)
             {
                 entry.SetOptions(_cacheOptions);
             }
-            _logger.LogWarning("Fetching source data for " + key);
+            _logger.LogWarning("Fetching source data for {key}", key);
             return _sourceRepository.GetByIdAsync(id, cancellationToken);
         });
     }
@@ -97,11 +97,11 @@ public class CachedRepository<T> : IReadRepository<T> where T : class, IAggregat
     public Task<List<T>> ListAsync(CancellationToken cancellationToken = default)
     {
         string key = $"{typeof(T).Name}-List";
-        _logger.LogInformation($"Checking cache for {key}");
+        _logger.LogInformation("Checking cache for {key}", key);
         return _cache.GetOrCreate(key, entry =>
         {
             entry.SetOptions(_cacheOptions);
-            _logger.LogWarning($"Fetching source data for {key}");
+            _logger.LogWarning("Fetching source data for {key}", key);
             return _sourceRepository.ListAsync(cancellationToken);
         });
     }
@@ -112,11 +112,11 @@ public class CachedRepository<T> : IReadRepository<T> where T : class, IAggregat
         if (specification.CacheEnabled)
         {
             string key = $"{specification.CacheKey}-ListAsync";
-            _logger.LogInformation($"Checking cache for {key}");
+            _logger.LogInformation("Checking cache for {key}", key);
             return _cache.GetOrCreate(key, entry =>
             {
                 entry.SetOptions(_cacheOptions);
-                _logger.LogWarning($"Fetching source data for {key}");
+                _logger.LogWarning("Fetching source data for {key}", key);
                 return _sourceRepository.ListAsync(specification, cancellationToken);
             });
         }
@@ -129,11 +129,11 @@ public class CachedRepository<T> : IReadRepository<T> where T : class, IAggregat
         if (specification.CacheEnabled)
         {
             string key = $"{specification.CacheKey}-ListAsync";
-            _logger.LogInformation($"Checking cache for {key}");
+            _logger.LogInformation("Checking cache for {key}", key);
             return _cache.GetOrCreate(key, entry =>
             {
                 entry.SetOptions(_cacheOptions);
-                _logger.LogWarning($"Fetching source data for {key}");
+                _logger.LogWarning("Fetching source data for {key}", key);
                 return _sourceRepository.ListAsync(specification, cancellationToken);
             });
         }
