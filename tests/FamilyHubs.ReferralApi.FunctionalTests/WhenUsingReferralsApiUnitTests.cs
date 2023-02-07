@@ -1,4 +1,4 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
+﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel;
 using FluentAssertions;
 using System.Text;

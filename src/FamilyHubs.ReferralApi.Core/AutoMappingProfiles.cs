@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using FamilyHubs.ReferralApi.Core.Entities;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 
 namespace FamilyHubs.ReferralApi.Core;
 

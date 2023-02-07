@@ -1,9 +1,8 @@
 ﻿using Ardalis.GuardClauses;
-using AutoMapper;
 using FamilyHubs.ReferralApi.Core.Entities;
 using FamilyHubs.ReferralApi.Core.Interfaces.Commands;
 using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using MediatR;
 
 namespace FamilyHubs.ReferralApi.Api.Commands.UpdateReferral;
