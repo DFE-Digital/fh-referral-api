@@ -2,7 +2,7 @@
 using FamilyHubs.ReferralApi.Api.Commands.SetReferralStatus;
 using FamilyHubs.ReferralApi.Api.Commands.UpdateReferral;
 using FamilyHubs.ReferralApi.Api.Queries.GetReferrals;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
