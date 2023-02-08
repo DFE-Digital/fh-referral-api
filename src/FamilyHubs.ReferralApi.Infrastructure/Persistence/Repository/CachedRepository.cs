@@ -2,6 +2,7 @@
 using FamilyHubs.SharedKernel.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
 
@@ -73,7 +74,7 @@ public class CachedRepository<T> : IReadRepository<T> where T : class, IAggregat
     {
         string? key = $"{typeof(T).Name}-{id}";
         _logger.LogInformation("Checking cache for {key}", key);
-        return _cache.GetOrCreate(key, entry =>
+        var retVal = _cache.GetOrCreate(key, entry =>
         {
             if (entry != null && _cacheOptions != null)
             {
@@ -82,6 +83,13 @@ public class CachedRepository<T> : IReadRepository<T> where T : class, IAggregat
             _logger.LogWarning("Fetching source data for {key}", key);
             return _sourceRepository.GetByIdAsync(id, cancellationToken);
         });
+
+        if (retVal == null)
+        {
+            return _sourceRepository.GetByIdAsync(id, cancellationToken);
+        }
+
+        return retVal;
     }
 
     public Task<T?> GetBySpecAsync(ISpecification<T> specification, CancellationToken cancellationToken = default)
@@ -98,12 +106,19 @@ public class CachedRepository<T> : IReadRepository<T> where T : class, IAggregat
     {
         string key = $"{typeof(T).Name}-List";
         _logger.LogInformation("Checking cache for {key}", key);
-        return _cache.GetOrCreate(key, entry =>
+        var retVal = _cache.GetOrCreate(key, entry =>
         {
             entry.SetOptions(_cacheOptions);
             _logger.LogWarning("Fetching source data for {key}", key);
             return _sourceRepository.ListAsync(cancellationToken);
         });
+
+        if (retVal == null)
+        {
+            return _sourceRepository.ListAsync(cancellationToken);
+        }
+
+        return retVal;
     }
 
     public Task<List<T>> ListAsync(ISpecification<T> specification,
@@ -113,12 +128,19 @@ public class CachedRepository<T> : IReadRepository<T> where T : class, IAggregat
         {
             string key = $"{specification.CacheKey}-ListAsync";
             _logger.LogInformation("Checking cache for {key}", key);
-            return _cache.GetOrCreate(key, entry =>
+            var retVal = _cache.GetOrCreate(key,entry =>
             {
                 entry.SetOptions(_cacheOptions);
                 _logger.LogWarning("Fetching source data for {key}", key);
                 return _sourceRepository.ListAsync(specification, cancellationToken);
             });
+
+            if (retVal == null)
+            {
+                return _sourceRepository.ListAsync(specification, cancellationToken);
+            }
+
+            return retVal;
         }
         return _sourceRepository.ListAsync(specification, cancellationToken);
     }
@@ -130,12 +152,19 @@ public class CachedRepository<T> : IReadRepository<T> where T : class, IAggregat
         {
             string key = $"{specification.CacheKey}-ListAsync";
             _logger.LogInformation("Checking cache for {key}", key);
-            return _cache.GetOrCreate(key, entry =>
+            var retVal = _cache.GetOrCreate(key, entry =>
             {
                 entry.SetOptions(_cacheOptions);
                 _logger.LogWarning("Fetching source data for {key}", key);
                 return _sourceRepository.ListAsync(specification, cancellationToken);
             });
+
+            if (retVal == null)
+            {
+                return _sourceRepository.ListAsync(specification, cancellationToken);
+            }
+
+            return retVal;
         }
         return _sourceRepository.ListAsync(specification, cancellationToken);
     }
