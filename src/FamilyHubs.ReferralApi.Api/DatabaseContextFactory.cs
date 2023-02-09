@@ -17,7 +17,7 @@ public class DatabaseContextFactory : IDesignTimeDbContextFactory<ApplicationDbC
 
         var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 
-        string useDbType = configuration.GetValue<string>("UseDbType");
+        string? useDbType = configuration.GetValue<string>("UseDbType");
 
         switch (useDbType)
         {

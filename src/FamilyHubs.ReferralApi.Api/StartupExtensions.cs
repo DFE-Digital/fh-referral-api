@@ -91,17 +91,21 @@ public static class StartupExtensions
         if (!configuration.GetValue<bool>("UseRabbitMQ")) return;
 
         var rabbitMqSettings = configuration.GetSection(nameof(RabbitMqSettings)).Get<RabbitMqSettings>();
-        services.AddMassTransit(mt =>
-            mt.UsingRabbitMq((_, cfg) =>
-            {
-                cfg.Host(rabbitMqSettings.Uri, "/", c =>
-                {
-                    c.Username(rabbitMqSettings.UserName);
-                    c.Password(rabbitMqSettings.Password);
-                });
+        if (rabbitMqSettings != null)
+        {
+           services.AddMassTransit(mt =>
+           mt.UsingRabbitMq((_, cfg) =>
+           {
+               cfg.Host(rabbitMqSettings.Uri, "/", c =>
+               {
+                   c.Username(rabbitMqSettings.UserName);
+                   c.Password(rabbitMqSettings.Password);
+               });
 
-                cfg.ReceiveEndpoint("referralqueue", (c) => { c.Consumer<CommandMessageConsumer>(); });
-            }));
+               cfg.ReceiveEndpoint("referralqueue", (c) => { c.Consumer<CommandMessageConsumer>(); });
+           }));
+        }
+       
     }
 
     public static async Task<IServiceProvider> ConfigureWebApplication(this WebApplication app)

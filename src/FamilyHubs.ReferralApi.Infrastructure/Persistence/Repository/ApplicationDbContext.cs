@@ -1,16 +1,12 @@
-﻿using FamilyHubs.ReferralApi.Core.Entities;
-using FamilyHubs.ReferralApi.Core.Infrastructure;
-using FamilyHubs.ReferralApi.Infrastructure.Persistence.Interceptors;
-using FamilyHubs.SharedKernel;
-using FamilyHubs.SharedKernel.Interfaces;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System.Reflection;
-using Microsoft.Extensions.Configuration;
+﻿using EncryptColumn.Core.Extension;
 using EncryptColumn.Core.Interfaces;
 using EncryptColumn.Core.Util;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using EncryptColumn.Core.Extension;
+using FamilyHubs.ReferralApi.Core.Entities;
+using FamilyHubs.ReferralApi.Core.Infrastructure;
+using FamilyHubs.ReferralApi.Infrastructure.Persistence.Interceptors;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System.Reflection;
 
 namespace FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
 
@@ -37,7 +33,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         _dispatcher = dispatcher;
 #endif
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
-        this._provider = new GenerateEncryptionProvider(configuration.GetValue<string>("DbKey"));
+        //DbKey should be overriden in build pipeline
+        this._provider = new GenerateEncryptionProvider(configuration.GetValue<string>("DbKey") ?? "kljsdkkdlo4454GG00155sajuklmbkdl");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
