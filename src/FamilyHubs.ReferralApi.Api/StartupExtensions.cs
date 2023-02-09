@@ -8,6 +8,8 @@ using Serilog;
 using System.Text;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog.Events;
+using Ardalis.GuardClauses;
+using FamilyHubs.ReferralApi.Core.Entities;
 
 namespace FamilyHubs.ReferralApi.Api;
 
@@ -91,9 +93,12 @@ public static class StartupExtensions
         if (!configuration.GetValue<bool>("UseRabbitMQ")) return;
 
         var rabbitMqSettings = configuration.GetSection(nameof(RabbitMqSettings)).Get<RabbitMqSettings>();
-        if (rabbitMqSettings != null)
+        if (rabbitMqSettings == null)
         {
-           services.AddMassTransit(mt =>
+            throw new NotFoundException(nameof(RabbitMqSettings), "RabbitMqSettings");
+        }
+
+        services.AddMassTransit(mt =>
            mt.UsingRabbitMq((_, cfg) =>
            {
                cfg.Host(rabbitMqSettings.Uri, "/", c =>
@@ -104,8 +109,6 @@ public static class StartupExtensions
 
                cfg.ReceiveEndpoint("referralqueue", (c) => { c.Consumer<CommandMessageConsumer>(); });
            }));
-        }
-       
     }
 
     public static async Task<IServiceProvider> ConfigureWebApplication(this WebApplication app)
