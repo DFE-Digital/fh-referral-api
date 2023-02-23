@@ -1,6 +1,8 @@
 ﻿using FamilyHubs.ReferralApi.Api.Commands.CreateReferral;
+using FamilyHubs.ReferralApi.Api.Commands.SetReferralStatus;
+using FamilyHubs.ReferralApi.Api.Commands.UpdateReferral;
 using FamilyHubs.ReferralApi.Api.Queries.GetReferrals;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +14,7 @@ public class MinimalReferralEndPoints
 {
     public void RegisterReferralEndPoints(WebApplication app)
     {
-        app.MapPost("api/referrals", async ([FromBody] ReferralDto request, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapPost("api/referrals", [Authorize(Policy = "Referrer")] async ([FromBody] ReferralDto request, CancellationToken cancellationToken, ISender _mediator) =>
         {
             try
             {
@@ -27,7 +29,24 @@ public class MinimalReferralEndPoints
             }
         }).WithMetadata(new SwaggerOperationAttribute("Referrals", "Create Referral") { Tags = new[] { "Referrals" } });
 
-        app.MapGet("api/referrals/{referrer}", async (string referrer, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapPut("api/referrals/{id}", [Authorize(Policy = "Referrer")] async (string id, [FromBody] ReferralDto request, CancellationToken cancellationToken, ISender _mediator, ILogger<MinimalReferralEndPoints> logger) =>
+        {
+            try
+            {
+                UpdateReferralCommand command = new(id, request);
+                var result = await _mediator.Send(command, cancellationToken);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred updating referral (api). {exceptionMessage}", ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                throw;
+            }
+        }).WithMetadata(new SwaggerOperationAttribute("Update Referral", "Update Referral By Id") { Tags = new[] { "Referrals" } });
+
+
+        app.MapGet("api/referrals/{referrer}", [Authorize(Policy = "Referrer")] async (string referrer, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
         {
             try
             {
@@ -57,7 +76,7 @@ public class MinimalReferralEndPoints
             }
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Organisation Id") { Tags = new[] { "Referrals" } });
 
-        app.MapGet("api/referral/{id}", async (string id, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapGet("api/referral/{id}", [Authorize(Policy = "Referrer")] async (string id, CancellationToken cancellationToken, ISender _mediator) =>
         {
             try
             {
@@ -71,5 +90,21 @@ public class MinimalReferralEndPoints
                 throw;
             }
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referral By Id") { Tags = new[] { "Referrals" } });
+
+        app.MapPost("api/referralStatus/{referralId}/{status}", [Authorize(Policy = "Referrer")] async (string referralId, string status, CancellationToken cancellationToken, ISender _mediator, ILogger<MinimalReferralEndPoints> logger) =>
+        {
+            try
+            {
+                SetReferralStatusCommand command = new(referralId, status);
+                var result = await _mediator.Send(command, cancellationToken);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred setting referral status (api). {exceptionMessage}", ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                throw;
+            }
+        }).WithMetadata(new SwaggerOperationAttribute("Referrals", "Set Referral Status") { Tags = new[] { "Referrals" } });
     }
 }

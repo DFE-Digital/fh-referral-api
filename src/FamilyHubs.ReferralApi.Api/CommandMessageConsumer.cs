@@ -1,12 +1,14 @@
 ﻿using FamilyHubs.ReferralApi.Api.Commands.CreateReferral;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
-using FamilyHubs.ServiceDirectory.Shared.Models.MassTransit;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.MassTransit;
 using MassTransit;
 using MediatR;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
 namespace FamilyHubs.ReferralApi.Api;
 
+[ExcludeFromCodeCoverage]
 public class CommandMessageConsumer : IConsumer<CommandMessage>
 {
     public async Task Consume(ConsumeContext<CommandMessage> context)
@@ -30,7 +32,7 @@ public class CommandMessageConsumer : IConsumer<CommandMessage>
                         var mediator = scope.ServiceProvider.GetService<ISender>();
                         if (mediator != null)
                         {
-                            var result = await mediator.Send(command, new CancellationToken());
+                            await mediator.Send(command, new CancellationToken());
                         }
                     }
                 }
