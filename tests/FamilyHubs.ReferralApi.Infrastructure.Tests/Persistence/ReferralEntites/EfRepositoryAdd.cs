@@ -14,17 +14,17 @@ public class WhenEfRepositoryAdd : BaseEfRepositoryTestFixture
     {
         // Arrange
         var referralItem = _fixture.Create<Referral>();     
-        ArgumentNullException.ThrowIfNull(referralItem, nameof(referralItem));
+        ArgumentNullException.ThrowIfNull(referralItem);
 
         var repository = GetRepository<Referral>();
-        ArgumentNullException.ThrowIfNull(repository, nameof(repository));
+        ArgumentNullException.ThrowIfNull(repository);
 
         // Act
         referralItem.RegisterDomainEvent(new ReferralCreatedEvent(referralItem));
         await repository.AddAsync(referralItem);
 
         var addedReferralItem = await repository.GetByIdAsync(referralItem.Id);
-        ArgumentNullException.ThrowIfNull(addedReferralItem, nameof(addedReferralItem));
+        ArgumentNullException.ThrowIfNull(addedReferralItem);
 
         await repository.SaveChangesAsync();
 

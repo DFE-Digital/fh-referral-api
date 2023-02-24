@@ -1,7 +1,7 @@
 ﻿using Ardalis.GuardClauses;
 using FamilyHubs.ReferralApi.Core.Entities;
 using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.Referrals;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -56,8 +56,9 @@ public class GetReferralsByReferrerCommandHandler : IRequestHandler<GetReferrals
             x.Phone,
             string.Empty,
             x.ReasonForSupport,
+            x.ReasonForRejection,
             x.Status.Select(x => new ReferralStatusDto(x.Id, x.Status)).ToList()
-            )).ToListAsync();
+            )).ToListAsync(cancellationToken);
 
         if (request != null)
         {

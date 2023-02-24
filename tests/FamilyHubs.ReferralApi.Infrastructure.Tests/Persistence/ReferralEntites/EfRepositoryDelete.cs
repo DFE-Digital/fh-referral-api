@@ -12,10 +12,10 @@ public class WhenEfRepositoryDelete : BaseEfRepositoryTestFixture
     {
         // Arrange
         var referralItem = _fixture.Create<Referral>();
-        ArgumentNullException.ThrowIfNull(referralItem, nameof(referralItem));
+        ArgumentNullException.ThrowIfNull(referralItem);
         var referralId = referralItem.Id;
         var repository = GetRepository<Referral>();
-        ArgumentNullException.ThrowIfNull(repository, nameof(repository));
+        ArgumentNullException.ThrowIfNull(repository);
         await repository.AddAsync(referralItem);
 
         // Act

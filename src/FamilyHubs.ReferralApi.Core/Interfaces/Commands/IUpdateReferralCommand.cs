@@ -2,7 +2,7 @@
 
 namespace FamilyHubs.ReferralApi.Core.Interfaces.Commands;
 
-public interface ICreateReferralCommand
+public interface IUpdateReferralCommand
 {
     public ReferralDto ReferralDto { get; }
 }

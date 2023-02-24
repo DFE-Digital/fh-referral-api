@@ -18,7 +18,7 @@ public static class ConfigureServices
         services.AddTransient<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddScoped<AuditableEntitySaveChangesInterceptor>();
 
-        string useDbType = configuration.GetValue<string>("UseDbType");
+        var useDbType = configuration.GetValue<string>("UseDbType");
 
         switch (useDbType)
         {
@@ -41,30 +41,13 @@ public static class ConfigureServices
                 services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseInMemoryDatabase("ReferralDb"));
                 break;
-
-
         }
 
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
         services.AddScoped<ApplicationDbContextInitialiser>();
 
-        //services
-        //    .AddDefaultIdentity<ApplicationUser>()
-        //    .AddRoles<IdentityRole>()
-        //    .AddEntityFrameworkStores<ApplicationDbContext>();
-
-        //services.AddIdentityServer()
-        //    .AddApiAuthorization<ApplicationUser, LAHubDbContext>();
-
         services.AddTransient<IDateTime, DateTimeService>();
-        //services.AddTransient<IIdentityService, IdentityService>();
-
-        //services.AddAuthentication()
-        //    .AddIdentityServerJwt();
-
-        //services.AddAuthorization(options =>
-        //    options.AddPolicy("CanPurge", policy => policy.RequireRole("Administrator")));
 
         return services;
     }
