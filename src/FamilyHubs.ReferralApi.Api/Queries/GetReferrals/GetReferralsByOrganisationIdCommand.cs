@@ -11,16 +11,20 @@ namespace FamilyHubs.ReferralApi.Api.Queries.GetReferrals;
 
 public class GetReferralsByOrganisationIdCommand : IRequest<PaginatedList<ReferralDto>>
 {
-    public GetReferralsByOrganisationIdCommand(string organisationId, int? pageNumber, int? pageSize)
+    public GetReferralsByOrganisationIdCommand(string organisationId, int? pageNumber, int? pageSize, string? searchText, bool? doNotListRejected)
     {
         OrganisationId = organisationId;
         PageNumber = pageNumber != null ? pageNumber.Value : 1;
         PageSize = pageSize != null ? pageSize.Value : 1;
+        SearchText = searchText;
+        DoNotListRejected = doNotListRejected;
     }
 
     public string OrganisationId { get; set; }
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 10;
+    public string? SearchText { get; set; }
+    public bool? DoNotListRejected { get; set; }
 }
 
 public class GetReferralsByOrganisationIdCommandHandler : IRequestHandler<GetReferralsByOrganisationIdCommand, PaginatedList<ReferralDto>>
@@ -40,6 +44,19 @@ public class GetReferralsByOrganisationIdCommandHandler : IRequestHandler<GetRef
         if (entities == null)
         {
             throw new NotFoundException(nameof(Referral), request.OrganisationId);
+        }
+
+        if (!string.IsNullOrEmpty(request.SearchText))
+        {
+            entities = entities.Where(x => x.RequestNumber.ToString().Contains(request.SearchText) ||
+                                           (x.DateRecieved != null && x.DateRecieved.Value.ToString("dd MMMM yyyy").Contains(request.SearchText)) ||
+                                           x.FullName.Contains(request.SearchText) ||
+                                           x.Referrer.Contains(request.SearchText));
+        }
+
+        if (request.DoNotListRejected != null && request.DoNotListRejected == true)
+        {
+            entities = entities.Where(x => IsRejected(x.Status));
         }
 
         var filteredReferrals = await entities.Select(x => new ReferralDto(
@@ -71,6 +88,20 @@ public class GetReferralsByOrganisationIdCommandHandler : IRequestHandler<GetRef
 
         return new PaginatedList<ReferralDto>(filteredReferrals, filteredReferrals.Count, 1, 10);
 
+    }
+
+    private bool IsRejected(ICollection<ReferralStatus> status)
+    {
+        if (status == null || !status.Any())
+            return false;
+
+        ReferralStatus referralStatus = status.LastOrDefault() ?? default!;
+        if (referralStatus != null && (referralStatus.Status.Contains("Reject") || referralStatus.Status.Contains("Decline")))
+        {
+            return true;
+        }
+
+        return false;
 
     }
 }

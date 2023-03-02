@@ -62,7 +62,7 @@ public class WhenValidatingReferralCommands
     {
         //Arrange
         var validator = new GetReferralsByOrganisationIdCommandValidator();
-        var testModel = new GetReferralsByOrganisationIdCommand("id", 1, 99);
+        var testModel = new GetReferralsByOrganisationIdCommand("id", 1, 99, default!, default!);
 
         //Act
         var result = validator.Validate(testModel);

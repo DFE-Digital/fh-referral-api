@@ -29,6 +29,8 @@ public static class ReferralSeedData
                 )
         };
 
+        listReferrals[0].RequestNumber = 1L;
+
         return listReferrals;
 
     }
