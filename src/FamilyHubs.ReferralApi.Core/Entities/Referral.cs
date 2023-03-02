@@ -1,6 +1,7 @@
 ﻿using EncryptColumn.Core.Attribute;
 using FamilyHubs.SharedKernel;
 using FamilyHubs.SharedKernel.Interfaces;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
 namespace FamilyHubs.ReferralApi.Core.Entities;

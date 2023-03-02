@@ -36,7 +36,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 #endif
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
         //DbKey should be overriden in build pipeline
-        string dbKey = configuration.GetValue<string>("DbKey");
+        string dbKey = configuration.GetValue<string>("DbKey") ?? string.Empty;
         ArgumentNullException.ThrowIfNull(configuration);
         if (string.IsNullOrEmpty(dbKey))
         {
@@ -48,6 +48,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Referral>().Property(e => e.RequestNumber).UseIdentityAlwaysColumn();
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         modelBuilder.UseEncryption(this._provider);

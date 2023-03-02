@@ -24,7 +24,7 @@ public static class ReferralSeedData
                 "0131 111 2222",
                 "Requires help with child",
                 null,
-                new DateTime(2023,1,1),
+                DateTime.SpecifyKind(new DateTime(2023,1,1), DateTimeKind.Utc),
                 new List<ReferralStatus> { new ReferralStatus("60abfe12-be36-4d4c-ae61-d039589f7318", "Initial Connection", "24572563-7d73-4127-b348-8d2bf646e7fe") }
                 )
         };
