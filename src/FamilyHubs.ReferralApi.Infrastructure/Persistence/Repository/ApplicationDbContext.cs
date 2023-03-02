@@ -1,4 +1,5 @@
 ﻿using Ardalis.GuardClauses;
+using Ardalis.Specification;
 using EncryptColumn.Core.Extension;
 using EncryptColumn.Core.Interfaces;
 using EncryptColumn.Core.Util;
@@ -36,11 +37,12 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
         //DbKey should be overriden in build pipeline
         string dbKey = configuration.GetValue<string>("DbKey");
+        ArgumentNullException.ThrowIfNull(configuration);
         if (string.IsNullOrEmpty(dbKey))
         {
             throw new NotFoundException(nameof(IConfiguration), "DbKey");
         }
-
+        
         this._provider = new GenerateEncryptionProvider(dbKey);
     }
 

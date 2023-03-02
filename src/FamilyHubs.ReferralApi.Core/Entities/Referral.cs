@@ -9,7 +9,7 @@ public class Referral : EntityBase<string>, IAggregateRoot
 {
     private Referral() { }
     [SuppressMessage("SonarLint", "S107", Justification = "Ignored intentionally as this is a database object")]
-    public Referral(string id, string organisationId, string serviceId, string serviceName, string serviceDescription, string serviceAsJson, string referrer, string fullName, string hasSpecialNeeds, string? email, string? phone, string? text, string reasonForSupport, string? reasonForRejection, ICollection<ReferralStatus> status)
+    public Referral(string id, string organisationId, string serviceId, string serviceName, string serviceDescription, string serviceAsJson, string referrer, string fullName, string hasSpecialNeeds, string? email, string? phone, string? text, string reasonForSupport, string? reasonForRejection, DateTime? dateRecieved, ICollection<ReferralStatus> status)
     {
         Id = id;
         OrganisationId = organisationId;
@@ -25,7 +25,9 @@ public class Referral : EntityBase<string>, IAggregateRoot
         Text = text;
         ReasonForSupport = reasonForSupport;
         ReasonForRejection = reasonForRejection;
+        DateRecieved = dateRecieved;
         Status = status;
+        
     }
     public string OrganisationId { get; set; } = default!;
     public string ServiceId { get; set; } = default!;
@@ -46,6 +48,8 @@ public class Referral : EntityBase<string>, IAggregateRoot
     public string ReasonForSupport { get; set; } = default!;
     [EncryptColumn]
     public string? ReasonForRejection { get; set; } = default!;
+    public DateTime? DateRecieved { get; set; } = default!;
+    public long RequestNumber { get; set; } = default!;
     public virtual ICollection<ReferralStatus> Status { get; set; } = default!;
 
 }

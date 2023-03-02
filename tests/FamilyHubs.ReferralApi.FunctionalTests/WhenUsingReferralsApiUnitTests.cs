@@ -24,9 +24,9 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             Method = HttpMethod.Get,
             RequestUri = new Uri(_client.BaseAddress + "api/referrals/CurrentUser?pageNumber=1&pageSize=10"),
         };
-
-        //request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
-
+#if USE_BEARER_TOKEN
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+#endif
         using var response = await _client.SendAsync(request);
 
         response.EnsureSuccessStatusCode();
@@ -55,6 +55,8 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 "Robert.Brown@yahoo.co.uk",
                 "0131 222 3333",
                 "text",
+                 DateTime.UtcNow,
+                 1,
                 "Requires help with child",
                 null,
                 new List<ReferralStatusDto> { new ReferralStatusDto("1d2c41ac-fade-4933-a810-d8a040f0b9ee", "Inital-Referral") }
@@ -67,7 +69,9 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json"),
         };
 
-        //request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+#if USE_BEARER_TOKEN
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+#endif
 
         using var response = await _client.SendAsync(request);
 
@@ -91,7 +95,9 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             RequestUri = new Uri(_client.BaseAddress + "api/organisationreferrals/72e653e8-1d05-4821-84e9-9177571a6013?pageNumber=1&pageSize=10"),
         };
 
-        //request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+#if USE_BEARER_TOKEN
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+#endif
 
         using var response = await _client.SendAsync(request);
 
@@ -115,7 +121,9 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             RequestUri = new Uri(_client.BaseAddress + "api/referral/24572563-7d73-4127-b348-8d2bf646e7fe"),
         };
 
-        //request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+#if USE_BEARER_TOKEN
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+#endif
 
         using var response = await _client.SendAsync(request);
 
@@ -145,6 +153,8 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 email: "John.Smith_Test@yahoo.co.uk",
                 phone: "0131 111 5555",
                 text: "0131 111 5555",
+                dateRecieved: DateTime.UtcNow,
+                requestNumber: 1,
                 reasonForSupport: "Requires help with child Test",
                 reasonForRejection: null,
                 new List<ReferralStatusDto> { new ReferralStatusDto("60abfe12-be36-4d4c-ae61-d039589f7318", "Initial Connection") }
@@ -157,7 +167,9 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json"),
         };
 
-        //request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+#if USE_BEARER_TOKEN
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+#endif
 
         using var response = await _client.SendAsync(request);
 
@@ -179,7 +191,9 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             RequestUri = new Uri(_client.BaseAddress + "api/referralStatus/24572563-7d73-4127-b348-8d2bf646e7fe/Accept Connection")
         };
 
-        //request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+#if USE_BEARER_TOKEN
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+#endif
 
         using var response = await _client.SendAsync(request);
 

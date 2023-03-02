@@ -80,7 +80,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             var testReferral = GetReferralDto();
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
-            var id = await handler.Handle(command, new System.Threading.CancellationToken());
+            await handler.Handle(command, new System.Threading.CancellationToken());
 
             GetReferralsByReferrerCommand getcommand = new("Bob Referrer",1,10);
             GetReferralsByReferrerCommandHandler gethandler = new(mockApplicationDbContext);
@@ -106,7 +106,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             var testReferral = GetReferralDto();
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
-            var id = await handler.Handle(command, new System.Threading.CancellationToken());
+            await handler.Handle(command, new System.Threading.CancellationToken());
 
             GetReferralsByOrganisationIdCommand getcommand = new("ba1cca90-b02a-4a0b-afa0-d8aed1083c0d", 1, 10);
             GetReferralsByOrganisationIdCommandHandler gethandler = new(mockApplicationDbContext);
@@ -132,7 +132,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             var testReferral = GetReferralDto();
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
-            var id = await handler.Handle(command, new System.Threading.CancellationToken());
+            await handler.Handle(command, new System.Threading.CancellationToken());
 
             GetReferralByIdCommand getcommand = new("212fecf5-0db2-4e05-b28c-8cacaebba840");
             GetReferralByIdCommandHandler gethandler = new(mockApplicationDbContext);
@@ -161,6 +161,8 @@ namespace FamilyHubs.ReferralApi.UnitTests
                 "Robert.Brown@yahoo.co.uk",
                 "0131 222 3333",
                 "",
+                DateTime.UtcNow,
+                1,
                 "Requires help with child",
                 null,
                 new List<ReferralStatusDto> { new ReferralStatusDto("aa0be0f8-c218-401d-9237-aa75b6e38f01", "Inital-Referral") }

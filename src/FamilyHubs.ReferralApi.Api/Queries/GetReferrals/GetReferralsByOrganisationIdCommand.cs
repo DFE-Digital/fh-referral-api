@@ -1,4 +1,5 @@
 ﻿using Ardalis.GuardClauses;
+using Ardalis.Specification;
 using FamilyHubs.ReferralApi.Core.Entities;
 using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
@@ -54,6 +55,8 @@ public class GetReferralsByOrganisationIdCommandHandler : IRequestHandler<GetRef
             x.Email,
             x.Phone,
             x.Text,
+            x.DateRecieved,
+            x.RequestNumber,
             x.ReasonForSupport,
             x.ReasonForRejection,
             x.Status.Select(x => new ReferralStatusDto(x.Id, x.Status)).ToList()
