@@ -54,10 +54,7 @@ public class GetReferralsByOrganisationIdCommandHandler : IRequestHandler<GetRef
                                            x.Referrer.Contains(request.SearchText));
         }
 
-        if (request.DoNotListRejected != null && request.DoNotListRejected == true)
-        {
-            entities = entities.Where(x => IsRejected(x.Status));
-        }
+        
 
         var filteredReferrals = await entities.Select(x => new ReferralDto(
             x.Id,
@@ -79,10 +76,15 @@ public class GetReferralsByOrganisationIdCommandHandler : IRequestHandler<GetRef
             x.Status.Select(x => new ReferralStatusDto(x.Id, x.Status)).ToList()
             )).ToListAsync(cancellationToken);
 
+        if (request.DoNotListRejected != null && request.DoNotListRejected == true)
+        {
+            filteredReferrals = filteredReferrals.Where(x => !IsRejected(x.Status)).ToList();
+        }
+
         if (request != null)
         {
-            var pagelist = filteredReferrals.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).ToList();
-            var result = new PaginatedList<ReferralDto>(filteredReferrals, pagelist.Count, request.PageNumber, request.PageSize);
+            var pageList = filteredReferrals.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).ToList();
+            var result = new PaginatedList<ReferralDto>(pageList, filteredReferrals.Count, request.PageNumber, request.PageSize);
             return result;
         }
 
@@ -90,12 +92,12 @@ public class GetReferralsByOrganisationIdCommandHandler : IRequestHandler<GetRef
 
     }
 
-    private bool IsRejected(ICollection<ReferralStatus> status)
+    private bool IsRejected(ICollection<ReferralStatusDto> status)
     {
         if (status == null || !status.Any())
             return false;
 
-        ReferralStatus referralStatus = status.LastOrDefault() ?? default!;
+        ReferralStatusDto referralStatus = status.LastOrDefault() ?? default!;
         if (referralStatus != null && (referralStatus.Status.Contains("Reject") || referralStatus.Status.Contains("Decline")))
         {
             return true;

@@ -56,7 +56,7 @@ public class ApplicationDbContextInitialiser
         if (_context.Referrals.Any())
             return;
 
-        IReadOnlyCollection<Referral> referrals = ReferralSeedData.SeedReferral();
+        IReadOnlyCollection<Referral> referrals = ReferralSeedData.SeedReferral(false);
 
         foreach (var referral in referrals)
         {

@@ -8,7 +8,6 @@ using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace FamilyHubs.ReferralApi.UnitTests
 {
@@ -82,7 +81,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
             await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralsByReferrerCommand getcommand = new("Bob Referrer",1,10);
+            GetReferralsByReferrerCommand getcommand = new("Bob Referrer",1,10, default!, default!);
             GetReferralsByReferrerCommandHandler gethandler = new(mockApplicationDbContext);
             
 
@@ -92,6 +91,61 @@ namespace FamilyHubs.ReferralApi.UnitTests
             //Assert
             result.Should().NotBeNull();
             result.Items[0].Should().BeEquivalentTo(testReferral);
+        }
+
+        [Fact]
+        public async Task ThenGetReferralsByReferrerByTextSearching()
+        {
+            //Arange
+            var myProfile = new AutoMappingProfiles();
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            IMapper mapper = new Mapper(configuration);
+            var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
+            var mockApplicationDbContext = GetApplicationDbContext();
+            var testReferral = GetReferralDto();
+            CreateReferralCommand command = new(testReferral);
+            CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
+            await handler.Handle(command, new System.Threading.CancellationToken());
+
+            GetReferralsByReferrerCommand getcommand = new("Bob Referrer", 1, 10, "Robert", default!);
+            GetReferralsByReferrerCommandHandler gethandler = new(mockApplicationDbContext);
+
+
+            //Act
+            var result = await gethandler.Handle(getcommand, new System.Threading.CancellationToken());
+
+            //Assert
+            result.Should().NotBeNull();
+            result.Items[0].Should().BeEquivalentTo(testReferral);
+        }
+
+        [Theory]
+        [InlineData("Reject Connection")]
+        [InlineData("Decline Connection")]
+        public async Task ThenGetReferralsByReferrerBy_NothingReturnedWithDeclinedStatus(string status)
+        {
+            //Arange
+            var myProfile = new AutoMappingProfiles();
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            IMapper mapper = new Mapper(configuration);
+            var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
+            var mockApplicationDbContext = GetApplicationDbContext();
+            var testReferral = GetReferralDto();
+            testReferral.Status.Add(new ReferralStatusDto("8f42447b-4676-4b7c-88da-97d531c7e209", status));
+            CreateReferralCommand command = new(testReferral);
+            CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
+            await handler.Handle(command, new System.Threading.CancellationToken());
+
+            GetReferralsByReferrerCommand getcommand = new("Bob Referrer", 1, 10, default!, true);
+            GetReferralsByReferrerCommandHandler gethandler = new(mockApplicationDbContext);
+
+
+            //Act
+            var result = await gethandler.Handle(getcommand, new System.Threading.CancellationToken());
+
+            //Assert
+            result.Should().NotBeNull();
+            result.Items.Any().Should().BeFalse();
         }
 
         [Fact]
@@ -118,6 +172,61 @@ namespace FamilyHubs.ReferralApi.UnitTests
             //Assert
             result.Should().NotBeNull();
             result.Items[0].Should().BeEquivalentTo(testReferral);
+        }
+
+        [Fact]
+        public async Task ThenGetReferralsByOrganisationIdUsingSearchText()
+        {
+            //Arange
+            var myProfile = new AutoMappingProfiles();
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            IMapper mapper = new Mapper(configuration);
+            var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
+            var mockApplicationDbContext = GetApplicationDbContext();
+            var testReferral = GetReferralDto();
+            CreateReferralCommand command = new(testReferral);
+            CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
+            await handler.Handle(command, new System.Threading.CancellationToken());
+
+            GetReferralsByOrganisationIdCommand getcommand = new("ba1cca90-b02a-4a0b-afa0-d8aed1083c0d", 1, 10, "Robert", default!);
+            GetReferralsByOrganisationIdCommandHandler gethandler = new(mockApplicationDbContext);
+
+
+            //Act
+            var result = await gethandler.Handle(getcommand, new System.Threading.CancellationToken());
+
+            //Assert
+            result.Should().NotBeNull();
+            result.Items[0].Should().BeEquivalentTo(testReferral);
+        }
+
+        [Theory]
+        [InlineData("Reject Connection")]
+        [InlineData("Decline Connection")]
+        public async Task ThenGetReferralsByOrganisationId_ShouldNotReturnDeclinedReferrals(string status)
+        {
+            //Arange
+            var myProfile = new AutoMappingProfiles();
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            IMapper mapper = new Mapper(configuration);
+            var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
+            var mockApplicationDbContext = GetApplicationDbContext();
+            var testReferral = GetReferralDto();
+            testReferral.Status.Add(new ReferralStatusDto("8f42447b-4676-4b7c-88da-97d531c7e209", status));
+            CreateReferralCommand command = new(testReferral);
+            CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
+            await handler.Handle(command, new System.Threading.CancellationToken());
+
+            GetReferralsByOrganisationIdCommand getcommand = new("ba1cca90-b02a-4a0b-afa0-d8aed1083c0d", 1, 10, default!, true);
+            GetReferralsByOrganisationIdCommandHandler gethandler = new(mockApplicationDbContext);
+
+
+            //Act
+            var result = await gethandler.Handle(getcommand, new System.Threading.CancellationToken());
+
+            //Assert
+            result.Should().NotBeNull();
+            result.Items.Any().Should().BeFalse();
         }
 
         [Fact]

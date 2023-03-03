@@ -46,11 +46,11 @@ public class MinimalReferralEndPoints
         }).WithMetadata(new SwaggerOperationAttribute("Update Referral", "Update Referral By Id") { Tags = new[] { "Referrals" } });
 
 
-        app.MapGet("api/referrals/{referrer}", [Authorize(Policy = "Referrer")] async (string referrer, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapGet("api/referrals/{referrer}", [Authorize(Policy = "Referrer")] async (string referrer, int? pageNumber, int? pageSize, string? searchText, bool? doNotListRejected, CancellationToken cancellationToken, ISender _mediator) =>
         {
             try
             {
-                GetReferralsByReferrerCommand request = new(referrer, pageNumber, pageSize);
+                GetReferralsByReferrerCommand request = new(referrer, pageNumber, pageSize, searchText, doNotListRejected);
                 var result = await _mediator.Send(request, cancellationToken);
                 return result;
             }
@@ -61,7 +61,7 @@ public class MinimalReferralEndPoints
             }
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Referrer") { Tags = new[] { "Referrals" } });
 
-        app.MapGet("api/organisationreferrals/{organisationId}", [Authorize(Policy = "Referrer")] async (string organisationId, int? pageNumber, int? pageSize, string ? searchText, bool ? doNotListRejected, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapGet("api/organisationreferrals/{organisationId}", [Authorize(Policy = "Referrer")] async (string organisationId, int? pageNumber, int? pageSize, string? searchText, bool? doNotListRejected, CancellationToken cancellationToken, ISender _mediator) =>
         {
             try
             {

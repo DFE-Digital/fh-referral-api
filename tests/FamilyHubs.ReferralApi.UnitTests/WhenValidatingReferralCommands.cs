@@ -2,11 +2,6 @@
 using FamilyHubs.ReferralApi.Api.Commands.UpdateReferral;
 using FamilyHubs.ReferralApi.Api.Queries.GetReferrals;
 using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FamilyHubs.ReferralApi.UnitTests;
 
@@ -76,7 +71,7 @@ public class WhenValidatingReferralCommands
     {
         //Arrange
         var validator = new GetReferralsByReferrerCommandValidator();
-        var testModel = new GetReferralsByReferrerCommand("id", 1, 99);
+        var testModel = new GetReferralsByReferrerCommand("id", 1, 99, default!, default!);
 
         //Act
         var result = validator.Validate(testModel);
