@@ -81,7 +81,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
             await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralsByReferrerCommand getcommand = new("Bob Referrer",1,10, default!, default!);
+            GetReferralsByReferrerCommand getcommand = new("Bob Referrer",1,10, null, null);
             GetReferralsByReferrerCommandHandler gethandler = new(mockApplicationDbContext);
             
 
@@ -107,7 +107,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
             await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralsByReferrerCommand getcommand = new("Bob Referrer", 1, 10, "Robert", default!);
+            GetReferralsByReferrerCommand getcommand = new("Bob Referrer", 1, 10, "Robert", null);
             GetReferralsByReferrerCommandHandler gethandler = new(mockApplicationDbContext);
 
 
@@ -117,6 +117,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             //Assert
             result.Should().NotBeNull();
             result.Items[0].Should().BeEquivalentTo(testReferral);
+            result.Items[0].Referrer.Should().Contain("Robert");
         }
 
         [Theory]
