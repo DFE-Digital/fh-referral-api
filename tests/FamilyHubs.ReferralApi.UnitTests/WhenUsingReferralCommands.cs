@@ -137,7 +137,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
             await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralsByReferrerCommand getcommand = new("Bob Referrer", 1, 10, default!, true);
+            GetReferralsByReferrerCommand getcommand = new("Bob Referrer", 1, 10, null, true);
             GetReferralsByReferrerCommandHandler gethandler = new(mockApplicationDbContext);
 
 
@@ -163,7 +163,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
             await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralsByOrganisationIdCommand getcommand = new("ba1cca90-b02a-4a0b-afa0-d8aed1083c0d", 1, 10, default!, default!);
+            GetReferralsByOrganisationIdCommand getcommand = new("ba1cca90-b02a-4a0b-afa0-d8aed1083c0d", 1, 10, null, null);
             GetReferralsByOrganisationIdCommandHandler gethandler = new(mockApplicationDbContext);
 
 
