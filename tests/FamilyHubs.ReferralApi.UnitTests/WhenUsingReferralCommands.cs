@@ -117,7 +117,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             //Assert
             result.Should().NotBeNull();
             result.Items[0].Should().BeEquivalentTo(testReferral);
-            result.Items[0].Referrer.Should().Contain("Robert");
+            result.Items[0].FullName.Should().Contain("Robert");
         }
 
         [Theory]
@@ -189,7 +189,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
             await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralsByOrganisationIdCommand getcommand = new("ba1cca90-b02a-4a0b-afa0-d8aed1083c0d", 1, 10, "Robert", default!);
+            GetReferralsByOrganisationIdCommand getcommand = new("ba1cca90-b02a-4a0b-afa0-d8aed1083c0d", 1, 10, "Robert", null);
             GetReferralsByOrganisationIdCommandHandler gethandler = new(mockApplicationDbContext);
 
 
@@ -218,7 +218,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
             await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralsByOrganisationIdCommand getcommand = new("ba1cca90-b02a-4a0b-afa0-d8aed1083c0d", 1, 10, default!, true);
+            GetReferralsByOrganisationIdCommand getcommand = new("ba1cca90-b02a-4a0b-afa0-d8aed1083c0d", 1, 10, null, true);
             GetReferralsByOrganisationIdCommandHandler gethandler = new(mockApplicationDbContext);
 
 
