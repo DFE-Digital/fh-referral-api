@@ -10,8 +10,6 @@ public class SetReferralStatusCommandValidator : AbstractValidator<SetReferralSt
     {
       
         RuleFor(v => v.ReferralId)
-            .MinimumLength(1)
-            .MaximumLength(50)
             .NotNull()
             .NotEmpty();
 

@@ -8,13 +8,19 @@ public class ReferralConfiguration : IEntityTypeConfiguration<Referral>
 {
     public void Configure(EntityTypeBuilder<Referral> builder)
     {
-        builder.Property(t => t.FullName)
-            .IsRequired();
-        builder.Property(t => t.ServiceId)
-            .HasMaxLength(50)
-            .IsRequired();
-        builder.Property(t => t.ServiceName)
-            .IsRequired();
+        builder.Navigation(e => e.Recipient).AutoInclude();
+        builder.Navigation(e => e.Referrer).AutoInclude();
+        builder.Navigation(e => e.ReferralService).AutoInclude();
+        builder.Navigation(e => e.Status).AutoInclude();
+
+        
+
+        //builder.Property(t => t.Recipient)
+        //    .IsRequired();
+        //builder.Property(t => t.Referrer)
+        //    .IsRequired();
+        //builder.Property(t => t.ReferralService)
+        //    .IsRequired();
         builder.Property(t => t.Created)
             .IsRequired();
         builder.Property(t => t.CreatedBy)

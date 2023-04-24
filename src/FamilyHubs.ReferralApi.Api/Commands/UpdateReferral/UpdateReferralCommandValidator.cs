@@ -6,32 +6,24 @@ public class UpdateReferralCommandValidator : AbstractValidator<UpdateReferralCo
 {
     public UpdateReferralCommandValidator()
     {
+
         RuleFor(v => v.ReferralDto)
             .NotNull();
 
         RuleFor(v => v.ReferralDto.Id)
-            .MinimumLength(1)
-            .MaximumLength(50)
+            .Equal(0);
+
+        RuleFor(v => v.ReferralDto.ReferralServiceDto)
             .NotNull()
             .NotEmpty();
 
-        RuleFor(v => v.ReferralDto.ServiceId)
-            .MaximumLength(50)
+        RuleFor(v => v.ReferralDto.RecipientDto)
             .NotNull()
             .NotEmpty();
 
-        RuleFor(v => v.ReferralDto.ServiceName)
+        RuleFor(v => v.ReferralDto.ReferrerDto)
             .NotNull()
             .NotEmpty();
 
-        RuleFor(v => v.ReferralDto.Referrer)
-            .MaximumLength(50)
-            .NotNull()
-            .NotEmpty();
-
-        RuleFor(v => v.ReferralDto.FullName)
-            .MinimumLength(1)
-            .NotNull()
-            .NotEmpty();
     }
 }

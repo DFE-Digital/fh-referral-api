@@ -3,5 +3,5 @@
 public interface ISetReferralStatusCommand
 {
     string Status { get; }
-    string ReferralId { get; }
+    long ReferralId { get; }
 }

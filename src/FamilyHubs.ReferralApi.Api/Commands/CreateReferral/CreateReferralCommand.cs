@@ -2,12 +2,12 @@
 using FamilyHubs.ReferralApi.Core.Entities;
 using FamilyHubs.ReferralApi.Core.Interfaces.Commands;
 using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
-using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Dto.Referral;
 using MediatR;
 
 namespace FamilyHubs.ReferralApi.Api.Commands.CreateReferral;
 
-public class CreateReferralCommand : IRequest<string>, ICreateReferralCommand
+public class CreateReferralCommand : IRequest<long>, ICreateReferralCommand
 {
     public CreateReferralCommand(ReferralDto referralDto)
     {
@@ -17,7 +17,7 @@ public class CreateReferralCommand : IRequest<string>, ICreateReferralCommand
     public ReferralDto ReferralDto { get; }
 }
 
-public class CreateReferralCommandHandler : IRequestHandler<CreateReferralCommand, string>
+public class CreateReferralCommandHandler : IRequestHandler<CreateReferralCommand, long>
 {
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -28,11 +28,12 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         _context = context;
         _mapper = mapper;
     }
-    public async Task<string> Handle(CreateReferralCommand request, CancellationToken cancellationToken)
+    public async Task<long> Handle(CreateReferralCommand request, CancellationToken cancellationToken)
     {
+        long id = 0;
         try
         {
-            CreateReferral(request);
+            id = CreateReferral(request);
             await _context.SaveChangesAsync(cancellationToken);
         }
         catch (Exception ex)
@@ -41,13 +42,10 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
             throw;
         }
 
-        if (request is not null && request.ReferralDto is not null)
-            return request.ReferralDto.Id;
-        else
-            return string.Empty;
+        return id;
     }
 
-    private void CreateReferral(CreateReferralCommand request)
+    private long CreateReferral(CreateReferralCommand request)
     {
         var entity = _mapper.Map<Referral>(request.ReferralDto);
         ArgumentNullException.ThrowIfNull(entity);
@@ -66,6 +64,8 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         }
 
         _context.Referrals.Add(entity);
+
+        return entity.Id;
     }
 }
 

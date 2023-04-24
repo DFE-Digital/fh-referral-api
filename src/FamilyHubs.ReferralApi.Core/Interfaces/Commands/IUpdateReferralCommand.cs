@@ -1,4 +1,4 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
+﻿using FamilyHubs.ServiceDirectory.Shared.Dto.Referral;
 
 namespace FamilyHubs.ReferralApi.Core.Interfaces.Commands;
 

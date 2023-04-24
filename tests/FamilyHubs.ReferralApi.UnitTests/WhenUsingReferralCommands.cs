@@ -5,6 +5,7 @@ using FamilyHubs.ReferralApi.Api.Commands.UpdateReferral;
 using FamilyHubs.ReferralApi.Api.Queries.GetReferrals;
 using FamilyHubs.ReferralApi.Core;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Dto.Referral;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -33,7 +34,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             var result = await handler.Handle(command, new System.Threading.CancellationToken());
 
             //Assert
-            result.Should().NotBeNull();
+            result.Should().BeGreaterThan(0);
             result.Should().Be(testReferral.Id);
         }
 
@@ -50,21 +51,21 @@ namespace FamilyHubs.ReferralApi.UnitTests
             CreateReferralCommand createCommand = new(testReferral);
             CreateReferralCommandHandler createHandler = new(mockApplicationDbContext, mapper, logger.Object);
             var setResult = await createHandler.Handle(createCommand, new System.Threading.CancellationToken());
-            testReferral.FullName = testReferral.FullName + " Test";
-            testReferral.Email = testReferral.Email + " Test";
-            testReferral.Phone = testReferral.Phone + " Test";
-            testReferral.Text = testReferral.Text + " Test";
+            testReferral.RecipientDto.Name = testReferral.RecipientDto.Name + " Test";
+            testReferral.RecipientDto.Email = testReferral.RecipientDto.Email + " Test";
+            testReferral.RecipientDto.Telephone = testReferral.RecipientDto.Telephone + " Test";
+            testReferral.RecipientDto.TextPhone = testReferral.RecipientDto.TextPhone + " Test";
             testReferral.ReasonForSupport = testReferral.ReasonForSupport + " Test";
             UpdateReferralCommand command = new(testReferral.Id, testReferral);
-            UpdateReferralCommandHandler handler = new(mockApplicationDbContext, new Mock<ILogger<UpdateReferralCommandHandler>>().Object);
+            UpdateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, new Mock<ILogger<UpdateReferralCommandHandler>>().Object);
 
             //Act
             var result = await handler.Handle(command, new System.Threading.CancellationToken());
 
             //Assert
-            setResult.Should().NotBeNull();
+            setResult.Should().BeGreaterThan(0);
             setResult.Should().Be(testReferral.Id);
-            result.Should().NotBeNull();
+            result.Should().BeGreaterThan(0);
             result.Should().Be(testReferral.Id);
         }
 
@@ -83,7 +84,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             var id = await handler.Handle(command, new System.Threading.CancellationToken());
 
             GetReferralsByReferrerCommand getcommand = new("Bob Referrer",1,10);
-            GetReferralsByReferrerCommandHandler gethandler = new(mockApplicationDbContext);
+            GetReferralsByReferrerCommandHandler gethandler = new(mockApplicationDbContext, mapper);
             
 
             //Act
@@ -108,8 +109,8 @@ namespace FamilyHubs.ReferralApi.UnitTests
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
             var id = await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralsByOrganisationIdCommand getcommand = new("ba1cca90-b02a-4a0b-afa0-d8aed1083c0d", 1, 10);
-            GetReferralsByOrganisationIdCommandHandler gethandler = new(mockApplicationDbContext);
+            GetReferralsByOrganisationIdCommand getcommand = new(1, 1, 10);
+            GetReferralsByOrganisationIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
 
 
             //Act
@@ -134,8 +135,8 @@ namespace FamilyHubs.ReferralApi.UnitTests
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
             var id = await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralByIdCommand getcommand = new("212fecf5-0db2-4e05-b28c-8cacaebba840");
-            GetReferralByIdCommandHandler gethandler = new(mockApplicationDbContext);
+            GetReferralByIdCommand getcommand = new(1);
+            GetReferralByIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
 
 
             //Act
@@ -148,25 +149,50 @@ namespace FamilyHubs.ReferralApi.UnitTests
 
         public static ReferralDto GetReferralDto()
         {
-            return new ReferralDto(
-                "212fecf5-0db2-4e05-b28c-8cacaebba840",
-                "ba1cca90-b02a-4a0b-afa0-d8aed1083c0d",
-                "c1b5dd80-7506-4424-9711-fe175fa13eb8",
-                "Test Organisation for Children with Tracheostomies",
-                "Test Organisation for for Children with Tracheostomies is a national self help group operating as a registered charity and is run by parents of children with a tracheostomy and by people who sympathise with the needs of such families. ACT as an organisation is non profit making, it links groups and individual members throughout Great Britain and Northern Ireland.",
-                JsonService,
-                "Bob Referrer",
-                "Mr Robert Brown",
-                "No",
-                "Robert.Brown@yahoo.co.uk",
-                "0131 222 3333",
-                "",
-                DateTime.Now,
-                1,
-                "Requires help with child",
-                null,
-                new List<ReferralStatusDto> { new ReferralStatusDto("aa0be0f8-c218-401d-9237-aa75b6e38f01", "Inital-Referral") }
-                );
+            return new ReferralDto
+            {
+                Id = 1,
+                ReferenceNumber = "1",
+                ReasonForSupport = "Reason For Support",
+                EngageWithFamily = "Engage With Family",
+                RecipientDto = new RecipientDto
+                {
+                    Id = 2,
+                    Name = "Joe Blogs",
+                    Email = "JoeBlog@email.com",
+                    Telephone = "078123456",
+                    TextPhone = "078123456",
+                    AddressLine1 = "Address Line 1",
+                    AddressLine2 = "Address Line 2",
+                    TownOrCity = "Town or City",
+                    Country = "Country",
+                    PostCode = "B30 2TV"
+                },
+                ReferrerDto = new ReferrerDto
+                {
+                    EmailAddress = "Bob.Referrer@email.com",
+                },
+                Status = new List<ReferralStatusDto>
+            {
+                new ReferralStatusDto
+                {
+                    Status = "Inital-Referral"
+                }
+            },
+                ReferralServiceDto = new ReferralServiceDto
+                {
+                    Id = 2,
+                    Name = "Service",
+                    Description = "Service Description",
+                    ReferralOrganisationDto = new ReferralOrganisationDto
+                    {
+                        Id = 2,
+                        Name = "Organisation",
+                        Description = "Organisation Description",
+                    }
+                }
+
+            };
         }
 
         [Fact]
@@ -189,7 +215,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             var result = await handler.Handle(command, new System.Threading.CancellationToken());
 
             //Assert
-            setupresult.Should().NotBeNull();
+            setupresult.Should().BeGreaterThan(0);
             setupresult.Should().Be(testReferral.Id);
             result.Should().NotBeNull();
             result.Should().Be("Accept Connection");

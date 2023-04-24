@@ -1,56 +1,47 @@
 ﻿using Ardalis.GuardClauses;
+using AutoMapper;
 using FamilyHubs.ReferralApi.Core.Entities;
 using FamilyHubs.ReferralApi.Core.Interfaces.Commands;
 using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
-using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Dto.Referral;
 using MediatR;
 
 namespace FamilyHubs.ReferralApi.Api.Commands.UpdateReferral;
 
-public class UpdateReferralCommand : IRequest<string>, IUpdateReferralCommand
+public class UpdateReferralCommand : IRequest<long>, IUpdateReferralCommand
 {
-    public UpdateReferralCommand(string id, ReferralDto referralDto)
+    public UpdateReferralCommand(long id, ReferralDto referralDto)
     {
         Id = id;
         ReferralDto = referralDto;
     }
 
-    public string Id { get; }
+    public long Id { get; }
     public ReferralDto ReferralDto { get; }
 }
 
-public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralCommand, string>
+public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralCommand, long>
 {
     private readonly ApplicationDbContext _context;
+    private readonly IMapper _mapper;
     private readonly ILogger<UpdateReferralCommandHandler> _logger;
-    public UpdateReferralCommandHandler(ApplicationDbContext context, ILogger<UpdateReferralCommandHandler> logger)
+    public UpdateReferralCommandHandler(ApplicationDbContext context, IMapper mapper, ILogger<UpdateReferralCommandHandler> logger)
     {
         _logger = logger;
+        _mapper = mapper;
         _context = context;
     }
-    public async Task<string> Handle(UpdateReferralCommand request, CancellationToken cancellationToken)
+    public async Task<long> Handle(UpdateReferralCommand request, CancellationToken cancellationToken)
     {
         var entity = _context.Referrals.FirstOrDefault(x => x.Id == request.Id);
         if (entity == null)
         {
-            throw new NotFoundException(nameof(Referral), request.Id);
+            throw new NotFoundException(nameof(Referral), request.Id.ToString());
         }
 
         try
         {
-            entity.OrganisationId = request.ReferralDto.OrganisationId;
-            entity.ServiceId = request.ReferralDto.ServiceId;
-            entity.ServiceName = request.ReferralDto.ServiceName;
-            entity.ServiceDescription = request.ReferralDto.ServiceDescription;
-            entity.ServiceAsJson = request.ReferralDto.ServiceAsJson;
-            entity.Referrer = request.ReferralDto.Referrer;
-            entity.FullName = request.ReferralDto.FullName;
-            entity.HasSpecialNeeds = request.ReferralDto.HasSpecialNeeds;
-            entity.Email = request.ReferralDto.Email ?? string.Empty;
-            entity.Phone = request.ReferralDto.Phone ?? string.Empty;
-            entity.Text = request.ReferralDto.Text ?? string.Empty;
-            entity.ReasonForSupport = request.ReferralDto.ReasonForSupport;
-            entity.ReasonForRejection = request.ReferralDto.ReasonForRejection;
+            entity = _mapper.Map(request.ReferralDto, entity);
 
             await _context.SaveChangesAsync(cancellationToken);
         }
@@ -60,10 +51,7 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
             throw;
         }
 
-        if (request is not null && request.ReferralDto is not null)
-            return request.ReferralDto.Id;
-        else
-            return string.Empty;
+        return entity.Id;
     }
 }
 

@@ -2,17 +2,9 @@
 
 namespace FamilyHubs.ReferralApi.Core.Entities;
 
-public class ReferralStatus : EntityBase<string>
+public class ReferralStatus : EntityBase<long>
 {
-    private ReferralStatus() { }
-    public ReferralStatus(string id, string status, string referralId)
-    {
-        Id = id;
-        Status = status;
-        ReferralId = referralId;
-    }
-
-    public string Status { get; set; } = default!;
-    public string ReferralId { get; set; } = default!;
+    public required string Status { get; set; } = default!;
+    public required long ReferralId { get; set; } = default!;
 
 }

@@ -1,10 +1,20 @@
 ﻿using EncryptColumn.Core.Attribute;
-using System.Diagnostics.CodeAnalysis;
 
 namespace FamilyHubs.ReferralApi.Core.Entities;
 
-public class Referral : EntityBase<string>
+public class Referral : EntityBase<long>
 {
+    public required string ReferenceNumber { get; set; }
+    [EncryptColumn]
+    public required string ReasonForSupport { get; set; }
+    [EncryptColumn]
+    public required string EngageWithFamily { get; set; }
+    public virtual required Recipient Recipient { get; set; }
+    public virtual required Referrer Referrer { get; set; }
+    public virtual required ReferralService ReferralService { get; set; }
+    public ICollection<ReferralStatus> Status { get; set; } = new List<ReferralStatus>();
+
+    /*
     private Referral() { }
     [SuppressMessage("SonarLint", "S107", Justification = "Ignored intentionally as this is a database object")]
     public Referral(string id, string organisationId, string serviceId, string serviceName, string serviceDescription, string serviceAsJson, string referrer, string fullName, string hasSpecialNeeds, string? email, string? phone, string? text, string reasonForSupport, string? reasonForRejection, ICollection<ReferralStatus> status)
@@ -45,5 +55,5 @@ public class Referral : EntityBase<string>
     [EncryptColumn]
     public string? ReasonForRejection { get; set; } = default!;
     public virtual ICollection<ReferralStatus> Status { get; set; } = default!;
-
+    */
 }

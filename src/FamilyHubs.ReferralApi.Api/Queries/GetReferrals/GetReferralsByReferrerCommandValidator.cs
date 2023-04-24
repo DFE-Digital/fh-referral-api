@@ -6,7 +6,7 @@ public class GetReferralsByReferrerCommandValidator : AbstractValidator<GetRefer
 {
     public GetReferralsByReferrerCommandValidator()
     {
-        RuleFor(v => v.Referrer)
+        RuleFor(v => v.EmailAddress)
             .NotNull()
             .NotEmpty();
     }

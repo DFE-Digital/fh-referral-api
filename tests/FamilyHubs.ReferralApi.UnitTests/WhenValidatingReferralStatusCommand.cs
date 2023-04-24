@@ -16,7 +16,7 @@ public class WhenValidatingReferralStatusCommand
     {
         //Arrange
         var validator = new SetReferralStatusCommandValidator();
-        var testModel = new SetReferralStatusCommand("statusId", "active");
+        var testModel = new SetReferralStatusCommand(1, "active");
 
         //Act
         var result = validator.Validate(testModel);

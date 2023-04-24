@@ -7,13 +7,13 @@ namespace FamilyHubs.ReferralApi.Api.Commands.SetReferralStatus;
 
 public class SetReferralStatusCommand: IRequest<string>, ISetReferralStatusCommand
 {
-    public SetReferralStatusCommand(string referralId, string status)
+    public SetReferralStatusCommand(long referralId, string status)
     {
         Status = status;
         ReferralId = referralId;
     }
 
-    public string ReferralId { get; }
+    public long ReferralId { get; }
 
     public string Status { get; }
 }
@@ -36,7 +36,13 @@ public class CreateReferralStatusCommandHandler : IRequestHandler<SetReferralSta
             { 
                 return currentStatus.Status;
             }
-            var entity = new ReferralStatus(Guid.NewGuid().ToString(), request.Status, request.ReferralId);
+
+            var entity = new ReferralStatus
+            {
+                ReferralId = request.ReferralId,
+                Status = request.Status,
+            };
+            
             _context.ReferralStatuses.Add(entity);
             await _context.SaveChangesAsync(cancellationToken);
         }

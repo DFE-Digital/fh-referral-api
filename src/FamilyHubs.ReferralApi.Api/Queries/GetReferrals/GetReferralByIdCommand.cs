@@ -1,7 +1,8 @@
 ﻿using Ardalis.GuardClauses;
+using AutoMapper;
 using FamilyHubs.ReferralApi.Core.Entities;
 using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
-using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Dto.Referral;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,22 +10,24 @@ namespace FamilyHubs.ReferralApi.Api.Queries.GetReferrals;
 
 public class GetReferralByIdCommand : IRequest<ReferralDto>
 {
-    public GetReferralByIdCommand(string id)
+    public GetReferralByIdCommand(long id)
     {
         Id = id;
     }
 
-    public string Id { get; set; }
+    public long Id { get; set; }
 
 }
 
 public class GetReferralByIdCommandHandler : IRequestHandler<GetReferralByIdCommand, ReferralDto>
 {
     private readonly ApplicationDbContext _context;
+    private readonly IMapper _mapper;
 
-    public GetReferralByIdCommandHandler(ApplicationDbContext context)
+    public GetReferralByIdCommandHandler(ApplicationDbContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
     public async Task<ReferralDto> Handle(GetReferralByIdCommand request, CancellationToken cancellationToken)
     {
@@ -34,34 +37,20 @@ public class GetReferralByIdCommandHandler : IRequestHandler<GetReferralByIdComm
 
         if (entity == null)
         {
-            throw new NotFoundException(nameof(Referral), request.Id);
+            throw new NotFoundException(nameof(Referral), request.Id.ToString());
         }
 
         List<ReferralStatusDto> referralStatusDtos = new();
         foreach (var status in entity.Status)
         {
-            referralStatusDtos.Add(new ReferralStatusDto(status.Id, status.Status));
+            referralStatusDtos.Add(new ReferralStatusDto
+            {
+                Status = status.Status,
+                Id = status.Id
+            });
         }
 
-        var result = new ReferralDto(
-           entity.Id,
-           entity.OrganisationId,
-           entity.ServiceId,
-           entity.ServiceName,
-           entity.ServiceDescription,
-           entity.ServiceAsJson,
-           entity.Referrer,
-           entity.FullName,
-           entity.HasSpecialNeeds,
-           entity.Email,
-           entity.Phone,
-           entity.Text,
-           entity.Created.Value,
-           0L,
-           entity.ReasonForSupport,
-           entity.ReasonForRejection,
-           referralStatusDtos
-           );
+        ReferralDto result = _mapper.Map<ReferralDto>(entity);
 
         return result;
     }
