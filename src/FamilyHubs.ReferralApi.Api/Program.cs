@@ -21,16 +21,24 @@ public class Program
 
             builder.ConfigureHost();
 
+            builder.Services.RegisterApplicationComponents(builder.Configuration);
+
             builder.Services.ConfigureServices(builder.Configuration, builder.Environment.IsProduction());
 
-            var app = builder.Build();
+            var webApplication = builder.Build();
 
-            ServiceProvider = await app.ConfigureWebApplication();
+            await webApplication.ConfigureWebApplication();
 
-            await app.RunAsync();
+            await webApplication.RunAsync();
         }
         catch (Exception e)
         {
+            if (e.GetType().Name.Equals("HostAbortedException", StringComparison.Ordinal))
+            {
+                //this error only occurs when DB migration is running on its own
+                throw;
+            }
+
             Log.Fatal(e, "An unhandled exception occurred during bootstrapping");
         }
         finally

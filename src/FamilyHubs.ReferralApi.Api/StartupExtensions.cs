@@ -1,4 +1,6 @@
-﻿using FamilyHubs.ReferralApi.Api.Endpoints;
+﻿using AutoMapper;
+using AutoMapper.EquivalencyExpression;
+using FamilyHubs.ReferralApi.Api.Endpoints;
 using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
 using FamilyHubs.ReferralApi.Infrastructure;
 using MassTransit;
@@ -10,6 +12,17 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Serilog.Events;
 using Ardalis.GuardClauses;
 using FamilyHubs.ReferralApi.Core.Entities;
+using FamilyHubs.ReferralApi.Core;
+using FamilyHubs.ReferralApi.Infrastructure.Persistence.Interceptors;
+using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using FluentValidation;
+using MediatR;
+using FamilyHubs.ReferralApi.Api.Middleware;
+using Microsoft.OpenApi.Models;
+using FamilyHubs.ReferralApi.Api.Commands.CreateReferral;
+using Microsoft.AspNetCore.Builder;
 
 namespace FamilyHubs.ReferralApi.Api;
 
@@ -34,104 +47,118 @@ public static class StartupExtensions
         });
     }
 
+    public static void RegisterApplicationComponents(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.RegisterAppDbContext(configuration);
+
+        services.RegisterMinimalEndPoints();
+
+        services.RegisterAutoMapper();
+
+        services.RegisterMediator();
+    }
+
+    private static void RegisterMinimalEndPoints(this IServiceCollection services)
+    {
+        services.AddTransient<MinimalGeneralEndPoints>();
+        services.AddTransient<MinimalReferralEndPoints>();
+    }
+
+    private static void RegisterAutoMapper(this IServiceCollection services)
+    {
+        services.AddAutoMapper((serviceProvider, cfg) =>
+        {
+            var auditProperties = new[] { "Created", "CreatedBy", "LastModified", "LastModifiedBy" };
+            cfg.AddProfile<AutoMappingProfiles>();
+            cfg.AddCollectionMappers();
+            cfg.UseEntityFrameworkCoreModel<ApplicationDbContext>(serviceProvider);
+            cfg.ShouldMapProperty = pi => !auditProperties.Contains(pi.Name);
+        }, typeof(AutoMappingProfiles));
+    }
+
+    private static void RegisterAppDbContext(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddTransient<AuditableEntitySaveChangesInterceptor>();
+        services.AddTransient<ApplicationDbContextInitialiser>();
+
+        var connectionString = configuration.GetConnectionString("ReferralConnection");
+        ArgumentException.ThrowIfNullOrEmpty(connectionString);
+
+        var useSqlite = configuration.GetValue<bool?>("UseSqlite");
+        ArgumentNullException.ThrowIfNull(useSqlite);
+
+        //DO not remove, This will prevent Application from starting if wrong type of connection string is provided
+        var connection = (useSqlite == true)
+            ? new SqliteConnectionStringBuilder(connectionString).ToString()
+            : new SqlConnectionStringBuilder(connectionString).ToString();
+
+        // Register Entity Framework
+        services.AddDbContext<ApplicationDbContext>(options =>
+        {
+            if (useSqlite == true)
+            {
+                options.UseSqlite(connection, mg =>
+                    mg.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.ToString()));
+            }
+            else
+            {
+                options.UseSqlServer(connection, mg =>
+                    mg.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.ToString()));
+            }
+        });
+    }
+
+    public static void RegisterMediator(this IServiceCollection services)
+    {
+        var assemblies = new[]
+        {
+            typeof(CreateReferralCommand).Assembly
+        };
+
+        services.AddMediatR(config =>
+        {
+            config.Lifetime = ServiceLifetime.Transient;
+            config.RegisterServicesFromAssemblies(assemblies);
+        });
+
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+        services.AddTransient<CorrelationMiddleware>();
+        services.AddTransient<ExceptionHandlingMiddleware>();
+    }
+
     public static void ConfigureServices(this IServiceCollection services, IConfiguration configuration, bool isProduction)
     {
         services.AddApplicationInsightsTelemetry();
 
-        // Adding Authentication
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(options =>
-        {
-            // Adding Jwt Bearer
-            options.SaveToken = true;
-            options.RequireHttpsMetadata = false;
-            options.TokenValidationParameters = new TokenValidationParameters()
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidAudience = configuration["JWT:ValidAudience"],
-                ValidIssuer = configuration["JWT:ValidIssuer"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                    configuration["JWT:Secret"] ?? "JWTAuthenticationHIGHsecuredPasswordVVVp1OH7Xzyr"))
-            };
-        });
-
-        //https://www.youtube.com/watch?v=cbtK3U2aOlg
-        services.AddAuthorization(options =>
-        {
-            if (isProduction)
-            {
-                options.AddPolicy("Referrer", policy =>
-                    policy.RequireAssertion(context =>
-                        context.User.IsInRole("VCSAdmin") ||
-                        context.User.IsInRole("Professional")));
-            }
-            else //LocalHost, Dev, Test, PP, disable Authorisation
-            {
-                options.AddPolicy("Referrer", policy =>
-                    policy.RequireAssertion(_ => true));
-            }
-        });
-
         // Add services to the container.
         services.AddControllers();
+        services.AddEndpointsApiExplorer();
+
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        services.AddEndpointsApiExplorer()
-            .AddInfrastructureServices(configuration)
-            .AddApplicationServices();
-
-        services.AddTransient<MinimalGeneralEndPoints>();
-        services.AddTransient<MinimalReferralEndPoints>();
-
-        services.AddSwaggerGen();
-
-        if (!configuration.GetValue<bool>("UseRabbitMQ")) return;
-
-        var rabbitMqSettings = configuration.GetSection(nameof(RabbitMqSettings)).Get<RabbitMqSettings>();
-        if (rabbitMqSettings == null)
+        services.AddSwaggerGen(c =>
         {
-            throw new NotFoundException(nameof(RabbitMqSettings), "RabbitMqSettings");
-        }
-
-        services.AddMassTransit(mt =>
-           mt.UsingRabbitMq((_, cfg) =>
-           {
-               cfg.Host(rabbitMqSettings.Uri, "/", c =>
-               {
-                   c.Username(rabbitMqSettings.UserName);
-                   c.Password(rabbitMqSettings.Password);
-               });
-
-               cfg.ReceiveEndpoint("referralqueue", (c) => { c.Consumer<CommandMessageConsumer>(); });
-           }));
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "FamilyHubs.Referral.Api", Version = "v1" });
+            c.EnableAnnotations();
+        });
     }
 
-    public static async Task<IServiceProvider> ConfigureWebApplication(this WebApplication app)
+    public static async Task ConfigureWebApplication(this WebApplication webApplication)
     {
-        app.UseSerilogRequestLogging();
+        webApplication.UseSerilogRequestLogging();
+
+        webApplication.UseMiddleware<CorrelationMiddleware>();
+        webApplication.UseMiddleware<ExceptionHandlingMiddleware>();
 
         // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
+        webApplication.UseSwagger();
+        webApplication.UseSwaggerUI();
 
-        app.UseHttpsRedirection();
+        webApplication.UseHttpsRedirection();
 
-        app.UseAuthentication();
-        app.UseAuthorization();
+        webApplication.MapControllers();
 
-        app.MapControllers();
-
-        await app.RegisterEndPoints();
-
-        return app.Services;
+        await RegisterEndPoints(webApplication);
     }
 
     private static async Task RegisterEndPoints(this WebApplication app)
@@ -149,9 +176,10 @@ public static class StartupExtensions
             if (!app.Environment.IsProduction())
             {
                 // Seed Database
+                // Seed Database
                 var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
-                await initialiser.InitialiseAsync(app.Configuration);
-                await initialiser.SeedAsync();
+                var shouldRestDatabaseOnRestart = app.Configuration.GetValue<bool>("ShouldRestDatabaseOnRestart");
+                await initialiser.InitialiseAsync(app.Environment.IsProduction(), shouldRestDatabaseOnRestart);
             }
         }
         catch (Exception ex)
@@ -159,4 +187,88 @@ public static class StartupExtensions
             Log.Error(ex, "An error occurred seeding the DB. {exceptionMessage}", ex.Message);
         }
     }
+
+
+    //public static void ConfigureServices(this IServiceCollection services, IConfiguration configuration, bool isProduction)
+    //{
+    //    services.AddApplicationInsightsTelemetry();
+
+    //    // Adding Authentication
+    //    services.AddAuthentication(options =>
+    //    {
+    //        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    //        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    //        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    //    })
+    //    .AddJwtBearer(options =>
+    //    {
+    //        // Adding Jwt Bearer
+    //        options.SaveToken = true;
+    //        options.RequireHttpsMetadata = false;
+    //        options.TokenValidationParameters = new TokenValidationParameters()
+    //        {
+    //            ValidateIssuer = true,
+    //            ValidateAudience = true,
+    //            ValidAudience = configuration["JWT:ValidAudience"],
+    //            ValidIssuer = configuration["JWT:ValidIssuer"],
+    //            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+    //                configuration["JWT:Secret"] ?? "JWTAuthenticationHIGHsecuredPasswordVVVp1OH7Xzyr"))
+    //        };
+    //    });
+
+    //    //https://www.youtube.com/watch?v=cbtK3U2aOlg
+    //    services.AddAuthorization(options =>
+    //    {
+    //        if (isProduction)
+    //        {
+    //            options.AddPolicy("Referrer", policy =>
+    //                policy.RequireAssertion(context =>
+    //                    context.User.IsInRole("VCSAdmin") ||
+    //                    context.User.IsInRole("Professional")));
+    //        }
+    //        else //LocalHost, Dev, Test, PP, disable Authorisation
+    //        {
+    //            options.AddPolicy("Referrer", policy =>
+    //                policy.RequireAssertion(_ => true));
+    //        }
+    //    });
+
+    //    // Add services to the container.
+    //    services.AddControllers();
+    //    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+    //    services.AddEndpointsApiExplorer()
+    //        .AddInfrastructureServices(configuration)
+    //        .AddApplicationServices();
+
+    //    services.AddTransient<MinimalGeneralEndPoints>();
+    //    services.AddTransient<MinimalReferralEndPoints>();
+
+    //    services.AddSwaggerGen();
+
+    //}
+
+    //public static async Task<IServiceProvider> ConfigureWebApplication(this WebApplication app)
+    //{
+    //    app.UseSerilogRequestLogging();
+
+    //    // Configure the HTTP request pipeline.
+    //    if (app.Environment.IsDevelopment())
+    //    {
+    //        app.UseSwagger();
+    //        app.UseSwaggerUI();
+    //    }
+
+    //    app.UseHttpsRedirection();
+
+    //    app.UseAuthentication();
+    //    app.UseAuthorization();
+
+    //    app.MapControllers();
+
+    //    await app.RegisterEndPoints();
+
+    //    return app.Services;
+    //}
+
+
 }

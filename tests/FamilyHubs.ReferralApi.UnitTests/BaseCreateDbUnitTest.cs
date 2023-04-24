@@ -1,11 +1,8 @@
-﻿using FamilyHubs.ReferralApi.Core;
-using FamilyHubs.ReferralApi.Infrastructure.Persistence.Interceptors;
+﻿using FamilyHubs.ReferralApi.Infrastructure.Persistence.Interceptors;
 using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
-using FamilyHubs.SharedKernel.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 
 namespace FamilyHubs.ReferralApi.UnitTests;
 
@@ -14,9 +11,7 @@ public class BaseCreateDbUnitTest
     protected static ApplicationDbContext GetApplicationDbContext()
     {
         var options = CreateNewContextOptions();
-        var mockDateTime = new Mock<IDateTime>();
-        var mockCurrentUserService = new Mock<ICurrentUserService>();
-        var auditableEntitySaveChangesInterceptor = new AuditableEntitySaveChangesInterceptor(mockCurrentUserService.Object, mockDateTime.Object);
+        var auditableEntitySaveChangesInterceptor = new AuditableEntitySaveChangesInterceptor();
 
         IEnumerable<KeyValuePair<string, string?>>? inMemorySettings = new List<KeyValuePair<string, string?>>()
         {

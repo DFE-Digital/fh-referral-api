@@ -1,4 +1,5 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel;
 using FluentAssertions;
 using System.Text;
@@ -55,6 +56,8 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 "Robert.Brown@yahoo.co.uk",
                 "0131 222 3333",
                 "text",
+                DateTime.Now,
+                123,
                 "Requires help with child",
                 null,
                 new List<ReferralStatusDto> { new ReferralStatusDto("1d2c41ac-fade-4933-a810-d8a040f0b9ee", "Inital-Referral") }
@@ -145,6 +148,8 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 email: "John.Smith_Test@yahoo.co.uk",
                 phone: "0131 111 5555",
                 text: "0131 111 5555",
+                dateRecieved: DateTime.Now,
+                requestNumber: 1,
                 reasonForSupport: "Requires help with child Test",
                 reasonForRejection: null,
                 new List<ReferralStatusDto> { new ReferralStatusDto("60abfe12-be36-4d4c-ae61-d039589f7318", "Initial Connection") }

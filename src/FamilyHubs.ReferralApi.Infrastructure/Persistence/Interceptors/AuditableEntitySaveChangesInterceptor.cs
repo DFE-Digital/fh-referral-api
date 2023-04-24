@@ -1,7 +1,4 @@
-﻿using FamilyHubs.ReferralApi.Core;
-using FamilyHubs.ReferralApi.Infrastructure.Persistence.Interceptors;
-using FamilyHubs.SharedKernel;
-using FamilyHubs.SharedKernel.Interfaces;
+﻿using FamilyHubs.ReferralApi.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -10,17 +7,6 @@ namespace FamilyHubs.ReferralApi.Infrastructure.Persistence.Interceptors;
 
 public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
 {
-    private readonly ICurrentUserService _currentUserService;
-    private readonly IDateTime _dateTime;
-
-    public AuditableEntitySaveChangesInterceptor(
-        ICurrentUserService currentUserService,
-        IDateTime dateTime)
-    {
-        _currentUserService = currentUserService;
-        _dateTime = dateTime;
-    }
-
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
         UpdateEntities(eventData.Context);
@@ -37,27 +23,20 @@ public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
 
     public void UpdateEntities(DbContext? context)
     {
-        if (context == null) return;
+        if (context is null) return;
 
         foreach (var entry in context.ChangeTracker.Entries<EntityBase<string>>())
         {
             if (entry.State == EntityState.Added)
             {
-                if (entry.Entity.CreatedBy == null)
-                {
-                    if (_currentUserService.UserId != null)
-                        entry.Entity.CreatedBy = _currentUserService.UserId;
-                    else
-                        entry.Entity.CreatedBy = "System";
-
-                }
-                entry.Entity.Created = _dateTime.Now;
+                entry.Entity.CreatedBy = "System";
+                entry.Entity.Created = DateTime.UtcNow;
             }
 
-            if (entry.State == EntityState.Added || entry.State == EntityState.Modified || entry.HasChangedOwnedEntities())
+            if (entry.State is EntityState.Added or EntityState.Modified || entry.HasChangedOwnedEntities())
             {
-                entry.Entity.LastModifiedBy = _currentUserService.UserId;
-                entry.Entity.LastModified = _dateTime.Now;
+                entry.Entity.LastModifiedBy = "System";
+                entry.Entity.LastModified = DateTime.UtcNow;
             }
         }
     }

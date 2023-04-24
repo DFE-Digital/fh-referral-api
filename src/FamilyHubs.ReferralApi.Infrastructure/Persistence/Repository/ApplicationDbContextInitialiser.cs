@@ -16,19 +16,22 @@ public class ApplicationDbContextInitialiser
         _context = context;
     }
 
-    public async Task InitialiseAsync(IConfiguration configuration)
+    public async Task InitialiseAsync(bool isProduction, bool shouldRestDatabaseOnRestart)
     {
         try
         {
-            if (_context.Database.IsSqlServer() || _context.Database.IsNpgsql())
+            if (!isProduction)
             {
-                if (configuration.GetValue<bool>("RecreateDbOnStartup"))
-                {
-                    _context.Database.EnsureDeleted();
-                    _context.Database.EnsureCreated();
-                }
-                else
+
+                if (shouldRestDatabaseOnRestart)
+                    await _context.Database.EnsureDeletedAsync();
+
+                if (_context.Database.IsSqlServer())
                     await _context.Database.MigrateAsync();
+                else
+                    await _context.Database.EnsureCreatedAsync();
+
+                await SeedAsync();
             }
         }
         catch (Exception ex)

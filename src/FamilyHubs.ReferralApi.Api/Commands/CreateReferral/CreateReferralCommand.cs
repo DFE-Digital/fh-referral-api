@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using FamilyHubs.ReferralApi.Core.Entities;
-using FamilyHubs.ReferralApi.Core.Events;
 using FamilyHubs.ReferralApi.Core.Interfaces.Commands;
 using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
@@ -66,7 +65,6 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
             }
         }
 
-        entity.RegisterDomainEvent(new ReferralCreatedEvent(entity));
         _context.Referrals.Add(entity);
     }
 }

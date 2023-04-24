@@ -1,5 +1,4 @@
 ﻿using FamilyHubs.ReferralApi.Core.Entities;
-using FamilyHubs.ReferralApi.Core.Events;
 using FamilyHubs.ReferralApi.Core.Interfaces.Commands;
 using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
 using MediatR;
@@ -38,7 +37,6 @@ public class CreateReferralStatusCommandHandler : IRequestHandler<SetReferralSta
                 return currentStatus.Status;
             }
             var entity = new ReferralStatus(Guid.NewGuid().ToString(), request.Status, request.ReferralId);
-            entity.RegisterDomainEvent(new ReferralStatusCreatedEvent(entity));
             _context.ReferralStatuses.Add(entity);
             await _context.SaveChangesAsync(cancellationToken);
         }

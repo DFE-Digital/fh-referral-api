@@ -2,7 +2,7 @@
 using FamilyHubs.ReferralApi.Core.Entities;
 using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
-using FamilyHubs.SharedKernel;
+using FamilyHubs.ServiceDirectory.Shared.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -54,6 +54,8 @@ public class GetReferralsByOrganisationIdCommandHandler : IRequestHandler<GetRef
             x.Email,
             x.Phone,
             x.Text,
+            x.Created.Value,
+            0L,
             x.ReasonForSupport,
             x.ReasonForRejection,
             x.Status.Select(x => new ReferralStatusDto(x.Id, x.Status)).ToList()
@@ -62,11 +64,11 @@ public class GetReferralsByOrganisationIdCommandHandler : IRequestHandler<GetRef
         if (request != null)
         {
             var pagelist = filteredReferrals.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).ToList();
-            var result = new PaginatedList<ReferralDto>(filteredReferrals, pagelist.Count, request.PageNumber, request.PageSize);
+            var result = new PaginatedList<ReferralDto>(filteredReferrals, pagelist.Count(), request.PageNumber, request.PageSize);
             return result;
         }
 
-        return new PaginatedList<ReferralDto>(filteredReferrals, filteredReferrals.Count, 1, 10);
+        return new PaginatedList<ReferralDto>(filteredReferrals, filteredReferrals.Count(), 1, 10);
 
 
     }
