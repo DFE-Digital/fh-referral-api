@@ -1,5 +1,5 @@
 ﻿using AutoFixture;
-using FamilyHubs.ReferralApi.Core.Entities;
+using FamilyHubs.ReferralApi.Data.Entities;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 

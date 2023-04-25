@@ -1,6 +1,6 @@
-﻿using FamilyHubs.ReferralApi.Api.Commands.CreateReferral;
-using FamilyHubs.ReferralApi.Api.Commands.UpdateReferral;
-using FamilyHubs.ReferralApi.Api.Queries.GetReferrals;
+﻿using FamilyHubs.ReferralApi.Core.Commands.CreateReferral;
+using FamilyHubs.ReferralApi.Core.Commands.UpdateReferral;
+using FamilyHubs.ReferralApi.Core.Queries.GetReferrals;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;

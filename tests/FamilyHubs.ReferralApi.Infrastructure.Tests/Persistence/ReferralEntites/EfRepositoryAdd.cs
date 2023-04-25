@@ -1,5 +1,5 @@
 ﻿using AutoFixture;
-using FamilyHubs.ReferralApi.Core.Entities;
+using FamilyHubs.ReferralApi.Data.Entities;
 using FluentAssertions;
 
 namespace FamilyHubs.ReferralApi.Infrastructure.Tests.Persistence.ReferralEntites;

@@ -1,13 +1,4 @@
-﻿using FamilyHubs.ReferralApi.Api;
-using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
-using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FamilyHubs.ReferralApi.Infrastructure.Tests;
+﻿namespace FamilyHubs.ReferralApi.Infrastructure.Tests;
 
 public  class WhenUsingDatabaseContextFactory
 {

@@ -1,5 +1,5 @@
-﻿using FamilyHubs.ReferralApi.Infrastructure.Persistence.Interceptors;
-using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
+﻿using FamilyHubs.ReferralApi.Data.Interceptors;
+using FamilyHubs.ReferralApi.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +8,9 @@ namespace FamilyHubs.ReferralApi.UnitTests;
 
 public class BaseCreateDbUnitTest
 {
+    protected BaseCreateDbUnitTest()
+    {
+    }
     protected static ApplicationDbContext GetApplicationDbContext()
     {
         var options = CreateNewContextOptions();

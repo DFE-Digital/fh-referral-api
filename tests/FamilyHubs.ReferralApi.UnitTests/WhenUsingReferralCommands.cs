@@ -1,8 +1,8 @@
 using AutoMapper;
-using FamilyHubs.ReferralApi.Api.Commands.CreateReferral;
-using FamilyHubs.ReferralApi.Api.Commands.SetReferralStatus;
-using FamilyHubs.ReferralApi.Api.Commands.UpdateReferral;
-using FamilyHubs.ReferralApi.Api.Queries.GetReferrals;
+using FamilyHubs.ReferralApi.Core.Commands.CreateReferral;
+using FamilyHubs.ReferralApi.Core.Commands.SetReferralStatus;
+using FamilyHubs.ReferralApi.Core.Commands.UpdateReferral;
+using FamilyHubs.ReferralApi.Core.Queries.GetReferrals;
 using FamilyHubs.ReferralApi.Core;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Dto.Referral;

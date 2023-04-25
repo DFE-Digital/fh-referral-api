@@ -1,4 +1,4 @@
-﻿using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
+﻿using FamilyHubs.ReferralApi.Data.Repository;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

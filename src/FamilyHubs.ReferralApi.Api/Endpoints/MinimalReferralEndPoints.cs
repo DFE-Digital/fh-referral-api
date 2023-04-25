@@ -1,10 +1,9 @@
-﻿using FamilyHubs.ReferralApi.Api.Commands.CreateReferral;
-using FamilyHubs.ReferralApi.Api.Commands.SetReferralStatus;
-using FamilyHubs.ReferralApi.Api.Commands.UpdateReferral;
-using FamilyHubs.ReferralApi.Api.Queries.GetReferrals;
+﻿using FamilyHubs.ReferralApi.Core.Commands.CreateReferral;
+using FamilyHubs.ReferralApi.Core.Commands.SetReferralStatus;
+using FamilyHubs.ReferralApi.Core.Commands.UpdateReferral;
+using FamilyHubs.ReferralApi.Core.Queries.GetReferrals;
 using FamilyHubs.ServiceDirectory.Shared.Dto.Referral;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 

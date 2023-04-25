@@ -22,10 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FamilyHubs.ReferralApi.Infrastructure\FamilyHubs.ReferralApi.Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
+    <ProjectReference Include="..\FamilyHubs.ReferralApi.Core\FamilyHubs.ReferralApi.Core.csproj" />
   </ItemGroup>
 </Project>

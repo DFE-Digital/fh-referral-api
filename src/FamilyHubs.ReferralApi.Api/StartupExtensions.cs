@@ -1,28 +1,20 @@
 ﻿using AutoMapper;
 using AutoMapper.EquivalencyExpression;
+using FamilyHubs.ReferralApi.Core.Commands.CreateReferral;
 using FamilyHubs.ReferralApi.Api.Endpoints;
-using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
-using FamilyHubs.ReferralApi.Infrastructure;
-using MassTransit;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Serilog;
-using System.Text;
-using Microsoft.ApplicationInsights.Extensibility;
-using Serilog.Events;
-using Ardalis.GuardClauses;
-using FamilyHubs.ReferralApi.Core.Entities;
+using FamilyHubs.ReferralApi.Api.Middleware;
 using FamilyHubs.ReferralApi.Core;
-using FamilyHubs.ReferralApi.Infrastructure.Persistence.Interceptors;
+using FamilyHubs.ReferralApi.Data.Interceptors;
+using FamilyHubs.ReferralApi.Data.Repository;
+using MassTransit;
+using MediatR;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using FluentValidation;
-using MediatR;
-using FamilyHubs.ReferralApi.Api.Middleware;
 using Microsoft.OpenApi.Models;
-using FamilyHubs.ReferralApi.Api.Commands.CreateReferral;
-using Microsoft.AspNetCore.Builder;
+using Serilog;
+using Serilog.Events;
 
 namespace FamilyHubs.ReferralApi.Api;
 
@@ -246,29 +238,5 @@ public static class StartupExtensions
     //    services.AddSwaggerGen();
 
     //}
-
-    //public static async Task<IServiceProvider> ConfigureWebApplication(this WebApplication app)
-    //{
-    //    app.UseSerilogRequestLogging();
-
-    //    // Configure the HTTP request pipeline.
-    //    if (app.Environment.IsDevelopment())
-    //    {
-    //        app.UseSwagger();
-    //        app.UseSwaggerUI();
-    //    }
-
-    //    app.UseHttpsRedirection();
-
-    //    app.UseAuthentication();
-    //    app.UseAuthorization();
-
-    //    app.MapControllers();
-
-    //    await app.RegisterEndPoints();
-
-    //    return app.Services;
-    //}
-
 
 }

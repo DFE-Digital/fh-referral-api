@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using FamilyHubs.ReferralApi.Core.Entities;
+using FamilyHubs.ReferralApi.Data.Entities;
 using FamilyHubs.ServiceDirectory.Shared.Dto.Referral;
 
 namespace FamilyHubs.ReferralApi.Core;
