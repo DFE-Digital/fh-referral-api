@@ -21,14 +21,17 @@ public class ReferralConfiguration : IEntityTypeConfiguration<Referral>
 
         builder.HasOne(s => s.Recipient)
             .WithOne()
+            .HasForeignKey<Recipient>(lc => lc.ReferralId)
             .IsRequired();
 
         builder.HasOne(s => s.Referrer)
             .WithOne()
+            .HasForeignKey<Referrer>(lc => lc.ReferralId)
             .IsRequired();
 
         builder.HasOne(s => s.ReferralService)
             .WithOne()
+            .HasForeignKey<ReferralService>(lc => lc.ReferralId)
             .IsRequired();
 
         builder.Property(t => t.Created)

@@ -30,6 +30,8 @@ public class ApplicationDbContextInitialiser
                 else
                     await _context.Database.EnsureCreatedAsync();
 
+                var rtn = _context.Database.GenerateCreateScript();
+
                 await SeedAsync();
             }
         }

@@ -14,6 +14,13 @@ public class ReferralServiceConfiguration : IEntityTypeConfiguration<ReferralSer
 {
     public void Configure(EntityTypeBuilder<ReferralService> builder)
     {
+        builder.Navigation(e => e.ReferralOrganisation).AutoInclude();
+
+        builder.HasOne(s => s.ReferralOrganisation)
+           .WithOne()
+           .HasForeignKey<ReferralOrganisation>(lc => lc.ReferralServiceId)
+           .IsRequired();
+
         builder.Property(t => t.Name)
             .IsRequired()
             .HasMaxLength(256);

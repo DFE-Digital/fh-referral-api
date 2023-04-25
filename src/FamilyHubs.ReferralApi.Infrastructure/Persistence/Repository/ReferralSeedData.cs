@@ -17,12 +17,13 @@ public static class ReferralSeedData
                 ReferenceNumber = "1",
                 ReasonForSupport = "Reason For Support",
                 EngageWithFamily = "Engage With Family",
-                RecipientId = 1,
-                ReferralServiceId = 1,
-                ReferrerId = 1,
+                //RecipientId = 1,
+                //ReferralServiceId = 1,
+                //ReferrerId = 1,
                 Recipient = new Recipient
                 {
                     Id = 1,
+                    ReferralId = 1,
                     Name = "Test User",
                     Email = "TestUser@email.com",
                     Telephone = "078873456",
@@ -35,6 +36,7 @@ public static class ReferralSeedData
                 },
                 Referrer = new Referrer
                 {
+                    ReferralId = 1,
                     EmailAddress = "Joe.Professional@email.com",
                 },
                 Status = new List<ReferralStatus>
@@ -48,12 +50,13 @@ public static class ReferralSeedData
                 ReferralService = new ReferralService
                 {
                     Id = 1,
-                    ReferralOrganisationId = 1,
+                    ReferralId = 1,
                     Name = "Test Service",
                     Description = "Test Service Description",
                     ReferralOrganisation = new ReferralOrganisation
                     {
                         Id = 1,
+                        ReferralServiceId = 1,
                         Name = "Test Organisation",
                         Description = "Test Organisation Description",
                     }
