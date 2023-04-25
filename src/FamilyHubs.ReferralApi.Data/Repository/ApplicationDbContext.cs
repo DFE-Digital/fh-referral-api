@@ -34,7 +34,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 #endif
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
         //DbKey should be overriden in build pipeline
-        string dbKey = configuration.GetValue<string>("DbKey");
+        ArgumentNullException.ThrowIfNull(configuration);
+        string dbKey = configuration.GetValue<string>("DbKey") ?? string.Empty;
         if (string.IsNullOrEmpty(dbKey))
         {
             throw new NotFoundException(nameof(IConfiguration), "DbKey");
