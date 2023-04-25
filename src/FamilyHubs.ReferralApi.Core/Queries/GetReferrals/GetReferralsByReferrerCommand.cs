@@ -58,9 +58,9 @@ public class GetReferralsByReferrerCommandHandler : IRequestHandler<GetReferrals
         List<ReferralDto> pagelist;
         if (request != null)
         {
-            pagelist = entities.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize)
+            pagelist = await  entities.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize)
                 .ProjectTo<ReferralDto>(_mapper.ConfigurationProvider)
-                .ToList();
+                .ToListAsync();
             return new PaginatedList<ReferralDto>(pagelist, pagelist.Count, request.PageNumber, request.PageSize);
         }
        

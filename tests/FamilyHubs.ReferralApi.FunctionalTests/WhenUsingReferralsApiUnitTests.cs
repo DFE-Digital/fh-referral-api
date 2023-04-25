@@ -172,7 +172,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             EngageWithFamily = "Engage With Family",
             RecipientDto = new RecipientDto
             {
-                Id = 2,
+                Id = 1,
                 Name = "Joe Blogs",
                 Email = "JoeBlog@email.com",
                 Telephone = "078123456",
@@ -185,6 +185,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             },
             ReferrerDto = new ReferrerDto
             {
+                Id = 1,
                 EmailAddress = "Bob.Referrer@email.com",
             },
             Status = new List<ReferralStatusDto>
@@ -196,12 +197,12 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             },
             ReferralServiceDto = new ReferralServiceDto
             {
-                Id = 2,
+                Id = 1,
                 Name = "Service",
                 Description = "Service Description",
                 ReferralOrganisationDto = new ReferralOrganisationDto
                 {
-                    Id = 2,
+                    Id = 1,
                     Name = "Organisation",
                     Description = "Organisation Description",
                 }

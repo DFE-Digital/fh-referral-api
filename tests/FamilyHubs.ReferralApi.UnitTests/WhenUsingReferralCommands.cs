@@ -169,15 +169,16 @@ namespace FamilyHubs.ReferralApi.UnitTests
                 },
                 ReferrerDto = new ReferrerDto
                 {
+                    Id = 2,
                     EmailAddress = "Bob.Referrer@email.com",
                 },
                 Status = new List<ReferralStatusDto>
-            {
-                new ReferralStatusDto
                 {
-                    Status = "Inital-Referral"
-                }
-            },
+                    new ReferralStatusDto
+                    {
+                        Status = "Inital-Referral"
+                    }
+                },
                 ReferralServiceDto = new ReferralServiceDto
                 {
                     Id = 2,

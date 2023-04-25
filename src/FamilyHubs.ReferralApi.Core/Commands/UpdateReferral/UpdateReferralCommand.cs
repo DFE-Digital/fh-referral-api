@@ -41,7 +41,6 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
             .Include(x => x.Recipient)
             .Include(x => x.ReferralService)
             .ThenInclude(x => x.ReferralOrganisation)
-            .AsNoTracking()
             .FirstOrDefault(x => x.Id == request.Id);
         if (entity == null)
         {
