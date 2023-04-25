@@ -18,6 +18,7 @@ public class WhenValidatingReferralCommands
     {
         //Arrange
         var testReferral = WhenUsingReferralCommands.GetReferralDto();
+        testReferral.Id = 0;
         var validator = new CreateReferralCommandValidator();
         var testModel = new CreateReferralCommand(testReferral);
 

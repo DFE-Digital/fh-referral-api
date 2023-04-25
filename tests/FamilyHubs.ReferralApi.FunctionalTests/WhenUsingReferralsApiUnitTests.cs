@@ -1,4 +1,5 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Dto.Referral;
+﻿using FamilyHubs.ReferralApi.Data.Repository;
+using FamilyHubs.ServiceDirectory.Shared.Dto.Referral;
 using FamilyHubs.ServiceDirectory.Shared.Models;
 using FluentAssertions;
 using System.Text;
@@ -18,11 +19,12 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
     [Fact]
     public async Task ThenReferralsByReferrerAreRetrieved()
     {
+        var referrer = ReferralSeedData.SeedReferral().ElementAt(0).Referrer.EmailAddress;
 
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Get,
-            RequestUri = new Uri(_client.BaseAddress + "api/referrals/CurrentUser?pageNumber=1&pageSize=10"),
+            RequestUri = new Uri(_client.BaseAddress + $"api/referrals/{referrer}?pageNumber=1&pageSize=10"),
         };
 
         //request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
@@ -232,7 +234,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri(_client.BaseAddress + "api/referralStatus/24572563-7d73-4127-b348-8d2bf646e7fe/Accept Connection")
+            RequestUri = new Uri(_client.BaseAddress + "api/referralStatus/1/Accept Connection")
         };
 
         //request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");

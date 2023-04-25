@@ -42,6 +42,7 @@ public class GetReferralsByOrganisationIdCommandHandler : IRequestHandler<GetRef
             .Include(x => x.Recipient)
             .Include(x => x.ReferralService)
             .ThenInclude(x => x.ReferralOrganisation)
+            .AsNoTracking()
             .Where(x => x.ReferralService.ReferralOrganisation.Id == request.OrganisationId);
 
         if (entities == null)

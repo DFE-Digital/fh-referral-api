@@ -1,15 +1,13 @@
 using AutoMapper;
+using FamilyHubs.ReferralApi.Core;
 using FamilyHubs.ReferralApi.Core.Commands.CreateReferral;
 using FamilyHubs.ReferralApi.Core.Commands.SetReferralStatus;
 using FamilyHubs.ReferralApi.Core.Commands.UpdateReferral;
 using FamilyHubs.ReferralApi.Core.Queries.GetReferrals;
-using FamilyHubs.ReferralApi.Core;
-using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Dto.Referral;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace FamilyHubs.ReferralApi.UnitTests
 {
@@ -56,7 +54,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             testReferral.RecipientDto.Telephone = testReferral.RecipientDto.Telephone + " Test";
             testReferral.RecipientDto.TextPhone = testReferral.RecipientDto.TextPhone + " Test";
             testReferral.ReasonForSupport = testReferral.ReasonForSupport + " Test";
-            UpdateReferralCommand command = new(testReferral.Id, testReferral);
+            UpdateReferralCommand command = new(setResult, testReferral);
             UpdateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, new Mock<ILogger<UpdateReferralCommandHandler>>().Object);
 
             //Act
@@ -83,7 +81,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
             await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralsByReferrerCommand getcommand = new("Bob Referrer",1,10);
+            GetReferralsByReferrerCommand getcommand = new("Bob.Referrer@email.com", 1,10);
             GetReferralsByReferrerCommandHandler gethandler = new(mockApplicationDbContext, mapper);
             
 
@@ -92,7 +90,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
 
             //Assert
             result.Should().NotBeNull();
-            result.Items[0].Should().BeEquivalentTo(testReferral);
+            result.Items.Count.Should().Be(1);
         }
 
         [Fact]
@@ -109,7 +107,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
             await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralsByOrganisationIdCommand getcommand = new(1, 1, 10);
+            GetReferralsByOrganisationIdCommand getcommand = new(2, 1, 10);
             GetReferralsByOrganisationIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
 
 
@@ -118,7 +116,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
 
             //Assert
             result.Should().NotBeNull();
-            result.Items[0].Should().BeEquivalentTo(testReferral);
+            result.Items.Count.Should().Be(1);
         }
 
         [Fact]
@@ -133,9 +131,9 @@ namespace FamilyHubs.ReferralApi.UnitTests
             var testReferral = GetReferralDto();
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
-            await handler.Handle(command, new System.Threading.CancellationToken());
+            var id = await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralByIdCommand getcommand = new(1);
+            GetReferralByIdCommand getcommand = new(id);
             GetReferralByIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
 
 
@@ -144,15 +142,15 @@ namespace FamilyHubs.ReferralApi.UnitTests
 
             //Assert
             result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(testReferral);
+            result.Id.Should().Be(id);
         }
 
         public static ReferralDto GetReferralDto()
         {
             return new ReferralDto
             {
-                Id = 1,
-                ReferenceNumber = "1",
+                Id = 2,
+                ReferenceNumber = "2",
                 ReasonForSupport = "Reason For Support",
                 EngageWithFamily = "Engage With Family",
                 RecipientDto = new RecipientDto

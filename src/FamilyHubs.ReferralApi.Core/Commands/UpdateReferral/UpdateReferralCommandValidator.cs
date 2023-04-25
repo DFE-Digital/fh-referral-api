@@ -11,7 +11,7 @@ public class UpdateReferralCommandValidator : AbstractValidator<UpdateReferralCo
             .NotNull();
 
         RuleFor(v => v.ReferralDto.Id)
-            .Equal(0);
+            .GreaterThan(0);
 
         RuleFor(v => v.ReferralDto.ReferralServiceDto)
             .NotNull()

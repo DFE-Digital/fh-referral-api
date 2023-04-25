@@ -6,6 +6,7 @@ using FamilyHubs.ReferralApi.Data.Repository;
 using FamilyHubs.ServiceDirectory.Shared.Dto.Referral;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamilyHubs.ReferralApi.Core.Commands.UpdateReferral;
 
@@ -34,7 +35,14 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
     }
     public async Task<long> Handle(UpdateReferralCommand request, CancellationToken cancellationToken)
     {
-        var entity = _context.Referrals.FirstOrDefault(x => x.Id == request.Id);
+        var entity = _context.Referrals
+            .Include(x => x.Status)
+            .Include(x => x.Referrer)
+            .Include(x => x.Recipient)
+            .Include(x => x.ReferralService)
+            .ThenInclude(x => x.ReferralOrganisation)
+            .AsNoTracking()
+            .FirstOrDefault(x => x.Id == request.Id);
         if (entity == null)
         {
             throw new NotFoundException(nameof(Referral), request.Id.ToString());
