@@ -76,7 +76,7 @@ public class MinimalReferralEndPoints
             }
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Organisation Id") { Tags = new[] { "Referrals" } });
 
-        app.MapGet("api/referral/{id}", [Authorize(Policy = "Referrer")] async (long id, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapGet("api/referral/{id}", async (long id, CancellationToken cancellationToken, ISender _mediator) =>
         {
             try
             {
@@ -91,7 +91,7 @@ public class MinimalReferralEndPoints
             }
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referral By Id") { Tags = new[] { "Referrals" } });
 
-        app.MapPost("api/referralStatus/{referralId}/{status}", [Authorize(Policy = "Referrer")] async (long referralId, string status, CancellationToken cancellationToken, ISender _mediator, ILogger<MinimalReferralEndPoints> logger) =>
+        app.MapPost("api/referralStatus/{referralId}/{status}", async (long referralId, string status, CancellationToken cancellationToken, ISender _mediator, ILogger<MinimalReferralEndPoints> logger) =>
         {
             try
             {

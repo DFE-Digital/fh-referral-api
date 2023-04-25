@@ -13,14 +13,24 @@ public class ReferralConfiguration : IEntityTypeConfiguration<Referral>
         builder.Navigation(e => e.ReferralService).AutoInclude();
         builder.Navigation(e => e.Status).AutoInclude();
 
-        
+        builder.HasMany(s => s.Status)
+            .WithOne()
+            .HasForeignKey(lc => lc.ReferralId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Cascade);
 
-        //builder.Property(t => t.Recipient)
-        //    .IsRequired();
-        //builder.Property(t => t.Referrer)
-        //    .IsRequired();
-        //builder.Property(t => t.ReferralService)
-        //    .IsRequired();
+        builder.HasOne(s => s.Recipient)
+            .WithOne()
+            .IsRequired();
+
+        builder.HasOne(s => s.Referrer)
+            .WithOne()
+            .IsRequired();
+
+        builder.HasOne(s => s.ReferralService)
+            .WithOne()
+            .IsRequired();
+
         builder.Property(t => t.Created)
             .IsRequired();
         builder.Property(t => t.CreatedBy)

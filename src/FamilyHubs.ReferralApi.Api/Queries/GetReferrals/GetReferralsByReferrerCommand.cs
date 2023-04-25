@@ -44,25 +44,29 @@ public class GetReferralsByReferrerCommandHandler : IRequestHandler<GetReferrals
             .Include(x => x.Recipient)
             .Include(x => x.ReferralService)
             .ThenInclude(x => x.ReferralOrganisation)
-            .ProjectTo<ReferralDto>(_mapper.ConfigurationProvider)
-            .Where(x => x.ReferrerDto.EmailAddress == request.EmailAddress);
+
+            .AsSplitQuery()
+            .AsNoTracking()
+
+            .Where(x => x.Referrer.EmailAddress == request.EmailAddress);
 
         if (entities == null)
         {
             throw new NotFoundException(nameof(Referral), request.EmailAddress);
         }
 
-        
 
+        List<ReferralDto> pagelist;
         if (request != null)
         {
-            var pagelist = entities.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).ToList();
-            var result = new PaginatedList<ReferralDto>(entities.ToList(), pagelist.Count, request.PageNumber, request.PageSize);
-            return result;
+            pagelist = entities.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize)
+                .ProjectTo<ReferralDto>(_mapper.ConfigurationProvider)
+                .ToList();
+            return new PaginatedList<ReferralDto>(pagelist, pagelist.Count, request.PageNumber, request.PageSize);
         }
-
-        return new PaginatedList<ReferralDto>(entities.ToList(), entities.Count(), 1, 10);
-
-
+       
+        pagelist = _mapper.Map<List<ReferralDto>>(entities);
+        var result = new PaginatedList<ReferralDto>(pagelist.ToList(), pagelist.Count, 1, 10);
+        return result;
     }
 }

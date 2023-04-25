@@ -42,25 +42,25 @@ public class GetReferralsByOrganisationIdCommandHandler : IRequestHandler<GetRef
             .Include(x => x.Recipient)
             .Include(x => x.ReferralService)
             .ThenInclude(x => x.ReferralOrganisation)
-            .ProjectTo<ReferralDto>(_mapper.ConfigurationProvider)
-            .Where(x => x.ReferralServiceDto.ReferralOrganisationDto.Id == request.OrganisationId);
+            .Where(x => x.ReferralService.ReferralOrganisation.Id == request.OrganisationId);
 
         if (entities == null)
         {
             throw new NotFoundException(nameof(Referral), request.OrganisationId.ToString());
         }
 
-        
-
+        List<ReferralDto> pagelist;
         if (request != null)
         {
-            var pagelist = entities.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).ToList();
-            var result = new PaginatedList<ReferralDto>(entities.ToList(), pagelist.Count, request.PageNumber, request.PageSize);
+            pagelist = entities.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize)
+                .ProjectTo<ReferralDto>(_mapper.ConfigurationProvider)
+                .ToList();
+            var result = new PaginatedList<ReferralDto>(pagelist.ToList(), pagelist.Count, request.PageNumber, request.PageSize);
             return result;
         }
-
-        return new PaginatedList<ReferralDto>(entities.ToList(), entities.Count(), 1, 10);
-
-
+        
+        pagelist = _mapper.Map<List<ReferralDto>>(entities);
+        return new PaginatedList<ReferralDto>(pagelist.ToList(), pagelist.Count, 1, 10);
+        
     }
 }

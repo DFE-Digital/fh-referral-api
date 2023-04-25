@@ -1,5 +1,6 @@
 ﻿using Ardalis.GuardClauses;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using FamilyHubs.ReferralApi.Core.Entities;
 using FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
 using FamilyHubs.ServiceDirectory.Shared.Dto.Referral;
@@ -33,6 +34,11 @@ public class GetReferralByIdCommandHandler : IRequestHandler<GetReferralByIdComm
     {
         var entity = await _context.Referrals
             .Include(x => x.Status)
+            .Include(x => x.Referrer)
+            .Include(x => x.Recipient)
+            .Include(x => x.ReferralService)
+            .ThenInclude(x => x.ReferralOrganisation)
+            .ProjectTo<ReferralDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken: cancellationToken);
 
         if (entity == null)
@@ -40,19 +46,8 @@ public class GetReferralByIdCommandHandler : IRequestHandler<GetReferralByIdComm
             throw new NotFoundException(nameof(Referral), request.Id.ToString());
         }
 
-        List<ReferralStatusDto> referralStatusDtos = new();
-        foreach (var status in entity.Status)
-        {
-            referralStatusDtos.Add(new ReferralStatusDto
-            {
-                Status = status.Status,
-                Id = status.Id
-            });
-        }
-
-        ReferralDto result = _mapper.Map<ReferralDto>(entity);
-
-        return result;
+        
+        return entity;
     }
 }
 

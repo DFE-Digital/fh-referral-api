@@ -13,7 +13,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests
     protected readonly HttpClient _client;
     protected readonly JwtSecurityToken _token;
 
-    public BaseWhenUsingOpenReferralApiUnitTests()
+    protected BaseWhenUsingOpenReferralApiUnitTests()
     {
         var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.test.json")

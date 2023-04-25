@@ -1,6 +1,5 @@
 ﻿using FamilyHubs.ReferralApi.Core.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace FamilyHubs.ReferralApi.Infrastructure.Persistence.Repository;
@@ -61,11 +60,8 @@ public class ApplicationDbContextInitialiser
 
         IReadOnlyCollection<Referral> referrals = ReferralSeedData.SeedReferral();
 
-        foreach (var referral in referrals)
-        {
-            _context.Referrals.Add(referral);
-        }
-
+        _context.Referrals.AddRange(referrals);
+        
         await _context.SaveChangesAsync();
 
     }

@@ -81,7 +81,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             var testReferral = GetReferralDto();
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
-            var id = await handler.Handle(command, new System.Threading.CancellationToken());
+            await handler.Handle(command, new System.Threading.CancellationToken());
 
             GetReferralsByReferrerCommand getcommand = new("Bob Referrer",1,10);
             GetReferralsByReferrerCommandHandler gethandler = new(mockApplicationDbContext, mapper);
@@ -107,7 +107,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             var testReferral = GetReferralDto();
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
-            var id = await handler.Handle(command, new System.Threading.CancellationToken());
+            await handler.Handle(command, new System.Threading.CancellationToken());
 
             GetReferralsByOrganisationIdCommand getcommand = new(1, 1, 10);
             GetReferralsByOrganisationIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
@@ -133,7 +133,7 @@ namespace FamilyHubs.ReferralApi.UnitTests
             var testReferral = GetReferralDto();
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
-            var id = await handler.Handle(command, new System.Threading.CancellationToken());
+            await handler.Handle(command, new System.Threading.CancellationToken());
 
             GetReferralByIdCommand getcommand = new(1);
             GetReferralByIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);

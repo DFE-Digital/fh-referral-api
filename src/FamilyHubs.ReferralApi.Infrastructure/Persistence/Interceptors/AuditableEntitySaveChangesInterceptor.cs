@@ -25,7 +25,7 @@ public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
     {
         if (context is null) return;
 
-        foreach (var entry in context.ChangeTracker.Entries<EntityBase<string>>())
+        foreach (var entry in context.ChangeTracker.Entries<EntityBase<long>>())
         {
             if (entry.State == EntityState.Added)
             {
