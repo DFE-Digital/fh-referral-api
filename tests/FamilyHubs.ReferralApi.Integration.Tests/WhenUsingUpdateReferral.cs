@@ -1,6 +1,4 @@
 ﻿using FamilyHubs.ReferralApi.Core.Commands.UpdateReferral;
-using FamilyHubs.ReferralApi.Data.Entities;
-using FamilyHubs.ReferralCommon.Shared.Dto;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -114,15 +112,5 @@ public class WhenUsingUpdateReferral : DataIntegrationTestBase
     }
 
 
-    public async Task<ReferralDto> CreateReferral(ReferralDto? newReferral = null)
-    {
-        
-        var referral = Mapper.Map<Referral>(newReferral ?? TestDataProvider.GetReferralDto());
-
-        TestDbContext.Referrals.Add(referral);
-
-        await TestDbContext.SaveChangesAsync();
-
-        return Mapper.Map(referral, newReferral ?? TestDataProvider.GetReferralDto());
-    }
+    
 }

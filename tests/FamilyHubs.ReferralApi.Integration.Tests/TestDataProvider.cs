@@ -37,6 +37,7 @@ public static class TestDataProvider
             {
                 new ReferralStatusDto
                 {
+                    Id = 2,
                     Status = "Inital-Referral"
                 }
             },

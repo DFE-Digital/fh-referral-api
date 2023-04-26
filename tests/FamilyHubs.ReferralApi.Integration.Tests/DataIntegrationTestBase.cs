@@ -4,6 +4,7 @@ using FamilyHubs.ReferralApi.Core;
 using FamilyHubs.ReferralApi.Data.Entities;
 using FamilyHubs.ReferralApi.Data.Interceptors;
 using FamilyHubs.ReferralApi.Data.Repository;
+using FamilyHubs.ReferralCommon.Shared.Dto;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -79,7 +80,17 @@ public abstract class DataIntegrationTestBase : IDisposable, IAsyncDisposable
         TestDbContext.SaveChangesAsync().GetAwaiter().GetResult(); 
     }
 
+    protected async Task<ReferralDto> CreateReferral(ReferralDto? newReferral = null)
+    {
 
+        var referral = Mapper.Map<Referral>(newReferral ?? TestDataProvider.GetReferralDto());
+
+        TestDbContext.Referrals.Add(referral);
+
+        await TestDbContext.SaveChangesAsync();
+
+        return Mapper.Map(referral, newReferral ?? TestDataProvider.GetReferralDto());
+    }
 
     public void Dispose()
     {
