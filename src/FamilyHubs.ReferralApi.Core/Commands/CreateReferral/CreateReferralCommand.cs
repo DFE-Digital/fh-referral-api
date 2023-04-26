@@ -64,9 +64,62 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
             }
         }
 
+        entity = AttachExistingReferrer(entity);
+        entity = AttachExistingRecipient(entity);
+        entity = AttachExistingService(entity);
+
         _context.Referrals.Add(entity);
 
         return entity.Id;
+    }
+
+    private Referral AttachExistingReferrer(Referral entity)
+    {
+        Referrer? referrer = _context.Referrers.SingleOrDefault(x => x.EmailAddress == entity.Referrer.EmailAddress);
+        if (referrer != null) 
+        {
+            entity.Referrer = referrer;
+        }
+        return entity;
+    }
+
+    private Referral AttachExistingRecipient(Referral entity)
+    {
+        Recipient? recipient = null;
+        if (!string.IsNullOrEmpty(entity.Recipient.Telephone))
+        {
+            recipient = _context.Recipients.SingleOrDefault(x => x.Telephone == entity.Recipient.Telephone);
+        }
+        else if (!string.IsNullOrEmpty(entity.Recipient.TextPhone))
+        {
+            recipient = _context.Recipients.SingleOrDefault(x => x.TextPhone == entity.Recipient.Telephone);
+        }
+        else if (!string.IsNullOrEmpty(entity.Recipient.Email))
+        {
+            recipient = _context.Recipients.SingleOrDefault(x => !string.IsNullOrEmpty(x.Email) && x.Email.ToLower() == entity.Recipient.Email.ToLower());
+        }
+        else if (!string.IsNullOrEmpty(entity.Recipient.Name) && !string.IsNullOrEmpty(entity.Recipient.PostCode))
+        {
+            recipient = _context.Recipients.SingleOrDefault(x => !string.IsNullOrEmpty(x.Name) && !string.IsNullOrEmpty(x.PostCode) && x.Name.ToLower() == entity.Recipient.Name.ToLower() && x.PostCode.ToLower() == entity.Recipient.PostCode.ToLower());
+        }
+
+        if (recipient != null) 
+        {
+            entity.Recipient = recipient;
+        }
+
+
+        return entity;
+    }
+
+    private Referral AttachExistingService(Referral entity)
+    {
+        ReferralService? referrer = _context.ReferralServices.SingleOrDefault(x => x.Name.ToLower() == entity.ReferralService.Name.ToLower() && x.ReferralOrganisation.Name.ToLower() == entity.ReferralService.ReferralOrganisation.Name.ToLower());
+        if (referrer != null)
+        {
+            entity.ReferralService = referrer;
+        }
+        return entity;
     }
 }
 
