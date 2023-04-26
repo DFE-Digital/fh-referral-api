@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.ReferralApi.Unit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.ReferralApi.FunctionalTests", "tests\FamilyHubs.ReferralApi.FunctionalTests\FamilyHubs.ReferralApi.FunctionalTests.csproj", "{3F0043DA-1B89-4E20-9FCC-3E29827B5779}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.ServiceDirectory.Shared", "..\fh-service-directory-shared\src\FamilyHubs.ServiceDirectory.Shared\FamilyHubs.ServiceDirectory.Shared.csproj", "{A36D8BC3-45BE-4284-9C85-DFE11AAE0581}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.ReferralApi.Data", "src\FamilyHubs.ReferralApi.Data\FamilyHubs.ReferralApi.Data.csproj", "{F3DCBF86-C0A0-4CC0-A23A-B21ACA4D45C2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.ReferralApi.Integration.Tests", "tests\FamilyHubs.ReferralApi.Integration.Tests\FamilyHubs.ReferralApi.Integration.Tests.csproj", "{5111810F-D303-4046-8F1B-DB0DF5BB1F16}"
@@ -43,10 +41,6 @@ Global
 		{3F0043DA-1B89-4E20-9FCC-3E29827B5779}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F0043DA-1B89-4E20-9FCC-3E29827B5779}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F0043DA-1B89-4E20-9FCC-3E29827B5779}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A36D8BC3-45BE-4284-9C85-DFE11AAE0581}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A36D8BC3-45BE-4284-9C85-DFE11AAE0581}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A36D8BC3-45BE-4284-9C85-DFE11AAE0581}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A36D8BC3-45BE-4284-9C85-DFE11AAE0581}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F3DCBF86-C0A0-4CC0-A23A-B21ACA4D45C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F3DCBF86-C0A0-4CC0-A23A-B21ACA4D45C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3DCBF86-C0A0-4CC0-A23A-B21ACA4D45C2}.Release|Any CPU.ActiveCfg = Release|Any CPU

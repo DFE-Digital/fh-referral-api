@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using FamilyHubs.ReferralApi.Core.Commands.UpdateReferral;
 using FamilyHubs.ReferralApi.Data.Entities;
-using FamilyHubs.ServiceDirectory.Shared.Dto.Referral;
+using FamilyHubs.ReferralCommon.Shared.Dto;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Moq;
 
 namespace FamilyHubs.ReferralApi.Integration.Tests;

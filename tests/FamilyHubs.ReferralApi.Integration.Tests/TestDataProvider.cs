@@ -1,4 +1,6 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Dto.Referral;
+﻿
+
+using FamilyHubs.ReferralCommon.Shared.Dto;
 
 namespace FamilyHubs.ReferralApi.Integration.Tests;
 

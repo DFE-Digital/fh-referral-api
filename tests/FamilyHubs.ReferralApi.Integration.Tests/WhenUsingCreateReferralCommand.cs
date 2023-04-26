@@ -1,12 +1,10 @@
-using AutoMapper;
 using FamilyHubs.ReferralApi.Core.Commands.CreateReferral;
-using FamilyHubs.ServiceDirectory.Shared.Dto.Referral;
+using FamilyHubs.ReferralCommon.Shared.Dto;
 using FluentAssertions;
 using FluentAssertions.Equivalency;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace FamilyHubs.ReferralApi.Integration.Tests
 {

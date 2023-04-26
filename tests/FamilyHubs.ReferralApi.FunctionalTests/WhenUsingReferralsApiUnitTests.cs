@@ -1,9 +1,9 @@
 ﻿using FamilyHubs.ReferralApi.Data.Repository;
-using FamilyHubs.ServiceDirectory.Shared.Dto.Referral;
-using FamilyHubs.ServiceDirectory.Shared.Models;
 using FluentAssertions;
 using System.Text;
 using System.Text.Json;
+using FamilyHubs.ServiceDirectory.Shared.Models;
+using FamilyHubs.ReferralCommon.Shared.Dto;
 
 namespace FamilyHubs.ReferralApi.FunctionalTests;
 
