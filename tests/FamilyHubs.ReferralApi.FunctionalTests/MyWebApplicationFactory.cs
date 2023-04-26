@@ -13,7 +13,7 @@ public class MyWebApplicationFactory : WebApplicationFactory<Program>
         {
             IEnumerable<KeyValuePair<string, string?>>? initialData = new List<KeyValuePair<string, string?>>
             {
-                new KeyValuePair<string, string?>("UseDbType", "UseInMemoryDatabase"),
+                new KeyValuePair<string, string?>("UseSqlite", "true"),
                 new KeyValuePair<string, string?>("UseVault", "false")
             };
             config.AddInMemoryCollection(initialData);

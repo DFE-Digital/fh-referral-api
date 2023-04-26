@@ -1,5 +1,4 @@
 ﻿using FamilyHubs.ReferralApi.Data.Repository;
-using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +10,12 @@ namespace FamilyHubs.ReferralApi.FunctionalTests;
 
 public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
 {
+    private readonly string _referralConnection;
+    public CustomWebApplicationFactory()
+    {
+        _referralConnection = $"Data Source=sd-{Random.Shared.Next().ToString()}.db;Mode=ReadWriteCreate;Cache=Shared;Foreign Keys=True;Recursive Triggers=True;Default Timeout=30;Pooling=True";
+    }
+
     /// <summary>
     /// Overriding CreateHost to avoid creating a separate ServiceProvider per this thread:
     /// https://github.com/dotnet-architecture/eShopOnWeb/issues/465
@@ -61,30 +66,21 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder
-            .ConfigureServices(services =>
+        builder.ConfigureServices(services =>
+        {
+            var efCoreServices = services.Where(s =>
+                s.ServiceType.FullName?.Contains("EntityFrameworkCore") == true).ToList();
+
+            efCoreServices.ForEach(s => services.Remove(s));
+
+            services.AddDbContext<ApplicationDbContext>(options =>
             {
-                // Remove the app's ApplicationDbContext registration.
-                var descriptor = services.SingleOrDefault(
-            d => d.ServiceType ==
-                typeof(DbContextOptions<ApplicationDbContext>));
-
-                if (descriptor != null)
-                {
-                    services.Remove(descriptor);
-                }
-
-                // This should be set for each individual test run
-                string inMemoryCollectionName = Guid.NewGuid().ToString();
-
-                // Add ApplicationDbContext using an in-memory database for testing.
-                services.AddDbContext<ApplicationDbContext>(options =>
-                {
-                    options.UseInMemoryDatabase(inMemoryCollectionName);
-                });
-
-                services.AddScoped<IMediator, NoOpMediator>();
+                options.UseSqlite(_referralConnection, mg =>
+                    mg.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.ToString()));
             });
+        });
+
+        builder.UseEnvironment("Development");
     }
 }
 
