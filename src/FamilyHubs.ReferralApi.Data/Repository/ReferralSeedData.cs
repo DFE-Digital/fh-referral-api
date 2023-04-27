@@ -14,7 +14,6 @@ public static class ReferralSeedData
             new Referral
             {
                 Id = 1,
-                ReferenceNumber = "1",
                 ReasonForSupport = "Reason For Support",
                 EngageWithFamily = "Engage With Family",
                 Recipient = new Recipient

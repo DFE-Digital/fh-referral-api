@@ -4,7 +4,6 @@
 
 public record ReferralDto : DtoBase<long>
 {
-    public required string ReferenceNumber { get; set; }
     public required string ReasonForSupport { get; set; }
     public required string EngageWithFamily { get; set; }
     public required RecipientDto RecipientDto { get; set; }
@@ -15,7 +14,6 @@ public record ReferralDto : DtoBase<long>
     public override int GetHashCode()
     {
         return
-           EqualityComparer<string>.Default.GetHashCode(ReferenceNumber) * -1521134295 +
            EqualityComparer<string?>.Default.GetHashCode(ReasonForSupport) * -1521134295 +
            EqualityComparer<string?>.Default.GetHashCode(EngageWithFamily) * -1521134295;
     }
@@ -28,7 +26,6 @@ public record ReferralDto : DtoBase<long>
             return true;
 
         return
-            EqualityComparer<string>.Default.Equals(ReferenceNumber, other.ReferenceNumber) &&
             EqualityComparer<string>.Default.Equals(ReasonForSupport, other.ReasonForSupport) &&
             EqualityComparer<string>.Default.Equals(EngageWithFamily, other.EngageWithFamily);
     }

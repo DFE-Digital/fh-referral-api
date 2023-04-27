@@ -3,8 +3,7 @@
 namespace FamilyHubs.ReferralApi.Data.Entities;
 
 public class Referral : EntityBase<long>
-{
-    public required string ReferenceNumber { get; set; }
+{ 
     [EncryptColumn]
     public required string ReasonForSupport { get; set; }
     [EncryptColumn]

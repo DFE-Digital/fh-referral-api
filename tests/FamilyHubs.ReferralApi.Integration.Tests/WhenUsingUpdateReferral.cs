@@ -12,7 +12,6 @@ public class WhenUsingUpdateReferral : DataIntegrationTestBase
     {
         await CreateReferral();
         var referral = TestDataProvider.GetReferralDto();
-        referral.ReferenceNumber = "Unit Test Ref";
         referral.ReasonForSupport = "Unit Test Reason For Support";
         referral.EngageWithFamily = "Unit Test Engage With Family";
 
@@ -27,7 +26,6 @@ public class WhenUsingUpdateReferral : DataIntegrationTestBase
         result.Should().Be(referral.Id);
         var actualService = TestDbContext.Referrals.SingleOrDefault(s => s.Id == referral.Id);
         actualService.Should().NotBeNull();
-        actualService!.ReferenceNumber.Should().Be(referral.ReferenceNumber);
         actualService!.ReasonForSupport.Should().Be(referral.ReasonForSupport);
         actualService!.EngageWithFamily.Should().Be(referral.EngageWithFamily);
 

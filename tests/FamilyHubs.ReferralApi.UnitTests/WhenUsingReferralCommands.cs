@@ -313,7 +313,6 @@ namespace FamilyHubs.ReferralApi.UnitTests
             return new ReferralDto
             {
                 Id = 2,
-                ReferenceNumber = "2",
                 ReasonForSupport = "Reason For Support",
                 EngageWithFamily = "Engage With Family",
                 RecipientDto = new RecipientDto

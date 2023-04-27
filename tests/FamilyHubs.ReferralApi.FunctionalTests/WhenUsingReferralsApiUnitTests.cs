@@ -49,7 +49,6 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var command = new ReferralDto
         { 
             Id = 2,
-            ReferenceNumber = "1",
             ReasonForSupport = "Reason For Support",
             EngageWithFamily = "Engage With Family",
             RecipientDto = new RecipientDto
@@ -167,7 +166,6 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var command = new ReferralDto
         {
             Id = 1,
-            ReferenceNumber = "1",
             ReasonForSupport = "Reason For Support",
             EngageWithFamily = "Engage With Family",
             RecipientDto = new RecipientDto
