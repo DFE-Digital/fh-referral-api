@@ -90,12 +90,14 @@ public static class StartupExtensions
             if (useSqlite == true)
             {
                 options.UseSqlite(connection, mg =>
-                    mg.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.ToString()));
+                    mg.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.ToString())
+                        .MigrationsHistoryTable("ReferralMigrationHistory"));  
             }
             else
             {
                 options.UseSqlServer(connection, mg =>
-                    mg.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.ToString()));
+                    mg.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.ToString())
+                        .MigrationsHistoryTable("ReferralMigrationHistory"));
             }
         });
     }
