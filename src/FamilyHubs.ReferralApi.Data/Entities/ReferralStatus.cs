@@ -1,4 +1,4 @@
-﻿namespace FamilyHubs.ReferralApi.Data.Entities;
+﻿namespace FamilyHubs.Referral.Data.Entities;
 
 public class ReferralStatus : EntityBase<long>
 {

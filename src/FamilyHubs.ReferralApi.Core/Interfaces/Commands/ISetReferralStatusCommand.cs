@@ -1,4 +1,4 @@
-﻿namespace FamilyHubs.ReferralApi.Core.Interfaces.Commands;
+﻿namespace FamilyHubs.Referral.Core.Interfaces.Commands;
 
 public interface ISetReferralStatusCommand
 {

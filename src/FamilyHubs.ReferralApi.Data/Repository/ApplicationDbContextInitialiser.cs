@@ -1,8 +1,7 @@
-﻿using FamilyHubs.ReferralApi.Data.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FamilyHubs.ReferralApi.Data.Repository;
+namespace FamilyHubs.Referral.Data.Repository;
 
 public class ApplicationDbContextInitialiser
 {
@@ -58,7 +57,7 @@ public class ApplicationDbContextInitialiser
         if (_context.Referrals.Any())
             return;
 
-        IReadOnlyCollection<Referral> referrals = ReferralSeedData.SeedReferral();
+        IReadOnlyCollection<Data.Entities.Referral> referrals = ReferralSeedData.SeedReferral();
 
         _context.Referrals.AddRange(referrals);
         

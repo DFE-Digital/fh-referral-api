@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using AutoMapper.EquivalencyExpression;
-using FamilyHubs.ReferralApi.Core.Commands.CreateReferral;
-using FamilyHubs.ReferralApi.Api.Endpoints;
-using FamilyHubs.ReferralApi.Api.Middleware;
-using FamilyHubs.ReferralApi.Core;
-using FamilyHubs.ReferralApi.Data.Interceptors;
-using FamilyHubs.ReferralApi.Data.Repository;
+using FamilyHubs.Referral.Core.Commands.CreateReferral;
+using FamilyHubs.Referral.Api.Endpoints;
+using FamilyHubs.Referral.Api.Middleware;
+using FamilyHubs.Referral.Core;
+using FamilyHubs.Referral.Data.Interceptors;
+using FamilyHubs.Referral.Data.Repository;
 using MassTransit;
 using MediatR;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -16,7 +16,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
 
-namespace FamilyHubs.ReferralApi.Api;
+namespace FamilyHubs.Referral.Api;
 
 public static class StartupExtensions
 {

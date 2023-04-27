@@ -1,11 +1,11 @@
-﻿using FamilyHubs.ReferralApi.Data.Entities;
+﻿using FamilyHubs.Referral.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace FamilyHubs.ReferralApi.Data.Repository;
+namespace FamilyHubs.Referral.Data.Repository;
 
 public interface IApplicationDbContext
 {
-    DbSet<Referral> Referrals { get; }
+    DbSet<Data.Entities.Referral> Referrals { get; }
     DbSet<ReferralStatus> ReferralStatuses { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

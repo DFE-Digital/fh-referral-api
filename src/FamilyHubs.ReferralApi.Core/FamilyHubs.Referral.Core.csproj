@@ -14,7 +14,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\FamilyHubs.ReferralApi.Data\FamilyHubs.ReferralApi.Data.csproj" />
+	  <ProjectReference Include="..\FamilyHubs.ReferralApi.Data\FamilyHubs.Referral.Data.csproj" />
 	</ItemGroup>
 
 </Project>

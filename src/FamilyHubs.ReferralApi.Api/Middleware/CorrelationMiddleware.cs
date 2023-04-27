@@ -1,4 +1,4 @@
-﻿namespace FamilyHubs.ReferralApi.Api.Middleware;
+﻿namespace FamilyHubs.Referral.Api.Middleware;
 
 public class CorrelationMiddleware : IMiddleware
 {

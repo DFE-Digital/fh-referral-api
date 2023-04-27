@@ -1,10 +1,10 @@
-﻿using FamilyHubs.ReferralApi.Data.Entities;
-using FamilyHubs.ReferralApi.Core.Interfaces.Commands;
-using FamilyHubs.ReferralApi.Data.Repository;
+﻿using FamilyHubs.Referral.Data.Entities;
+using FamilyHubs.Referral.Core.Interfaces.Commands;
+using FamilyHubs.Referral.Data.Repository;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace FamilyHubs.ReferralApi.Core.Commands.SetReferralStatus;
+namespace FamilyHubs.Referral.Core.Commands.SetReferralStatus;
 
 public class SetReferralStatusCommand: IRequest<string>, ISetReferralStatusCommand
 {

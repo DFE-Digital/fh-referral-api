@@ -1,4 +1,4 @@
-﻿namespace FamilyHubs.ReferralApi.Api.Endpoints;
+﻿namespace FamilyHubs.Referral.Api.Endpoints;
 
 public class WebMarker
 {

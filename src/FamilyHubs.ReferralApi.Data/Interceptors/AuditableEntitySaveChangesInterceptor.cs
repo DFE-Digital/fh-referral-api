@@ -1,9 +1,9 @@
-﻿using FamilyHubs.ReferralApi.Data.Entities;
+﻿using FamilyHubs.Referral.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace FamilyHubs.ReferralApi.Data.Interceptors;
+namespace FamilyHubs.Referral.Data.Interceptors;
 
 public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
 {

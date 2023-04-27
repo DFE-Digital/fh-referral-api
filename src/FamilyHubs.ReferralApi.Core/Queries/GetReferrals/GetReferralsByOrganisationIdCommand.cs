@@ -1,14 +1,14 @@
 ﻿using Ardalis.GuardClauses;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using FamilyHubs.ReferralApi.Data.Entities;
-using FamilyHubs.ReferralApi.Data.Repository;
+using FamilyHubs.Referral.Data.Entities;
+using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace FamilyHubs.ReferralApi.Core.Queries.GetReferrals;
+namespace FamilyHubs.Referral.Core.Queries.GetReferrals;
 
 public class GetReferralsByOrganisationIdCommand : IRequest<PaginatedList<ReferralDto>>
 {

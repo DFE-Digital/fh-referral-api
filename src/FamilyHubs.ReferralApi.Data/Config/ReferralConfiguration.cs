@@ -1,12 +1,12 @@
-﻿using FamilyHubs.ReferralApi.Data.Entities;
+﻿using FamilyHubs.Referral.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FamilyHubs.ReferralApi.Data.Config;
+namespace FamilyHubs.Referral.Data.Config;
 
-public class ReferralConfiguration : IEntityTypeConfiguration<Referral>
+public class ReferralConfiguration : IEntityTypeConfiguration<Data.Entities.Referral>
 {
-    public void Configure(EntityTypeBuilder<Referral> builder)
+    public void Configure(EntityTypeBuilder<Data.Entities.Referral> builder)
     {
         builder.Navigation(e => e.Recipient).AutoInclude();
         builder.Navigation(e => e.Referrer).AutoInclude();

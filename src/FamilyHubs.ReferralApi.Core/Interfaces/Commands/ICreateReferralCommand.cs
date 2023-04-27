@@ -1,6 +1,6 @@
 ﻿using FamilyHubs.ReferralService.Shared.Dto;
 
-namespace FamilyHubs.ReferralApi.Core.Interfaces.Commands;
+namespace FamilyHubs.Referral.Core.Interfaces.Commands;
 
 public interface ICreateReferralCommand
 {

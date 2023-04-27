@@ -2,7 +2,7 @@
 
 using FamilyHubs.ReferralService.Shared.Dto;
 
-namespace FamilyHubs.ReferralApi.Integration.Tests;
+namespace FamilyHubs.Referral.Integration.Tests;
 
 public static class TestDataProvider
 {

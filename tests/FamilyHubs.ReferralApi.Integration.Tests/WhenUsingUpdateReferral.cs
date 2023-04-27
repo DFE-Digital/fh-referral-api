@@ -1,9 +1,9 @@
-﻿using FamilyHubs.ReferralApi.Core.Commands.UpdateReferral;
+﻿using FamilyHubs.Referral.Core.Commands.UpdateReferral;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace FamilyHubs.ReferralApi.Integration.Tests;
+namespace FamilyHubs.Referral.Integration.Tests;
 
 public class WhenUsingUpdateReferral : DataIntegrationTestBase
 {

@@ -1,6 +1,6 @@
 using Serilog;
 
-namespace FamilyHubs.ReferralApi.Api;
+namespace FamilyHubs.Referral.Api;
 
 public class Program
 {

@@ -1,10 +1,10 @@
-﻿using FamilyHubs.ReferralApi.Data.Interceptors;
-using FamilyHubs.ReferralApi.Data.Repository;
+﻿using FamilyHubs.Referral.Data.Interceptors;
+using FamilyHubs.Referral.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FamilyHubs.ReferralApi.UnitTests;
+namespace FamilyHubs.Referral.UnitTests;
 
 public class BaseCreateDbUnitTest
 {

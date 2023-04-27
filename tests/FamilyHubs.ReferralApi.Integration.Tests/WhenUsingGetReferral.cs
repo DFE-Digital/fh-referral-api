@@ -1,7 +1,7 @@
-﻿using FamilyHubs.ReferralApi.Core.Queries.GetReferrals;
+﻿using FamilyHubs.Referral.Core.Queries.GetReferrals;
 using FluentAssertions;
 
-namespace FamilyHubs.ReferralApi.Integration.Tests;
+namespace FamilyHubs.Referral.Integration.Tests;
 
 public class WhenUsingGetReferral : DataIntegrationTestBase
 {

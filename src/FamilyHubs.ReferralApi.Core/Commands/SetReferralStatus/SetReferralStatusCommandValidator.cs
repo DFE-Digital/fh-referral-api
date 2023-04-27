@@ -1,7 +1,7 @@
-﻿using FamilyHubs.ReferralApi.Core.Commands.SetReferralStatus;
+﻿using FamilyHubs.Referral.Core.Commands.SetReferralStatus;
 using FluentValidation;
 
-namespace FamilyHubs.ReferralApi.Api.Commands.SetReferralStatus;
+namespace FamilyHubs.Referral.Api.Commands.SetReferralStatus;
 
 
 public class SetReferralStatusCommandValidator : AbstractValidator<SetReferralStatusCommand>

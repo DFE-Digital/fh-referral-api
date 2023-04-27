@@ -1,8 +1,8 @@
-﻿using FamilyHubs.ReferralApi.Data.Entities;
+﻿using FamilyHubs.Referral.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FamilyHubs.ReferralApi.Data.Config;
+namespace FamilyHubs.Referral.Data.Config;
 
 public class RecipientConfiguration : IEntityTypeConfiguration<Recipient>
 {

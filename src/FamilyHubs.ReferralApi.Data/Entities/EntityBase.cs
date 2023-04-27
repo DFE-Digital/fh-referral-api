@@ -1,4 +1,4 @@
-﻿namespace FamilyHubs.ReferralApi.Data.Entities;
+﻿namespace FamilyHubs.Referral.Data.Entities;
 
 /// <summary>
 /// Base types for all Entities which track state using a given Id.

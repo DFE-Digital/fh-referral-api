@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using System.Runtime.CompilerServices;
 
-namespace FamilyHubs.ReferralApi.FunctionalTests;
+namespace FamilyHubs.Referral.FunctionalTests;
 
 public class NoOpMediator : IMediator
 {

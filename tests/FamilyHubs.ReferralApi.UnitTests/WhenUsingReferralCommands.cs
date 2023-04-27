@@ -1,16 +1,16 @@
 using AutoMapper;
-using FamilyHubs.ReferralApi.Core;
-using FamilyHubs.ReferralApi.Core.Commands.CreateReferral;
-using FamilyHubs.ReferralApi.Core.Commands.SetReferralStatus;
-using FamilyHubs.ReferralApi.Core.Commands.UpdateReferral;
-using FamilyHubs.ReferralApi.Core.Queries.GetReferrals;
-using FamilyHubs.ReferralApi.Data.Repository;
+using FamilyHubs.Referral.Core;
+using FamilyHubs.Referral.Core.Commands.CreateReferral;
+using FamilyHubs.Referral.Core.Commands.SetReferralStatus;
+using FamilyHubs.Referral.Core.Commands.UpdateReferral;
+using FamilyHubs.Referral.Core.Queries.GetReferrals;
+using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace FamilyHubs.ReferralApi.UnitTests
+namespace FamilyHubs.Referral.UnitTests
 {
     public class WhenUsingReferralCommands : BaseCreateDbUnitTest
     {

@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
-using FamilyHubs.ReferralApi.Core.Interfaces.Commands;
-using FamilyHubs.ReferralApi.Data.Entities;
-using FamilyHubs.ReferralApi.Data.Repository;
+using FamilyHubs.Referral.Core.Interfaces.Commands;
+using FamilyHubs.Referral.Data.Entities;
+using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace FamilyHubs.ReferralApi.Core.Commands.CreateReferral;
+namespace FamilyHubs.Referral.Core.Commands.CreateReferral;
 
 public class CreateReferralCommand : IRequest<long>, ICreateReferralCommand
 {
@@ -48,7 +48,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     private long CreateReferral(CreateReferralCommand request)
     {
-        var entity = _mapper.Map<Referral>(request.ReferralDto);
+        Data.Entities.Referral entity = _mapper.Map<Data.Entities.Referral>(request.ReferralDto);
         ArgumentNullException.ThrowIfNull(entity);
 
         if (entity.Status != null)
@@ -73,7 +73,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         return entity.Id;
     }
 
-    private Referral AttachExistingReferrer(Referral entity)
+    private Data.Entities.Referral AttachExistingReferrer(Data.Entities.Referral entity)
     {
         Referrer? referrer = _context.Referrers.SingleOrDefault(x => x.EmailAddress == entity.Referrer.EmailAddress);
         if (referrer != null) 
@@ -83,7 +83,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         return entity;
     }
 
-    private Referral AttachExistingRecipient(Referral entity)
+    private Data.Entities.Referral AttachExistingRecipient(Data.Entities.Referral entity)
     {
         Recipient? recipient = null;
         if (!string.IsNullOrEmpty(entity.Recipient.Telephone))
@@ -112,7 +112,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         return entity;
     }
 
-    private Referral AttachExistingService(Referral entity)
+    private Data.Entities.Referral AttachExistingService(Data.Entities.Referral entity)
     {
         Data.Entities.ReferralService? referrer = _context.ReferralServices.SingleOrDefault(x => x.Name.ToLower() == entity.ReferralService.Name.ToLower() && x.ReferralOrganisation.Name.ToLower() == entity.ReferralService.ReferralOrganisation.Name.ToLower());
         if (referrer != null)

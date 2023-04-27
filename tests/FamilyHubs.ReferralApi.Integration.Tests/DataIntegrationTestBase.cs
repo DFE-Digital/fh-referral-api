@@ -1,16 +1,16 @@
 ﻿using AutoMapper;
 using AutoMapper.EquivalencyExpression;
-using FamilyHubs.ReferralApi.Core;
-using FamilyHubs.ReferralApi.Data.Entities;
-using FamilyHubs.ReferralApi.Data.Interceptors;
-using FamilyHubs.ReferralApi.Data.Repository;
+using FamilyHubs.Referral.Core;
+using FamilyHubs.Referral.Data.Entities;
+using FamilyHubs.Referral.Data.Interceptors;
+using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace FamilyHubs.ReferralApi.Integration.Tests;
+namespace FamilyHubs.Referral.Integration.Tests;
 
 #pragma warning disable S3881
 public abstract class DataIntegrationTestBase : IDisposable, IAsyncDisposable
@@ -73,7 +73,7 @@ public abstract class DataIntegrationTestBase : IDisposable, IAsyncDisposable
         TestDbContext.Database.EnsureDeleted();
         TestDbContext.Database.EnsureCreated();
 
-        IReadOnlyCollection<Referral> referrals = ReferralSeedData.SeedReferral();
+        IReadOnlyCollection<Data.Entities.Referral> referrals = ReferralSeedData.SeedReferral();
 
         TestDbContext.Referrals.AddRange(referrals);
 
@@ -83,7 +83,7 @@ public abstract class DataIntegrationTestBase : IDisposable, IAsyncDisposable
     protected async Task<ReferralDto> CreateReferral(ReferralDto? newReferral = null)
     {
 
-        var referral = Mapper.Map<Referral>(newReferral ?? TestDataProvider.GetReferralDto());
+        var referral = Mapper.Map<Data.Entities.Referral>(newReferral ?? TestDataProvider.GetReferralDto());
 
         TestDbContext.Referrals.Add(referral);
 

@@ -1,4 +1,4 @@
-using FamilyHubs.ReferralApi.Core.Commands.CreateReferral;
+using FamilyHubs.Referral.Core.Commands.CreateReferral;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FluentAssertions;
 using FluentAssertions.Equivalency;
@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace FamilyHubs.ReferralApi.Integration.Tests
+namespace FamilyHubs.Referral.Integration.Tests
 {
     public class WhenUsingCreateReferralCommand : DataIntegrationTestBase
     {

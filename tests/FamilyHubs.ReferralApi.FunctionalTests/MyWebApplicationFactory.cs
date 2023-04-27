@@ -1,9 +1,9 @@
-﻿using FamilyHubs.ReferralApi.Api;
+﻿using FamilyHubs.Referral.Api;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
-namespace FamilyHubs.ReferralApi.FunctionalTests;
+namespace FamilyHubs.Referral.FunctionalTests;
 
 public class MyWebApplicationFactory : WebApplicationFactory<Program>
 {

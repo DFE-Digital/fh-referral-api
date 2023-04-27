@@ -1,6 +1,6 @@
-﻿using FamilyHubs.ReferralApi.Core.Commands.CreateReferral;
-using FamilyHubs.ReferralApi.Core.Commands.UpdateReferral;
-using FamilyHubs.ReferralApi.Core.Queries.GetReferrals;
+﻿using FamilyHubs.Referral.Core.Commands.CreateReferral;
+using FamilyHubs.Referral.Core.Commands.UpdateReferral;
+using FamilyHubs.Referral.Core.Queries.GetReferrals;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FamilyHubs.ReferralApi.UnitTests;
+namespace FamilyHubs.Referral.UnitTests;
 
 public class WhenValidatingReferralCommands
 {

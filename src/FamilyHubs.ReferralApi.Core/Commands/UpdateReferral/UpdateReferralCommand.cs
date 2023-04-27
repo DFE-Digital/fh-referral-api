@@ -1,14 +1,14 @@
 ﻿using Ardalis.GuardClauses;
 using AutoMapper;
-using FamilyHubs.ReferralApi.Core.Interfaces.Commands;
-using FamilyHubs.ReferralApi.Data.Entities;
-using FamilyHubs.ReferralApi.Data.Repository;
+using FamilyHubs.Referral.Core.Interfaces.Commands;
+using FamilyHubs.Referral.Data.Entities;
+using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FamilyHubs.ReferralApi.Core.Commands.UpdateReferral;
+namespace FamilyHubs.Referral.Core.Commands.UpdateReferral;
 
 public class UpdateReferralCommand : IRequest<long>, IUpdateReferralCommand
 {

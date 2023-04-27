@@ -3,7 +3,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace FamilyHubs.ReferralApi.Api.Middleware;
+namespace FamilyHubs.Referral.Api.Middleware;
 
 internal sealed class ExceptionHandlingMiddleware : IMiddleware
 {

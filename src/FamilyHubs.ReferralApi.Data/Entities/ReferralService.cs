@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FamilyHubs.ReferralApi.Data.Entities;
+namespace FamilyHubs.Referral.Data.Entities;
 
 public class ReferralService : EntityBase<long>
 {

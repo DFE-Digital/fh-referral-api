@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace FamilyHubs.ReferralApi.Core.Queries.GetReferrals;
+namespace FamilyHubs.Referral.Core.Queries.GetReferrals;
 
 public class GetReferralsByOrganisationIdCommandValidator : AbstractValidator<GetReferralsByOrganisationIdCommand>
 {

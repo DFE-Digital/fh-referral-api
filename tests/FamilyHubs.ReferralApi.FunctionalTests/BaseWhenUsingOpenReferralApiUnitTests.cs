@@ -6,7 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace FamilyHubs.ReferralApi.FunctionalTests;
+namespace FamilyHubs.Referral.FunctionalTests;
 
 public abstract class BaseWhenUsingOpenReferralApiUnitTests
 {

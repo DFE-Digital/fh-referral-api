@@ -2,13 +2,13 @@
 using EncryptColumn.Core.Extension;
 using EncryptColumn.Core.Interfaces;
 using EncryptColumn.Core.Util;
-using FamilyHubs.ReferralApi.Data.Entities;
-using FamilyHubs.ReferralApi.Data.Interceptors;
+using FamilyHubs.Referral.Data.Entities;
+using FamilyHubs.Referral.Data.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
 
-namespace FamilyHubs.ReferralApi.Data.Repository;
+namespace FamilyHubs.Referral.Data.Repository;
 
 public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
@@ -89,7 +89,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         return result;
     }
 
-    public DbSet<Referral> Referrals => Set<Referral>();
+    public DbSet<Data.Entities.Referral> Referrals => Set<Data.Entities.Referral>();
     public DbSet<Recipient> Recipients => Set<Recipient>();
     public DbSet<ReferralOrganisation> ReferralOrganisations => Set<ReferralOrganisation>();
     public DbSet<Entities.ReferralService> ReferralServices => Set<Entities.ReferralService>();

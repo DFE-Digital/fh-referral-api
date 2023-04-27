@@ -7,17 +7,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{21267970-8AE
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0788655C-213C-4547-A557-2D394E8F19C0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.ReferralApi.Api", "src\FamilyHubs.ReferralApi.Api\FamilyHubs.ReferralApi.Api.csproj", "{1F9CF243-B81E-4683-A744-E61D69030A77}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.Referral.Api", "src\FamilyHubs.ReferralApi.Api\FamilyHubs.Referral.Api.csproj", "{1F9CF243-B81E-4683-A744-E61D69030A77}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.ReferralApi.Core", "src\FamilyHubs.ReferralApi.Core\FamilyHubs.ReferralApi.Core.csproj", "{2BD94AB3-E375-4FE6-98F2-7D0F68FDE30C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.Referral.Core", "src\FamilyHubs.ReferralApi.Core\FamilyHubs.Referral.Core.csproj", "{2BD94AB3-E375-4FE6-98F2-7D0F68FDE30C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.ReferralApi.UnitTests", "tests\FamilyHubs.ReferralApi.UnitTests\FamilyHubs.ReferralApi.UnitTests.csproj", "{273A10A7-EBF4-463D-B112-41D26F163E81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.Referral.UnitTests", "tests\FamilyHubs.ReferralApi.UnitTests\FamilyHubs.Referral.UnitTests.csproj", "{273A10A7-EBF4-463D-B112-41D26F163E81}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.ReferralApi.FunctionalTests", "tests\FamilyHubs.ReferralApi.FunctionalTests\FamilyHubs.ReferralApi.FunctionalTests.csproj", "{3F0043DA-1B89-4E20-9FCC-3E29827B5779}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.Referral.FunctionalTests", "tests\FamilyHubs.ReferralApi.FunctionalTests\FamilyHubs.Referral.FunctionalTests.csproj", "{3F0043DA-1B89-4E20-9FCC-3E29827B5779}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.ReferralApi.Data", "src\FamilyHubs.ReferralApi.Data\FamilyHubs.ReferralApi.Data.csproj", "{F3DCBF86-C0A0-4CC0-A23A-B21ACA4D45C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.Referral.Data", "src\FamilyHubs.ReferralApi.Data\FamilyHubs.Referral.Data.csproj", "{F3DCBF86-C0A0-4CC0-A23A-B21ACA4D45C2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.ReferralApi.Integration.Tests", "tests\FamilyHubs.ReferralApi.Integration.Tests\FamilyHubs.ReferralApi.Integration.Tests.csproj", "{5111810F-D303-4046-8F1B-DB0DF5BB1F16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.Referral.Integration.Tests", "tests\FamilyHubs.ReferralApi.Integration.Tests\FamilyHubs.Referral.Integration.Tests.csproj", "{5111810F-D303-4046-8F1B-DB0DF5BB1F16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

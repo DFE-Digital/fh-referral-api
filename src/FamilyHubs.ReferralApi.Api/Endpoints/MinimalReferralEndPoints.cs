@@ -1,13 +1,13 @@
-﻿using FamilyHubs.ReferralApi.Core.Commands.CreateReferral;
-using FamilyHubs.ReferralApi.Core.Commands.SetReferralStatus;
-using FamilyHubs.ReferralApi.Core.Commands.UpdateReferral;
-using FamilyHubs.ReferralApi.Core.Queries.GetReferrals;
+﻿using FamilyHubs.Referral.Core.Commands.CreateReferral;
+using FamilyHubs.Referral.Core.Commands.SetReferralStatus;
+using FamilyHubs.Referral.Core.Commands.UpdateReferral;
+using FamilyHubs.Referral.Core.Queries.GetReferrals;
 using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace FamilyHubs.ReferralApi.Api.Endpoints;
+namespace FamilyHubs.Referral.Api.Endpoints;
 
 public class MinimalReferralEndPoints
 {

@@ -1,6 +1,6 @@
-﻿using FamilyHubs.ReferralApi.Api.Commands.SetReferralStatus;
-using FamilyHubs.ReferralApi.Core.Commands.CreateReferral;
-using FamilyHubs.ReferralApi.Core.Commands.SetReferralStatus;
+﻿using FamilyHubs.Referral.Api.Commands.SetReferralStatus;
+using FamilyHubs.Referral.Core.Commands.CreateReferral;
+using FamilyHubs.Referral.Core.Commands.SetReferralStatus;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FamilyHubs.ReferralApi.UnitTests;
+namespace FamilyHubs.Referral.UnitTests;
 
 public class WhenValidatingReferralStatusCommand
 {

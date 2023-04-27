@@ -1,6 +1,6 @@
 ﻿using EncryptColumn.Core.Attribute;
 
-namespace FamilyHubs.ReferralApi.Data.Entities;
+namespace FamilyHubs.Referral.Data.Entities;
 
 public class Referral : EntityBase<long>
 { 

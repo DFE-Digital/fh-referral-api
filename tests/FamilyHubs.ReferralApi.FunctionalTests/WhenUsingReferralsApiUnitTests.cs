@@ -1,11 +1,11 @@
-﻿using FamilyHubs.ReferralApi.Data.Repository;
+﻿using FamilyHubs.Referral.Data.Repository;
 using FluentAssertions;
 using System.Text;
 using System.Text.Json;
 using FamilyHubs.ReferralService.Shared.Models;
 using FamilyHubs.ReferralService.Shared.Dto;
 
-namespace FamilyHubs.ReferralApi.FunctionalTests;
+namespace FamilyHubs.Referral.FunctionalTests;
 
 [Collection("Sequential")]
 public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTests

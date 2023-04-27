@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace FamilyHubs.ReferralApi.Core.Commands.CreateReferral;
+namespace FamilyHubs.Referral.Core.Commands.CreateReferral;
 
 public class CreateReferralCommandValidator : AbstractValidator<CreateReferralCommand>
 {
