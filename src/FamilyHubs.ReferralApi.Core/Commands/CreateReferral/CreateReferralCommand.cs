@@ -2,7 +2,7 @@
 using FamilyHubs.ReferralApi.Core.Interfaces.Commands;
 using FamilyHubs.ReferralApi.Data.Entities;
 using FamilyHubs.ReferralApi.Data.Repository;
-using FamilyHubs.ReferralCommon.Shared.Dto;
+using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -114,7 +114,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     private Referral AttachExistingService(Referral entity)
     {
-        ReferralService? referrer = _context.ReferralServices.SingleOrDefault(x => x.Name.ToLower() == entity.ReferralService.Name.ToLower() && x.ReferralOrganisation.Name.ToLower() == entity.ReferralService.ReferralOrganisation.Name.ToLower());
+        Data.Entities.ReferralService? referrer = _context.ReferralServices.SingleOrDefault(x => x.Name.ToLower() == entity.ReferralService.Name.ToLower() && x.ReferralOrganisation.Name.ToLower() == entity.ReferralService.ReferralOrganisation.Name.ToLower());
         if (referrer != null)
         {
             entity.ReferralService = referrer;

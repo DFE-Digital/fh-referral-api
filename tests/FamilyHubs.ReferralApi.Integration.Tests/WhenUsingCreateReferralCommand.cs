@@ -1,5 +1,5 @@
 using FamilyHubs.ReferralApi.Core.Commands.CreateReferral;
-using FamilyHubs.ReferralCommon.Shared.Dto;
+using FamilyHubs.ReferralService.Shared.Dto;
 using FluentAssertions;
 using FluentAssertions.Equivalency;
 using Microsoft.EntityFrameworkCore;

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using FamilyHubs.ReferralApi.Data.Entities;
-using FamilyHubs.ReferralCommon.Shared.Dto;
+using FamilyHubs.ReferralService.Shared.Dto;
 
 namespace FamilyHubs.ReferralApi.Core;
 
@@ -16,7 +16,7 @@ public class AutoMappingProfiles : Profile
         CreateMap<ReferralStatusDto, ReferralStatus>().ReverseMap();
         CreateMap<ReferrerDto, Referrer>().ReverseMap();
         CreateMap<RecipientDto, Recipient>().ReverseMap();
-        CreateMap<ReferralServiceDto, ReferralService>()
+        CreateMap<ReferralServiceDto, Data.Entities.ReferralService>()
             .ForMember(dest => dest.ReferralOrganisation, opt => opt.MapFrom(src => src.ReferralOrganisationDto))
             .ReverseMap();
         CreateMap<ReferralOrganisationDto, ReferralOrganisation>().ReverseMap();

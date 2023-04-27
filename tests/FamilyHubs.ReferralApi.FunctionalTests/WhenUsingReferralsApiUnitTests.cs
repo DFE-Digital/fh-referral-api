@@ -2,8 +2,8 @@
 using FluentAssertions;
 using System.Text;
 using System.Text.Json;
-using FamilyHubs.ServiceDirectory.Shared.Models;
-using FamilyHubs.ReferralCommon.Shared.Dto;
+using FamilyHubs.ReferralService.Shared.Models;
+using FamilyHubs.ReferralService.Shared.Dto;
 
 namespace FamilyHubs.ReferralApi.FunctionalTests;
 

@@ -3,7 +3,7 @@ using AutoMapper;
 using FamilyHubs.ReferralApi.Core.Interfaces.Commands;
 using FamilyHubs.ReferralApi.Data.Entities;
 using FamilyHubs.ReferralApi.Data.Repository;
-using FamilyHubs.ReferralCommon.Shared.Dto;
+using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

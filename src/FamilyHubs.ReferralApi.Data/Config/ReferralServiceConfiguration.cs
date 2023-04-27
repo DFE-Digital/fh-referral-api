@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace FamilyHubs.ReferralApi.Data.Config;
 
 
-public class ReferralServiceConfiguration : IEntityTypeConfiguration<ReferralService>
+public class ReferralServiceConfiguration : IEntityTypeConfiguration<Entities.ReferralService>
 {
-    public void Configure(EntityTypeBuilder<ReferralService> builder)
+    public void Configure(EntityTypeBuilder<Entities.ReferralService> builder)
     {
         builder.Navigation(e => e.ReferralOrganisation).AutoInclude();
 

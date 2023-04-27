@@ -3,8 +3,8 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using FamilyHubs.ReferralApi.Data.Entities;
 using FamilyHubs.ReferralApi.Data.Repository;
-using FamilyHubs.ReferralCommon.Shared.Dto;
-using FamilyHubs.ServiceDirectory.Shared.Models;
+using FamilyHubs.ReferralService.Shared.Dto;
+using FamilyHubs.ReferralService.Shared.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

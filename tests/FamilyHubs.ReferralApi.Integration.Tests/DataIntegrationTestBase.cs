@@ -4,7 +4,7 @@ using FamilyHubs.ReferralApi.Core;
 using FamilyHubs.ReferralApi.Data.Entities;
 using FamilyHubs.ReferralApi.Data.Interceptors;
 using FamilyHubs.ReferralApi.Data.Repository;
-using FamilyHubs.ReferralCommon.Shared.Dto;
+using FamilyHubs.ReferralService.Shared.Dto;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

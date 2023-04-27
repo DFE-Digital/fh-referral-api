@@ -31,7 +31,7 @@ public class ReferralConfiguration : IEntityTypeConfiguration<Referral>
 
         builder.HasOne(s => s.ReferralService)
             .WithOne()
-            .HasForeignKey<ReferralService>(lc => lc.ReferralId)
+            .HasForeignKey<Entities.ReferralService>(lc => lc.ReferralId)
             .IsRequired();
 
         builder.Property(t => t.Created)

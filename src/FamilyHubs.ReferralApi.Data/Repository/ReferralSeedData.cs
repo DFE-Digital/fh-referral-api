@@ -43,7 +43,7 @@ public static class ReferralSeedData
                         ReferralId = 1,
                     }
                 },
-                ReferralService = new ReferralService
+                ReferralService = new Data.Entities.ReferralService
                 {
                     Id = 1,
                     ReferralId = 1,

@@ -2,7 +2,7 @@
 using FamilyHubs.ReferralApi.Core.Commands.SetReferralStatus;
 using FamilyHubs.ReferralApi.Core.Commands.UpdateReferral;
 using FamilyHubs.ReferralApi.Core.Queries.GetReferrals;
-using FamilyHubs.ReferralCommon.Shared.Dto;
+using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;

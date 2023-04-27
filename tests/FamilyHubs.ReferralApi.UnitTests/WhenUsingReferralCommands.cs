@@ -5,7 +5,7 @@ using FamilyHubs.ReferralApi.Core.Commands.SetReferralStatus;
 using FamilyHubs.ReferralApi.Core.Commands.UpdateReferral;
 using FamilyHubs.ReferralApi.Core.Queries.GetReferrals;
 using FamilyHubs.ReferralApi.Data.Repository;
-using FamilyHubs.ReferralCommon.Shared.Dto;
+using FamilyHubs.ReferralService.Shared.Dto;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;

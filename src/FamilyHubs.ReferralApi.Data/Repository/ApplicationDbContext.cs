@@ -92,7 +92,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Referral> Referrals => Set<Referral>();
     public DbSet<Recipient> Recipients => Set<Recipient>();
     public DbSet<ReferralOrganisation> ReferralOrganisations => Set<ReferralOrganisation>();
-    public DbSet<ReferralService> ReferralServices => Set<ReferralService>();
+    public DbSet<Entities.ReferralService> ReferralServices => Set<Entities.ReferralService>();
     public DbSet<ReferralStatus> ReferralStatuses => Set<ReferralStatus>();
     public DbSet<Referrer> Referrers => Set<Referrer>();
 }
