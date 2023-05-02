@@ -24,13 +24,13 @@ Starting the API will then show the swagger definition with the available operat
 To Add Migration
 
 <br />
- dotnet ef migrations add CreateIntialSchema --project ..\FamilyHubs.ReferralApi.Data
+ dotnet ef migrations add CreateIntialSchema --project ..\FamilyHubs.Referral.Data\FamilyHubs.Referral.Data
 <br />
 
 To Apply Latest Schema Manually
 
 <br />
- dotnet ef database update --project ..\FamilyHubs.ReferralApi.Data
+ dotnet ef database update --project ..\FamilyHubs.Referral.Data
 <br />
 
 ## cypress tests

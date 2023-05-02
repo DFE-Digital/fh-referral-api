@@ -13,12 +13,10 @@ public static class ReferralSeedData
         {
             new Data.Entities.Referral
             {
-                Id = 1,
                 ReasonForSupport = "Reason For Support",
                 EngageWithFamily = "Engage With Family",
                 Recipient = new Recipient
                 {
-                    Id = 1,
                     ReferralId = 1,
                     Name = "Test User",
                     Email = "TestUser@email.com",
@@ -45,13 +43,11 @@ public static class ReferralSeedData
                 },
                 ReferralService = new Data.Entities.ReferralService
                 {
-                    Id = 1,
                     ReferralId = 1,
                     Name = "Test Service",
                     Description = "Test Service Description",
                     ReferralOrganisation = new ReferralOrganisation
                     {
-                        Id = 1,
                         ReferralServiceId = 1,
                         Name = "Test Organisation",
                         Description = "Test Organisation Description",

@@ -1,10 +1,9 @@
-﻿using FamilyHubs.Referral.Data.Repository;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using FamilyHubs.Referral.Data.Repository;
 
 namespace FamilyHubs.Referral.FunctionalTests;
 

@@ -20,7 +20,6 @@ public class ApplicationDbContextInitialiser
         {
             if (!isProduction)
             {
-
                 if (shouldRestDatabaseOnRestart)
                     await _context.Database.EnsureDeletedAsync();
 
