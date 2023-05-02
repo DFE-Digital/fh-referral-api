@@ -37,17 +37,7 @@ public abstract class DataIntegrationTestBase : IDisposable, IAsyncDisposable
 
         var auditableEntitySaveChangesInterceptor = new AuditableEntitySaveChangesInterceptor();
 
-        IEnumerable<KeyValuePair<string, string?>>? inMemorySettings = new List<KeyValuePair<string, string?>>()
-        {
-            new KeyValuePair<string, string?>("DbKey", "kljsdkkdlo4454GG00155sajuklmbkdl")
-        };
-
-        IConfiguration configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(inMemorySettings)
-            .Build();
-
         return new ServiceCollection()
-            .AddSingleton(configuration)
             .AddEntityFrameworkSqlite()
             .AddDbContext<ApplicationDbContext>(dbContextOptionsBuilder =>
             {

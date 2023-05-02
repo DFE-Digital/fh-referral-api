@@ -3,10 +3,8 @@
 namespace FamilyHubs.Referral.Data.Entities;
 
 public class Referral : EntityBase<long>
-{ 
-    [EncryptColumn]
+{
     public required string ReasonForSupport { get; set; }
-    [EncryptColumn]
     public required string EngageWithFamily { get; set; }
 
     public virtual required Recipient Recipient { get; set; }

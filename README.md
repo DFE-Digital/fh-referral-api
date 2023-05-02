@@ -16,7 +16,7 @@ This repos has been built using the "Clean Architecture Design" taken from Steve
 In the appsetting.json file you set the Database to be Sql Server or SQLite
 
 
-The startup project is: FamilyHubs.ReferralApi.Api
+The startup project is: FamilyHubs.Referral.Api
 Starting the API will then show the swagger definition with the available operations.
 
 ## Migrations

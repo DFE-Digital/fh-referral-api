@@ -1,7 +1,6 @@
 ﻿using FamilyHubs.Referral.Data.Interceptors;
 using FamilyHubs.Referral.Data.Repository;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FamilyHubs.Referral.UnitTests;
@@ -16,19 +15,10 @@ public class BaseCreateDbUnitTest
         var options = CreateNewContextOptions();
         var auditableEntitySaveChangesInterceptor = new AuditableEntitySaveChangesInterceptor();
 
-        IEnumerable<KeyValuePair<string, string?>>? inMemorySettings = new List<KeyValuePair<string, string?>>()
-        {
-            new KeyValuePair<string, string?>("DbKey", "kljsdkkdlo4454GG00155sajuklmbkdl")
-        };
-
-        IConfiguration configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(inMemorySettings)
-            .Build();
-
 #if _USE_EVENT_DISPATCHER
         var mockApplicationDbContext = new ApplicationDbContext(options, new Mock<IDomainEventDispatcher>().Object, auditableEntitySaveChangesInterceptor, configuration);
 #else
-        var mockApplicationDbContext = new ApplicationDbContext(options,  auditableEntitySaveChangesInterceptor, configuration);
+        var mockApplicationDbContext = new ApplicationDbContext(options,  auditableEntitySaveChangesInterceptor);
 #endif
         return mockApplicationDbContext;
     }

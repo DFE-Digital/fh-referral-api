@@ -1,7 +1,4 @@
-﻿using Ardalis.GuardClauses;
-using EncryptColumn.Core.Extension;
-using EncryptColumn.Core.Interfaces;
-using EncryptColumn.Core.Util;
+﻿using EncryptColumn.Core.Interfaces;
 using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Interceptors;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +13,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     private readonly IDomainEventDispatcher _dispatcher;
 #endif
     private readonly AuditableEntitySaveChangesInterceptor _auditableEntitySaveChangesInterceptor;
-    private readonly IEncryptionProvider _provider;
 
     public ApplicationDbContext
         (
@@ -24,8 +20,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 #if _USE_EVENT_DISPATCHER
             IDomainEventDispatcher dispatcher,
 #endif
-            AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor,
-            IConfiguration configuration
+            AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor
         )
         : base(options)
     {
@@ -33,22 +28,11 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         _dispatcher = dispatcher;
 #endif
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
-        //DbKey should be overriden in build pipeline
-        ArgumentNullException.ThrowIfNull(configuration);
-        string dbKey = configuration.GetValue<string>("DbKey") ?? string.Empty;
-        if (string.IsNullOrEmpty(dbKey))
-        {
-            throw new NotFoundException(nameof(IConfiguration), "DbKey");
-        }
-
-        this._provider = new GenerateEncryptionProvider(dbKey);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-        modelBuilder.UseEncryption(this._provider);
 
         base.OnModelCreating(modelBuilder);
     }
