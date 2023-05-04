@@ -30,17 +30,17 @@ public class MinimalReferralEndPoints
         }).WithMetadata(new SwaggerOperationAttribute("Update Referral", "Update Referral By Id") { Tags = new[] { "Referrals" } });
 
 
-        app.MapGet("api/referrals/{referrer}", async (string referrer, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapGet("api/referrals/{referrer}", async (string referrer, int? pageNumber, int? pageSize, string? searchText, CancellationToken cancellationToken, ISender _mediator) =>
         {
-            GetReferralsByReferrerCommand request = new(referrer, pageNumber, pageSize);
+            GetReferralsByReferrerCommand request = new(referrer, pageNumber, pageSize, searchText);
             var result = await _mediator.Send(request, cancellationToken);
             return result;
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Referrer") { Tags = new[] { "Referrals" } });
 
-        app.MapGet("api/organisationreferrals/{organisationId}", async (long organisationId, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapGet("api/organisationreferrals/{organisationId}", async (long organisationId, int? pageNumber, int? pageSize, string ? searchText, CancellationToken cancellationToken, ISender _mediator) =>
         {
-            GetReferralsByOrganisationIdCommand request = new(organisationId, pageNumber, pageSize);
+            GetReferralsByOrganisationIdCommand request = new(organisationId, pageNumber, pageSize, searchText);
             var result = await _mediator.Send(request, cancellationToken);
             return result;
 

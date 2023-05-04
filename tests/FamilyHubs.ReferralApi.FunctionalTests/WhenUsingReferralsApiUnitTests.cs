@@ -43,6 +43,34 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         retVal.Items.Count.Should().BeGreaterThan(0);
     }
 
+    [Theory]
+    [InlineData("0001")]
+    [InlineData("Test User")]
+    [InlineData("0001 Test User")]
+    public async Task ThenReferralsByReferrerAreRetrievedWithSearchText(string searchText)
+    {
+        var referrer = ReferralSeedData.SeedReferral().ElementAt(0).Referrer.EmailAddress;
+
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Get,
+            RequestUri = new Uri(_client.BaseAddress + $"api/referrals/{referrer}?pageNumber=1&pageSize=10&searchText={searchText}"),
+        };
+#if UseAuthoriseHeader
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+#endif
+        using var response = await _client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        var retVal = await JsonSerializer.DeserializeAsync<PaginatedList<ReferralDto>>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        ArgumentNullException.ThrowIfNull(retVal);
+        retVal.Should().NotBeNull();
+        retVal.Items.Count.Should().BeGreaterThan(0);
+    }
+
     [Fact]
     public async Task ThenTheOpenReferralIsCreated()
     {
@@ -72,7 +100,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             { 
                 new ReferralStatusDto
                 {
-                    Status = "Inital-Referral"
+                    Status = "New"
                 }
             },
             ReferralServiceDto = new ReferralServiceDto
@@ -121,6 +149,33 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         {
             Method = HttpMethod.Get,
             RequestUri = new Uri(_client.BaseAddress + "api/organisationreferrals/1?pageNumber=1&pageSize=10"),
+        };
+#if UseAuthoriseHeader
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+#endif
+        using var response = await _client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        var retVal = await JsonSerializer.DeserializeAsync<PaginatedList<ReferralDto>>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        ArgumentNullException.ThrowIfNull(retVal);
+        retVal.Should().NotBeNull();
+        retVal.Items.Count.Should().BeGreaterThan(0);
+    }
+
+    [Theory]
+    [InlineData("0001")]
+    [InlineData("Test User")]
+    [InlineData("0001 Test User")]
+    public async Task ThenReferralsByOrganisationIdAreRetrievedWithSearchText(string searchText)
+    {
+
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Get,
+            RequestUri = new Uri(_client.BaseAddress + $"api/organisationreferrals/1?pageNumber=1&pageSize=10&searchText={searchText}"),
         };
 #if UseAuthoriseHeader
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
@@ -190,7 +245,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             {
                 new ReferralStatusDto
                 {
-                    Status = "Inital-Referral"
+                    Status = "New"
                 }
             },
             ReferralServiceDto = new ReferralServiceDto

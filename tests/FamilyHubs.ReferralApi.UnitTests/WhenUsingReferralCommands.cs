@@ -244,9 +244,38 @@ namespace FamilyHubs.Referral.UnitTests
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
             await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralsByReferrerCommand getcommand = new("Bob.Referrer@email.com", 1,10);
+            GetReferralsByReferrerCommand getcommand = new("Bob.Referrer@email.com", 1,10, null);
             GetReferralsByReferrerCommandHandler gethandler = new(mockApplicationDbContext, mapper);
             
+
+            //Act
+            var result = await gethandler.Handle(getcommand, new System.Threading.CancellationToken());
+
+            //Assert
+            result.Should().NotBeNull();
+            result.Items.Count.Should().Be(1);
+        }
+
+        [Theory]
+        [InlineData("0002")]
+        [InlineData("Joe Blogs")]
+        [InlineData("0002 Joe Blogs")]
+        public async Task ThenGetReferralsByReferrerWithSearchText(string searchText)
+        {
+            //Arange
+            var myProfile = new AutoMappingProfiles();
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            IMapper mapper = new Mapper(configuration);
+            var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
+            var mockApplicationDbContext = GetApplicationDbContext();
+            var testReferral = GetReferralDto();
+            CreateReferralCommand command = new(testReferral);
+            CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
+            await handler.Handle(command, new System.Threading.CancellationToken());
+
+            GetReferralsByReferrerCommand getcommand = new("Bob.Referrer@email.com", 1, 10, searchText);
+            GetReferralsByReferrerCommandHandler gethandler = new(mockApplicationDbContext, mapper);
+
 
             //Act
             var result = await gethandler.Handle(getcommand, new System.Threading.CancellationToken());
@@ -270,7 +299,36 @@ namespace FamilyHubs.Referral.UnitTests
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
             await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralsByOrganisationIdCommand getcommand = new(2, 1, 10);
+            GetReferralsByOrganisationIdCommand getcommand = new(2, 1, 10, null);
+            GetReferralsByOrganisationIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
+
+
+            //Act
+            var result = await gethandler.Handle(getcommand, new System.Threading.CancellationToken());
+
+            //Assert
+            result.Should().NotBeNull();
+            result.Items.Count.Should().Be(1);
+        }
+
+        [Theory]
+        [InlineData("0002")]
+        [InlineData("Joe Blogs")]
+        [InlineData("0002 Joe Blogs")]
+        public async Task ThenGetReferralsByOrganisationIdWithSearchText(string searchText)
+        {
+            //Arange
+            var myProfile = new AutoMappingProfiles();
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            IMapper mapper = new Mapper(configuration);
+            var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
+            var mockApplicationDbContext = GetApplicationDbContext();
+            var testReferral = GetReferralDto();
+            CreateReferralCommand command = new(testReferral);
+            CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
+            await handler.Handle(command, new System.Threading.CancellationToken());
+
+            GetReferralsByOrganisationIdCommand getcommand = new(2, 1, 10, searchText);
             GetReferralsByOrganisationIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
 
 
@@ -337,7 +395,7 @@ namespace FamilyHubs.Referral.UnitTests
                 {
                     new ReferralStatusDto
                     {
-                        Status = "Inital-Referral"
+                        Status = "New"
                     }
                 },
                 ReferralServiceDto = new ReferralServiceDto

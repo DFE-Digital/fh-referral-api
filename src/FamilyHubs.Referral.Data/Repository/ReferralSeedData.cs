@@ -37,7 +37,7 @@ public static class ReferralSeedData
                 {
                     new ReferralStatus
                     {
-                        Status = "Inital-Referral",
+                        Status = "New",
                         ReferralId = 1,
                     }
                 },
