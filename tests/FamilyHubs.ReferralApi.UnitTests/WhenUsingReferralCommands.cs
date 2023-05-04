@@ -9,6 +9,7 @@ using FamilyHubs.ReferralService.Shared.Dto;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Xunit.Abstractions;
 
 namespace FamilyHubs.Referral.UnitTests
 {
@@ -254,6 +255,7 @@ namespace FamilyHubs.Referral.UnitTests
             //Assert
             result.Should().NotBeNull();
             result.Items.Count.Should().Be(1);
+            result.Items[0].Created.Should().NotBeNull();
         }
 
         [Theory]
@@ -309,6 +311,7 @@ namespace FamilyHubs.Referral.UnitTests
             //Assert
             result.Should().NotBeNull();
             result.Items.Count.Should().Be(1);
+            result.Items[0].Created.Should().NotBeNull();
         }
 
         [Theory]
@@ -364,6 +367,7 @@ namespace FamilyHubs.Referral.UnitTests
             //Assert
             result.Should().NotBeNull();
             result.Id.Should().Be(id);
+            result.Created.Should().NotBeNull();
         }
 
         public static ReferralDto GetReferralDto()

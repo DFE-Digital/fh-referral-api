@@ -1,7 +1,6 @@
 ﻿using Ardalis.GuardClauses;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
