@@ -1,9 +1,9 @@
-﻿using FamilyHubs.ReferralApi.Api;
+﻿using FamilyHubs.Referral.Api;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
-namespace FamilyHubs.ReferralApi.FunctionalTests;
+namespace FamilyHubs.Referral.FunctionalTests;
 
 public class MyWebApplicationFactory : WebApplicationFactory<Program>
 {
@@ -13,7 +13,7 @@ public class MyWebApplicationFactory : WebApplicationFactory<Program>
         {
             IEnumerable<KeyValuePair<string, string?>>? initialData = new List<KeyValuePair<string, string?>>
             {
-                new KeyValuePair<string, string?>("UseDbType", "UseInMemoryDatabase"),
+                new KeyValuePair<string, string?>("UseSqlite", "true"),
                 new KeyValuePair<string, string?>("UseVault", "false")
             };
             config.AddInMemoryCollection(initialData);

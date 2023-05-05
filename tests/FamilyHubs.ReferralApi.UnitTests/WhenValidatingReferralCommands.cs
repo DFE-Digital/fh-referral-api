@@ -1,6 +1,6 @@
-﻿using FamilyHubs.ReferralApi.Api.Commands.CreateReferral;
-using FamilyHubs.ReferralApi.Api.Commands.UpdateReferral;
-using FamilyHubs.ReferralApi.Api.Queries.GetReferrals;
+﻿using FamilyHubs.Referral.Core.Commands.CreateReferral;
+using FamilyHubs.Referral.Core.Commands.UpdateReferral;
+using FamilyHubs.Referral.Core.Queries.GetReferrals;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FamilyHubs.ReferralApi.UnitTests;
+namespace FamilyHubs.Referral.UnitTests;
 
 public class WhenValidatingReferralCommands
 {
@@ -18,6 +18,7 @@ public class WhenValidatingReferralCommands
     {
         //Arrange
         var testReferral = WhenUsingReferralCommands.GetReferralDto();
+        testReferral.Id = 0;
         var validator = new CreateReferralCommandValidator();
         var testModel = new CreateReferralCommand(testReferral);
 
@@ -48,7 +49,7 @@ public class WhenValidatingReferralCommands
     {
         //Arrange
         var validator = new GetReferralByIdCommandValidator();
-        var testModel = new GetReferralByIdCommand("id");
+        var testModel = new GetReferralByIdCommand(1);
 
         //Act
         var result = validator.Validate(testModel);
@@ -62,7 +63,7 @@ public class WhenValidatingReferralCommands
     {
         //Arrange
         var validator = new GetReferralsByOrganisationIdCommandValidator();
-        var testModel = new GetReferralsByOrganisationIdCommand("id", 1, 99);
+        var testModel = new GetReferralsByOrganisationIdCommand(1, 1, 99, null);
 
         //Act
         var result = validator.Validate(testModel);
@@ -76,7 +77,7 @@ public class WhenValidatingReferralCommands
     {
         //Arrange
         var validator = new GetReferralsByReferrerCommandValidator();
-        var testModel = new GetReferralsByReferrerCommand("id", 1, 99);
+        var testModel = new GetReferralsByReferrerCommand("id", 1, 99, null);
 
         //Act
         var result = validator.Validate(testModel);

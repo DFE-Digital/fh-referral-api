@@ -1,52 +1,45 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Linq;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+﻿using FamilyHubs.Referral.Data.Repository;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace FamilyHubs.ReferralApi.FunctionalTests;
+namespace FamilyHubs.Referral.FunctionalTests;
 
-public abstract class BaseWhenUsingOpenReferralApiUnitTests
+#pragma warning disable S3881
+public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
 {
-    protected readonly HttpClient _client;
-    protected readonly JwtSecurityToken _token;
+    protected readonly HttpClient Client;
+    private readonly CustomWebApplicationFactory _webAppFactory;
+    private bool _disposed;
 
-    public BaseWhenUsingOpenReferralApiUnitTests()
+    protected BaseWhenUsingOpenReferralApiUnitTests()
     {
-        var config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.test.json")
-                 .AddEnvironmentVariables()
-                 .Build();
+        _disposed = false;
+        _webAppFactory = new CustomWebApplicationFactory();
+        _webAppFactory.SetupTestDatabaseAndSeedData();
 
-        List<Claim> authClaims = new() { new Claim(ClaimTypes.Role, "LAAdmin"), new Claim(ClaimTypes.Role, "Professional") };
-        _token = CreateToken(authClaims, config);
-
-        var webAppFactory = new MyWebApplicationFactory();
-
-        _client = webAppFactory.CreateDefaultClient();
-        _client.BaseAddress = new Uri("https://localhost:7128/");
-
+        Client = _webAppFactory.CreateDefaultClient();
+        Client.BaseAddress = new Uri("https://localhost:7192/");
     }
 
-    private static JwtSecurityToken CreateToken(List<Claim> authClaims, IConfiguration configuration)
+    protected virtual void Dispose(bool disposing)
     {
-        string secret = configuration["JWT:Secret"] ?? "JWTAuthenticationHIGHsecuredPasswordVVVp1OH7Xzyr";
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
-        if (!int.TryParse(configuration["JWT:TokenValidityInMinutes"], out int tokenValidityInMinutes))
+        // Cleanup
+        if (!_disposed &&  disposing)
         {
-            tokenValidityInMinutes = 30;
+            Dispose();
         }
+        _disposed = true;
+    }
 
-        var token = new JwtSecurityToken(
-            issuer: configuration["JWT:ValidIssuer"],
-            audience: configuration["JWT:ValidAudience"],
-            expires: DateTime.Now.AddMinutes(tokenValidityInMinutes),
-            claims: authClaims,
-            signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-            );
+    public void Dispose()
+    {
+        using var scope = _webAppFactory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        context.Database.EnsureDeleted();
 
-        return token;
+        Client.Dispose();
+        _webAppFactory.Dispose();
+        GC.SuppressFinalize(this);
     }
 }
+
+#pragma warning restore S3881

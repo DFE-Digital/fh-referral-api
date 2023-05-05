@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using System.Runtime.CompilerServices;
 
-namespace FamilyHubs.ReferralApi.FunctionalTests;
+namespace FamilyHubs.Referral.FunctionalTests;
 
 public class NoOpMediator : IMediator
 {
@@ -39,5 +39,10 @@ public class NoOpMediator : IMediator
     {
         await Task.CompletedTask;
         yield break;
+    }
+
+    public Task Send<TRequest>(TRequest request, CancellationToken cancellationToken = default) where TRequest : IRequest
+    {
+        return Task.FromResult<object?>(default);
     }
 }

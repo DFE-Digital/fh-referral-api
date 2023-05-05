@@ -1,5 +1,6 @@
-﻿using FamilyHubs.ReferralApi.Api.Commands.CreateReferral;
-using FamilyHubs.ReferralApi.Api.Commands.SetReferralStatus;
+﻿using FamilyHubs.Referral.Api.Commands.SetReferralStatus;
+using FamilyHubs.Referral.Core.Commands.CreateReferral;
+using FamilyHubs.Referral.Core.Commands.SetReferralStatus;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FamilyHubs.ReferralApi.UnitTests;
+namespace FamilyHubs.Referral.UnitTests;
 
 public class WhenValidatingReferralStatusCommand
 {
@@ -16,7 +17,7 @@ public class WhenValidatingReferralStatusCommand
     {
         //Arrange
         var validator = new SetReferralStatusCommandValidator();
-        var testModel = new SetReferralStatusCommand("statusId", "active");
+        var testModel = new SetReferralStatusCommand(1, "active");
 
         //Act
         var result = validator.Validate(testModel);
