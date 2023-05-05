@@ -44,16 +44,105 @@ public static class ReferralSeedData
                 ReferralService = new Data.Entities.ReferralService
                 {
                     ReferralId = 1,
+                    Name = "Test 1 Service",
+                    Description = "Test 1 Service Description",
+                    ReferralOrganisation = new ReferralOrganisation
+                    {
+                        ReferralServiceId = 1,
+                        Name = "Test 1 Organisation",
+                        Description = "Test Organisation Description",
+                    }
+                }
+            },
+
+            new Data.Entities.Referral
+            {
+                ReasonForSupport = "Reason For Support",
+                EngageWithFamily = "Engage With Family",
+                Recipient = new Recipient
+                {
+                    ReferralId = 2,
+                    Name = "Sarah Wheeler",
+                    Email = "Sarah.Wheeler@email.com",
+                    Telephone = "0122 888 920",
+                    TextPhone = "078811111",
+                    AddressLine1 = "Address Line 1",
+                    AddressLine2 = "Address Line 2",
+                    TownOrCity = "Birmingham",
+                    Country = "Country",
+                    PostCode = "B1 2TV"
+                },
+                Referrer = new Referrer
+                {
+                    ReferralId = 2,
+                    EmailAddress = "Joe.Professional@email.com",
+                },
+                Status = new List<ReferralStatus>
+                {
+                    new ReferralStatus
+                    {
+                        Status = "New",
+                        ReferralId = 2,
+                    }
+                },
+                ReferralService = new Data.Entities.ReferralService
+                {
+                    ReferralId = 2,
+                    Name = "Test 2 Service",
+                    Description = "Test 2 Service Description",
+                    ReferralOrganisation = new ReferralOrganisation
+                    {
+                        ReferralServiceId = 2,
+                        Name = "Test 2 Organisation",
+                        Description = "Test 2 Organisation Description",
+                    }
+                }
+            },
+
+            new Data.Entities.Referral
+            {
+                ReasonForSupport = "Reason For Support",
+                EngageWithFamily = "Engage With Family",
+                Recipient = new Recipient
+                {
+                    ReferralId = 3,
+                    Name = "Ian Cook",
+                    Email = "Ian.Cook@email.com",
+                    Telephone = "\t0122 870 908",
+                    TextPhone = "078811112",
+                    AddressLine1 = "Address Line 1",
+                    AddressLine2 = "Address Line 2",
+                    TownOrCity = "Birmingham",
+                    Country = "Country",
+                    PostCode = "B2 2TV"
+                },
+                Referrer = new Referrer
+                {
+                    ReferralId = 3,
+                    EmailAddress = "Joe.Professional@email.com",
+                },
+                Status = new List<ReferralStatus>
+                {
+                    new ReferralStatus
+                    {
+                        Status = "New",
+                        ReferralId = 3,
+                    }
+                },
+                ReferralService = new Data.Entities.ReferralService
+                {
+                    ReferralId = 3,
                     Name = "Test Service",
                     Description = "Test Service Description",
                     ReferralOrganisation = new ReferralOrganisation
                     {
-                        ReferralServiceId = 1,
+                        ReferralServiceId = 3,
                         Name = "Test Organisation",
                         Description = "Test Organisation Description",
                     }
                 }
-            }
+            },
+
         };
 
         return listReferrals;
