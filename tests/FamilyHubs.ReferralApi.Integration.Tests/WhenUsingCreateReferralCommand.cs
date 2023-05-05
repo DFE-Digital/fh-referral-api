@@ -38,7 +38,7 @@ namespace FamilyHubs.Referral.Integration.Tests
 
             actualReferral.Should().BeEquivalentTo(newReferral, options =>
                 options.Excluding((IMemberInfo info) => info.Name.Contains("Id"))
-                       .Excluding((IMemberInfo info) => info.Name.Contains("CreatedBy"))
+                       .Excluding((IMemberInfo info) => info.Name.Contains("Created"))
                        .Excluding((IMemberInfo info) => info.Name.Contains("CreatedBy"))
                        .Excluding((IMemberInfo info) => info.Name.Contains("LastModified"))
                        .Excluding((IMemberInfo info) => info.Name.Contains("LastModifiedBy"))

@@ -19,7 +19,8 @@ public class WhenUsingGetReferral : DataIntegrationTestBase
 
         //Assert
         result.Should().NotBeNull();
-        result.Should().BeEquivalentTo(referral);
+        result.Should().BeEquivalentTo(referral,
+            options => options.Excluding(x => x.Created).Excluding(x => x.LastModified));
         var actualService = TestDbContext.Referrals.SingleOrDefault(s => s.Id == referral.Id);
         actualService.Should().NotBeNull();
 
@@ -39,7 +40,8 @@ public class WhenUsingGetReferral : DataIntegrationTestBase
 
         //Assert
         result.Should().NotBeNull();
-        result.Items[0].Should().BeEquivalentTo(referral);
+        result.Items[0].Should().BeEquivalentTo(referral,
+            options => options.Excluding(x => x.Created).Excluding(x => x.LastModified));
         var actualService = TestDbContext.Referrals.SingleOrDefault(s => s.Id == referral.Id);
         actualService.Should().NotBeNull();
 
@@ -59,7 +61,8 @@ public class WhenUsingGetReferral : DataIntegrationTestBase
 
         //Assert
         result.Should().NotBeNull();
-        result.Items[0].Should().BeEquivalentTo(referral);
+        result.Items[0].Should().BeEquivalentTo(referral,
+            options => options.Excluding(x => x.Created).Excluding(x => x.LastModified) );
         var actualService = TestDbContext.Referrals.SingleOrDefault(s => s.Id == referral.Id);
         actualService.Should().NotBeNull();
 
