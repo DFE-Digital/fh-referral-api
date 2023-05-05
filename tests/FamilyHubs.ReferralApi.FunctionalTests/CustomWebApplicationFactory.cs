@@ -4,10 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using FamilyHubs.Referral.Data.Repository;
+using Microsoft.Extensions.Logging;
+using FamilyHubs.Referral.Api;
 
 namespace FamilyHubs.Referral.FunctionalTests;
 
-public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
+public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
     private readonly string _referralConnection;
     public CustomWebApplicationFactory()
@@ -60,6 +62,30 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         });
 
         builder.UseEnvironment("Development");
+    }
+
+    public void SetupTestDatabaseAndSeedData()
+    {
+        using var scope = Services.CreateScope();
+
+        var scopedServices = scope.ServiceProvider;
+        var logger = scopedServices.GetRequiredService<ILogger<CustomWebApplicationFactory>>();
+
+        try
+        {
+            var context = scopedServices.GetRequiredService<ApplicationDbContext>();
+
+            IReadOnlyCollection<Data.Entities.Referral> referrals = ReferralSeedData.SeedReferral();
+
+            context.Referrals.AddRange(referrals);
+
+            context.SaveChanges();
+
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred seeding the database with test messages. Error: {exceptionMessage}", ex.Message);
+        }
     }
 }
 

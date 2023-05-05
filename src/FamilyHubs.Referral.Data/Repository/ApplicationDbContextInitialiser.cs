@@ -28,8 +28,7 @@ public class ApplicationDbContextInitialiser
                 else
                     await _context.Database.EnsureCreatedAsync();
 
-                if (_context.Database.IsSqlite())
-                    await SeedAsync();
+                await SeedAsync();
             }
         }
         catch (Exception ex)
