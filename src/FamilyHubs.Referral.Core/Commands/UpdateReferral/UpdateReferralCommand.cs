@@ -1,4 +1,5 @@
 ﻿using Ardalis.GuardClauses;
+using Ardalis.Specification;
 using AutoMapper;
 using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Data.Entities;
@@ -7,6 +8,7 @@ using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace FamilyHubs.Referral.Core.Commands.UpdateReferral;
 
@@ -50,6 +52,7 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
         try
         {
             entity = _mapper.Map(request.ReferralDto, entity);
+            entity.Status = AttachExistingStatus(entity.Status.ToList());
 
             await _context.SaveChangesAsync(cancellationToken);
         }
@@ -60,6 +63,25 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
         }
 
         return entity.Id;
+    }
+
+    private List<Data.Entities.ReferralStatus> AttachExistingStatus(List<Data.Entities.ReferralStatus> referralStatuses)
+    {
+        List<Data.Entities.ReferralStatus> list = new();
+        for (int i = 0; i < referralStatuses.Count; i++) 
+        {
+            ReferralStatus? status = _context.ReferralStatuses.SingleOrDefault(x => x.Id == referralStatuses[i].Id);
+            if (status != null) 
+            {
+                list.Add(status);
+            }
+            else
+            {
+                list.Add(referralStatuses[i]);
+            }
+        }
+
+        return list;
     }
 }
 
