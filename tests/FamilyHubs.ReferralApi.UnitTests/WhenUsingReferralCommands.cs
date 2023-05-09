@@ -353,6 +353,7 @@ namespace FamilyHubs.Referral.UnitTests
             var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
             var testReferral = GetReferralDto();
+            testReferral.ReasonForDecliningSupport = "Reason For Declining Support";
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
             var id = await handler.Handle(command, new System.Threading.CancellationToken());
@@ -368,6 +369,7 @@ namespace FamilyHubs.Referral.UnitTests
             result.Should().NotBeNull();
             result.Id.Should().Be(id);
             result.Created.Should().NotBeNull();
+            result.Should().BeEquivalentTo(testReferral, options => options.Excluding(x => x.Created).Excluding(x => x.LastModified));
         }
 
         public static ReferralDto GetReferralDto()
@@ -394,11 +396,16 @@ namespace FamilyHubs.Referral.UnitTests
                 {
                     Id = 2,
                     EmailAddress = "Bob.Referrer@email.com",
+                    Name = "Bob Referrer",
+                    PhoneNumber = "1234567890",
+                    Role = "Role",
+                    Team = "Team"
                 },
                 Status = new List<ReferralStatusDto>
                 {
                     new ReferralStatusDto
                     {
+                        Id = 2,
                         Status = "New"
                     }
                 },

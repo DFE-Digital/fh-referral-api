@@ -32,6 +32,10 @@ public static class ReferralSeedData
                 {
                     ReferralId = 1,
                     EmailAddress = "Joe.Professional@email.com",
+                    Name = "Joe Professional",
+                    PhoneNumber = "011 222 3333",
+                    Role = "Social Worker",
+                    Team = "Social Work team North"
                 },
                 Status = new List<ReferralStatus>
                 {
