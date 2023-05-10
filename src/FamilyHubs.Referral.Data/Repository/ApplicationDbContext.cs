@@ -21,6 +21,16 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        if (Database.IsSqlServer())
+        {
+            modelBuilder.Entity<ReferralOrganisation>().ToTable("ReferralOrganisations", b => b.IsTemporal());
+            modelBuilder.Entity<Entities.ReferralService>().ToTable("ReferralServices", b => b.IsTemporal());
+            modelBuilder.Entity<Recipient>().ToTable("Recipients", b => b.IsTemporal());
+            modelBuilder.Entity<Referrer>().ToTable("Referrers", b => b.IsTemporal());
+            modelBuilder.Entity<ReferralStatus>().ToTable("ReferralStatuses", b => b.IsTemporal());
+            modelBuilder.Entity<Entities.Referral>().ToTable("Referrals", b => b.IsTemporal());
+        }
+
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         base.OnModelCreating(modelBuilder);
