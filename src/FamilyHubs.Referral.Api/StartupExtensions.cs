@@ -15,6 +15,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
+using FamilyHubs.Referral.Data.EMailServices;
+using Notify.Interfaces;
+using Notify.Client;
 
 namespace FamilyHubs.Referral.Api;
 
@@ -52,6 +55,7 @@ public static class StartupExtensions
 
     private static void RegisterMinimalEndPoints(this IServiceCollection services)
     {
+        services.AddTransient<IEmailSender, GovNotifySender>();
         services.AddTransient<MinimalGeneralEndPoints>();
         services.AddTransient<MinimalReferralEndPoints>();
     }
@@ -70,6 +74,8 @@ public static class StartupExtensions
 
     private static void RegisterAppDbContext(this IServiceCollection services, IConfiguration configuration)
     {
+        var notifyAPIKey = configuration["GovNotifySetting:APIKey"];
+        services.AddTransient<IAsyncNotificationClient>(s => new NotificationClient(notifyAPIKey));
         services.AddTransient<AuditableEntitySaveChangesInterceptor>();
         services.AddTransient<ApplicationDbContextInitialiser>();
 
