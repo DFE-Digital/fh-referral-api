@@ -70,6 +70,8 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
         _context.Referrals.Add(entity);
 
+        _context.SaveChanges();
+
         return entity.Id;
     }
 
