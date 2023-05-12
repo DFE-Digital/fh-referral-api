@@ -2,7 +2,6 @@
 
 public class Recipient : EntityBase<long>
 {
-    public required long ReferralId { get; set; }
     public required string Name { get; set; }
     public string? Email { get; set; }
     public string? Telephone { get; set; }
