@@ -58,6 +58,7 @@ public static class StartupExtensions
         services.AddTransient<IEmailSender, GovNotifySender>();
         services.AddTransient<MinimalGeneralEndPoints>();
         services.AddTransient<MinimalReferralEndPoints>();
+        services.AddTransient<MinimalNotifyEndPoints>();
     }
 
     private static void RegisterAutoMapper(this IServiceCollection services)
@@ -170,6 +171,9 @@ public static class StartupExtensions
 
         var referralApi = scope.ServiceProvider.GetService<MinimalReferralEndPoints>();
         referralApi?.RegisterReferralEndPoints(app);
+
+        var notifyApi = scope.ServiceProvider.GetService<MinimalNotifyEndPoints>();
+        notifyApi?.RegisterMinimalNotifyEndPoints(app);
 
         try
         {
