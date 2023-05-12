@@ -40,4 +40,5 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Entities.ReferralService> ReferralServices => Set<Entities.ReferralService>();
     public DbSet<ReferralStatus> ReferralStatuses => Set<ReferralStatus>();
     public DbSet<Referrer> Referrers => Set<Referrer>();
+    public DbSet<Team> Teams => Set<Team>();
 }

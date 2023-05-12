@@ -1,4 +1,5 @@
 ﻿using EncryptColumn.Core.Attribute;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FamilyHubs.Referral.Data.Entities;
 
@@ -11,6 +12,10 @@ public class Referral : EntityBase<long>
     public virtual required Recipient Recipient { get; set; }
 
     public virtual required Referrer Referrer { get; set; }
+
+    //public long TeamId { get; set; }
+    //[NotMapped]
+    public virtual required Team Team { get; set; }
 
     public virtual required ReferralService ReferralService { get; set; }
 

@@ -4,7 +4,9 @@ using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace FamilyHubs.Referral.Core.Commands.CreateReferral;
 
@@ -64,13 +66,50 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
             }
         }
 
+        entity = AttachExistingTeam(entity);
         entity = AttachExistingReferrer(entity);
         entity = AttachExistingRecipient(entity);
         entity = AttachExistingService(entity);
 
         _context.Referrals.Add(entity);
 
+        _context.SaveChanges();
+
+        Team? team = _context.Teams.SingleOrDefault(x => x.Name == request.ReferralDto.ReferrerDto.Team);
+        if (team == null)
+        {
+            team = new Team
+            {
+                OrganisationId = request.ReferralDto.ReferralServiceDto.ReferralOrganisationDto.Id,
+                ReferrerId = entity.Id,
+                Name = request.ReferralDto.ReferrerDto.Team,
+            };
+
+            _context.Teams.Add(team); 
+            entity.Team = team;
+            //entity.TeamId = team.Id;
+        }
+        else
+        {
+            team.ReferrerId = entity.Id;
+            team.OrganisationId = request.ReferralDto.ReferralServiceDto.ReferralOrganisationDto.Id;
+        }
+
+        _context.SaveChanges();
+
         return entity.Id;
+    }
+
+    private Data.Entities.Referral AttachExistingTeam(Data.Entities.Referral entity)
+    {
+        Team? team = _context.Teams.SingleOrDefault(x => x.Name == entity.Referrer.Team);
+        if (team != null)
+        {
+            //entity.TeamId = team.Id;
+            entity.Team = team;
+        }
+       
+        return entity;
     }
 
     private Data.Entities.Referral AttachExistingReferrer(Data.Entities.Referral entity)

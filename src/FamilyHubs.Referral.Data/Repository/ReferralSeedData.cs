@@ -9,6 +9,13 @@ public static class ReferralSeedData
 #endif
     public static IReadOnlyCollection<Data.Entities.Referral> SeedReferral()
     {
+        Team team = new Team
+        { 
+            Id = 1,
+            OrganisationId = 1,
+            ReferrerId = 1,
+            Name = "Social Work team North"
+        };
         List<Data.Entities.Referral> listReferrals = new()
         {
             new Data.Entities.Referral
@@ -35,8 +42,10 @@ public static class ReferralSeedData
                     Name = "Joe Professional",
                     PhoneNumber = "011 222 3333",
                     Role = "Social Worker",
-                    Team = "Social Work team North"
+                    Team = team.Name
                 },
+                //TeamId = 1,
+                Team = team, 
                 Status = new List<ReferralStatus>
                 {
                     new ReferralStatus
