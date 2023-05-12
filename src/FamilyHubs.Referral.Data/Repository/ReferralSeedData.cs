@@ -30,7 +30,6 @@ public static class ReferralSeedData
                 },
                 Referrer = new Referrer
                 {
-                    ReferralId = 1,
                     EmailAddress = "Joe.Professional@email.com",
                     Name = "Joe Professional",
                     PhoneNumber = "011 222 3333",
