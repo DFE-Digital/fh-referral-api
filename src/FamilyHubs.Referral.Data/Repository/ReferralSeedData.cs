@@ -24,7 +24,6 @@ public static class ReferralSeedData
                 EngageWithFamily = "Engage With Family",
                 Recipient = new Recipient
                 {
-                    ReferralId = 1,
                     Name = "Test User",
                     Email = "TestUser@email.com",
                     Telephone = "078873456",
@@ -55,7 +54,6 @@ public static class ReferralSeedData
                 },
                 ReferralService = new Data.Entities.ReferralService
                 {
-                    ReferralId = 1,
                     Name = "Test Service",
                     Description = "Test Service Description",
                     ReferralOrganisation = new ReferralOrganisation
