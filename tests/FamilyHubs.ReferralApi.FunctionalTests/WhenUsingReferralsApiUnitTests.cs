@@ -48,8 +48,8 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
 
     [Theory]
     [InlineData("0001")]
-    [InlineData("Test User")]
-    [InlineData("0001 Test User")]
+    [InlineData("Test Users")]
+    [InlineData("0001 Test Users")]
     public async Task ThenReferralsByReferrerAreRetrievedWithSearchText(string searchText)
     {
         var referrer = ReferralSeedData.SeedReferral().ElementAt(0).Referrer.EmailAddress;
@@ -98,7 +98,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             ReferrerDto = new ReferrerDto
             { 
              
-                EmailAddress = "Bob.Referrer@email.com", 
+                EmailAddress = "Bob.Users@email.com", 
             },
             Status = new List<ReferralStatusDto>
             { 
@@ -110,8 +110,8 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             ReferralServiceDto = new ReferralServiceDto
             {
                 Id = 3,
-                Name = "New Service",
-                Description = "Service Description",
+                Name = "New Services",
+                Description = "Services Description",
                 ReferralOrganisationDto = new ReferralOrganisationDto
                 { 
                     Id = 3,
@@ -171,8 +171,8 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
 
     [Theory]
     [InlineData("0001")]
-    [InlineData("Test User")]
-    [InlineData("0001 Test User")]
+    [InlineData("Test Users")]
+    [InlineData("0001 Test Users")]
     public async Task ThenReferralsByOrganisationIdAreRetrievedWithSearchText(string searchText)
     {
 
@@ -243,7 +243,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             ReferrerDto = new ReferrerDto
             {
                 Id = 1,
-                EmailAddress = "Bob.Referrer@email.com",
+                EmailAddress = "Bob.Users@email.com",
             },
             Status = new List<ReferralStatusDto>
             {
@@ -255,8 +255,8 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             ReferralServiceDto = new ReferralServiceDto
             {
                 Id = 1,
-                Name = "Service",
-                Description = "Service Description",
+                Name = "Services",
+                Description = "Services Description",
                 ReferralOrganisationDto = new ReferralOrganisationDto
                 {
                     Id = 1,

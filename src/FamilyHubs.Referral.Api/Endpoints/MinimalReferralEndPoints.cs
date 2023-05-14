@@ -1,5 +1,4 @@
 ﻿using FamilyHubs.Referral.Core.Commands.CreateReferral;
-using FamilyHubs.Referral.Core.Commands.SetReferralStatus;
 using FamilyHubs.Referral.Core.Commands.UpdateReferral;
 using FamilyHubs.Referral.Core.Queries.GetReferrals;
 using FamilyHubs.ReferralService.Shared.Dto;
@@ -36,7 +35,7 @@ public class MinimalReferralEndPoints
             var result = await _mediator.Send(request, cancellationToken);
             return result;
 
-        }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Referrer") { Tags = new[] { "Referrals" } });
+        }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Users") { Tags = new[] { "Referrals" } });
 
         app.MapGet("api/organisationreferrals/{organisationId}", async (long organisationId, int? pageNumber, int? pageSize, string ? searchText, CancellationToken cancellationToken, ISender _mediator) =>
         {
@@ -53,13 +52,5 @@ public class MinimalReferralEndPoints
             return result;
             
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referral By Id") { Tags = new[] { "Referrals" } });
-
-        app.MapPost("api/referralStatus/{referralId}/{status}", async (long referralId, string status, CancellationToken cancellationToken, ISender _mediator, ILogger<MinimalReferralEndPoints> logger) =>
-        {
-            SetReferralStatusCommand command = new(referralId, status);
-            var result = await _mediator.Send(command, cancellationToken);
-            return result;
-
-        }).WithMetadata(new SwaggerOperationAttribute("Referrals", "Set Referral Status") { Tags = new[] { "Referrals" } });
     }
 }

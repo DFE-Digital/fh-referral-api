@@ -5,16 +5,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace FamilyHubs.Referral.Data.Config;
 
 
-public class ReferralServiceConfiguration : IEntityTypeConfiguration<Entities.ReferralService>
+public class ReferralServiceConfiguration : IEntityTypeConfiguration<Entities.Service>
 {
-    public void Configure(EntityTypeBuilder<Entities.ReferralService> builder)
+    public void Configure(EntityTypeBuilder<Entities.Service> builder)
     {
-        builder.Navigation(e => e.ReferralOrganisation).AutoInclude();
-
-        builder.HasOne(s => s.ReferralOrganisation)
-           .WithOne()
-           .HasForeignKey<ReferralOrganisation>(lc => lc.ReferralServiceId)
-           .IsRequired();
+        builder.Navigation(e => e.Organisation).AutoInclude();
 
         builder.Property(t => t.Name)
             .IsRequired()

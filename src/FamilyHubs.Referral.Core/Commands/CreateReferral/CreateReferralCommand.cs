@@ -53,19 +53,6 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         Data.Entities.Referral entity = _mapper.Map<Data.Entities.Referral>(request.ReferralDto);
         ArgumentNullException.ThrowIfNull(entity);
 
-        if (entity.Status != null)
-        {
-            for (int i = entity.Status.Count - 1; i >= 0; i--)
-            {
-                var referralStatus = _context.ReferralStatuses.FirstOrDefault(x => x.Id == entity.Status.ElementAt(i).Id);
-                if (referralStatus != null)
-                {
-                    entity.Status.Remove(entity.Status.ElementAt(i));
-                    entity.Status.Add(referralStatus);
-                }
-            }
-        }
-
         entity = AttachExistingTeam(entity);
         entity = AttachExistingReferrer(entity);
         entity = AttachExistingRecipient(entity);
@@ -75,25 +62,25 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
         _context.SaveChanges();
 
-        Team? team = _context.Teams.SingleOrDefault(x => x.Name == request.ReferralDto.ReferrerDto.Team);
-        if (team == null)
-        {
-            team = new Team
-            {
-                OrganisationId = request.ReferralDto.ReferralServiceDto.ReferralOrganisationDto.Id,
-                ReferrerId = entity.Id,
-                Name = request.ReferralDto.ReferrerDto.Team,
-            };
+        //Team? team = _context.Teams.SingleOrDefault(x => x.Name == request.ReferralDto.ReferrerDto.Team);
+        //if (team == null)
+        //{
+        //    team = new Team
+        //    {
+        //        OrganisationId = request.ReferralDto.ReferralServiceDto.ReferralOrganisationDto.Id,
+        //        //UserId = entity.Id,
+        //        Name = request.ReferralDto.ReferrerDto.Team,
+        //    };
 
-            _context.Teams.Add(team); 
-            entity.Team = team;
-            //entity.TeamId = team.Id;
-        }
-        else
-        {
-            team.ReferrerId = entity.Id;
-            team.OrganisationId = request.ReferralDto.ReferralServiceDto.ReferralOrganisationDto.Id;
-        }
+        //    _context.Teams.Add(team); 
+        //    entity.Team = team;
+        //    //entity.TeamId = team.Id;
+        //}
+        //else
+        //{
+        //    //team.UserId = entity.Id;
+        //    team.OrganisationId = request.ReferralDto.ReferralServiceDto.ReferralOrganisationDto.Id;
+        //}
 
         _context.SaveChanges();
 
@@ -102,19 +89,19 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     private Data.Entities.Referral AttachExistingTeam(Data.Entities.Referral entity)
     {
-        Team? team = _context.Teams.SingleOrDefault(x => x.Name == entity.Referrer.Team);
-        if (team != null)
-        {
-            //entity.TeamId = team.Id;
-            entity.Team = team;
-        }
+        //Teams? team = _context.Teams.SingleOrDefault(x => x.Name == entity.Referrer.Teams);
+        //if (team != null)
+        //{
+        //    //entity.TeamId = team.Id;
+        //    entity.Teams = team;
+        //}
        
         return entity;
     }
 
     private Data.Entities.Referral AttachExistingReferrer(Data.Entities.Referral entity)
     {
-        Referrer? referrer = _context.Referrers.SingleOrDefault(x => x.EmailAddress == entity.Referrer.EmailAddress);
+        User? referrer = _context.Users.FirstOrDefault(x => x.EmailAddress == entity.Referrer.EmailAddress);
         if (referrer != null) 
         {
             entity.Referrer = referrer;
@@ -127,19 +114,19 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         Recipient? recipient = null;
         if (!string.IsNullOrEmpty(entity.Recipient.Telephone))
         {
-            recipient = _context.Recipients.SingleOrDefault(x => x.Telephone == entity.Recipient.Telephone);
+            recipient = _context.Recipients.FirstOrDefault(x => x.Telephone == entity.Recipient.Telephone);
         }
         else if (!string.IsNullOrEmpty(entity.Recipient.TextPhone))
         {
-            recipient = _context.Recipients.SingleOrDefault(x => x.TextPhone == entity.Recipient.Telephone);
+            recipient = _context.Recipients.FirstOrDefault(x => x.TextPhone == entity.Recipient.Telephone);
         }
         else if (!string.IsNullOrEmpty(entity.Recipient.Email))
         {
-            recipient = _context.Recipients.SingleOrDefault(x => !string.IsNullOrEmpty(x.Email) && x.Email.ToLower() == entity.Recipient.Email.ToLower());
+            recipient = _context.Recipients.FirstOrDefault(x => !string.IsNullOrEmpty(x.Email) && x.Email.ToLower() == entity.Recipient.Email.ToLower());
         }
         else if (!string.IsNullOrEmpty(entity.Recipient.Name) && !string.IsNullOrEmpty(entity.Recipient.PostCode))
         {
-            recipient = _context.Recipients.SingleOrDefault(x => !string.IsNullOrEmpty(x.Name) && !string.IsNullOrEmpty(x.PostCode) && x.Name.ToLower() == entity.Recipient.Name.ToLower() && x.PostCode.ToLower() == entity.Recipient.PostCode.ToLower());
+            recipient = _context.Recipients.FirstOrDefault(x => !string.IsNullOrEmpty(x.Name) && !string.IsNullOrEmpty(x.PostCode) && x.Name.ToLower() == entity.Recipient.Name.ToLower() && x.PostCode.ToLower() == entity.Recipient.PostCode.ToLower());
         }
 
         if (recipient != null) 
@@ -153,10 +140,10 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     private Data.Entities.Referral AttachExistingService(Data.Entities.Referral entity)
     {
-        Data.Entities.ReferralService? referrer = _context.ReferralServices.SingleOrDefault(x => x.Name.ToLower() == entity.ReferralService.Name.ToLower() && x.ReferralOrganisation.Name.ToLower() == entity.ReferralService.ReferralOrganisation.Name.ToLower());
+        Data.Entities.Service? referrer = _context.Services.FirstOrDefault(x => x.Name.ToLower() == entity.Service.Name.ToLower() && x.Organisation.Name.ToLower() == entity.Service.Organisation.Name.ToLower());
         if (referrer != null)
         {
-            entity.ReferralService = referrer;
+            entity.Service = referrer;
         }
         return entity;
     }

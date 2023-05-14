@@ -9,64 +9,67 @@ public static class ReferralSeedData
 #endif
     public static IReadOnlyCollection<Data.Entities.Referral> SeedReferral()
     {
-        Team team = new Team
-        { 
-            Id = 1,
-            OrganisationId = 1,
-            ReferrerId = 1,
-            Name = "Social Work team North"
-        };
-        List<Data.Entities.Referral> listReferrals = new()
-        {
-            new Data.Entities.Referral
-            {
-                ReasonForSupport = "Reason For Support",
-                EngageWithFamily = "Engage With Family",
-                Recipient = new Recipient
-                {
-                    Name = "Test User",
-                    Email = "TestUser@email.com",
-                    Telephone = "078873456",
-                    TextPhone = "078873456",
-                    AddressLine1 = "Address Line 1",
-                    AddressLine2 = "Address Line 2",
-                    TownOrCity = "Birmingham",
-                    Country = "Country",
-                    PostCode = "B30 2TV"
-                },
-                Referrer = new Referrer
-                {
-                    EmailAddress = "Joe.Professional@email.com",
-                    Name = "Joe Professional",
-                    PhoneNumber = "011 222 3333",
-                    Role = "Social Worker",
-                    Team = team.Name
-                },
-                //TeamId = 1,
-                Team = team, 
-                Status = new List<ReferralStatus>
-                {
-                    new ReferralStatus
-                    {
-                        Status = "New",
-                        ReferralId = 1,
-                    }
-                },
-                ReferralService = new Data.Entities.ReferralService
-                {
-                    Name = "Test Service",
-                    Description = "Test Service Description",
-                    ReferralOrganisation = new ReferralOrganisation
-                    {
-                        ReferralServiceId = 1,
-                        Name = "Test Organisation",
-                        Description = "Test Organisation Description",
-                    }
-                }
-            }
-        };
+        //List<Entities.Referral> listReferrals = new()
+        //{
+        //    new Entities.Referral
+        //    {
+        //        ReasonForSupport = "Reason For Support",
+        //        EngageWithFamily = "Engage With Family",
 
-        return listReferrals;
+        //        Services = new Services
+        //        {
+        //            Name = "Test Services",
+        //            Description = "Test Services Description",
+        //            Organisation = new Organisation
+        //            {
+        //                ServiceId = 1,
+        //                Name = "Test Organisation",
+        //                Description = "Test Organisation Description",
+        //            }
+        //        },
+
+
+
+
+
+
+        //        Recipient = new Recipient
+        //        {
+        //            Name = "Test Users",
+        //            Email = "TestUser@email.com",
+        //            Telephone = "078873456",
+        //            TextPhone = "078873456",
+        //            AddressLine1 = "Address Line 1",
+        //            AddressLine2 = "Address Line 2",
+        //            TownOrCity = "Birmingham",
+        //            Country = "Country",
+        //            PostCode = "B30 2TV"
+        //        },
+        //        Users = new Users
+        //        {
+        //            EmailAddress = "Joe.Professional@email.com",
+        //            Name = "Joe Professional",
+        //            PhoneNumber = "011 222 3333",
+        //            Role = "Social Worker"
+        //        },
+        //        Teams = new Teams
+        //        {
+        //            Id = 1,
+        //            OrganisationId = 1,
+        //            UserId = 1,
+        //            Name = "Social Work team North"
+        //         },
+        //        Status = new Status
+        //        {
+        //            Name = "New",
+        //            SortOrder = 1,
+        //        },
+        //    }
+        //};
+
+        //return listReferrals;
+
+        return null;
 
     }
 }

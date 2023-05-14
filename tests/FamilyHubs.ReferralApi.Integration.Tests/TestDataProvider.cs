@@ -30,7 +30,7 @@ public static class TestDataProvider
             ReferrerDto = new ReferrerDto
             {
                 Id = 2,
-                EmailAddress = "Bob.Referrer@email.com",
+                EmailAddress = "Bob.Users@email.com",
             },
             Status = new List<ReferralStatusDto>
             {
@@ -43,8 +43,8 @@ public static class TestDataProvider
             ReferralServiceDto = new ReferralServiceDto
             {
                 Id = 2,
-                Name = "Service",
-                Description = "Service Description",
+                Name = "Services",
+                Description = "Services Description",
                 ReferralOrganisationDto = new ReferralOrganisationDto
                 {
                     Id = 2,

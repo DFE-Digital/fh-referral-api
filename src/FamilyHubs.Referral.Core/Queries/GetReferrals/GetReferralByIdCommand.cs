@@ -35,8 +35,8 @@ public class GetReferralByIdCommandHandler : IRequestHandler<GetReferralByIdComm
             .Include(x => x.Status)
             .Include(x => x.Referrer)
             .Include(x => x.Recipient)
-            .Include(x => x.ReferralService)
-            .ThenInclude(x => x.ReferralOrganisation)
+            .Include(x => x.Service)
+            .ThenInclude(x => x.Organisation)
             .AsNoTracking()
             .ProjectTo<ReferralDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken: cancellationToken);

@@ -10,7 +10,7 @@ public class ReferralConfiguration : IEntityTypeConfiguration<Data.Entities.Refe
     {
         builder.Navigation(e => e.Recipient).AutoInclude();
         builder.Navigation(e => e.Referrer).AutoInclude();
-        builder.Navigation(e => e.ReferralService).AutoInclude();
+        builder.Navigation(e => e.Service).AutoInclude();
         builder.Navigation(e => e.Status).AutoInclude();
 
         builder.Property(t => t.Created)

@@ -28,7 +28,7 @@ public class ApplicationDbContextInitialiser
                 else
                     await _context.Database.EnsureCreatedAsync();
 
-                await SeedAsync();
+                //await SeedAsync();
             }
         }
         catch (Exception ex)
@@ -56,9 +56,9 @@ public class ApplicationDbContextInitialiser
         if (_context.Referrals.Any())
             return;
 
-        IReadOnlyCollection<Data.Entities.Referral> referrals = ReferralSeedData.SeedReferral();
+        IReadOnlyCollection<Entities.Status> statuses = StatusSeedData.SeedStatuses();
 
-        _context.Referrals.AddRange(referrals);
+        _context.Statuses.AddRange(statuses);
         
         await _context.SaveChangesAsync();
 

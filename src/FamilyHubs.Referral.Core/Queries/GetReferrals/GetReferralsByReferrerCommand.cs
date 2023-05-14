@@ -42,8 +42,8 @@ public class GetReferralsByReferrerCommandHandler : IRequestHandler<GetReferrals
             .Include(x => x.Status)
             .Include(x => x.Referrer)
             .Include(x => x.Recipient)
-            .Include(x => x.ReferralService)
-            .ThenInclude(x => x.ReferralOrganisation)
+            .Include(x => x.Service)
+            .ThenInclude(x => x.Organisation)
 
             .AsSplitQuery()
             .AsNoTracking()

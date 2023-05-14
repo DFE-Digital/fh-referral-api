@@ -29,7 +29,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
-                name: "Team",
+                name: "Teams",
                 table: "Referrers",
                 type: "nvarchar(max)",
                 nullable: true);
@@ -57,7 +57,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                 table: "Referrers");
 
             migrationBuilder.DropColumn(
-                name: "Team",
+                name: "Teams",
                 table: "Referrers");
 
             migrationBuilder.DropColumn(

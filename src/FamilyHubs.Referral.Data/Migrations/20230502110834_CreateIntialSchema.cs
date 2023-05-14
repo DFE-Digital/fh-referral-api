@@ -62,7 +62,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ReferralServices",
+                name: "Services",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -135,7 +135,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ReferralOrganisations",
+                name: "Organisations",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -154,7 +154,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                     table.ForeignKey(
                         name: "FK_ReferralOrganisations_ReferralServices_ReferralServiceId",
                         column: x => x.ReferralServiceId,
-                        principalTable: "ReferralServices",
+                        principalTable: "Services",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -167,13 +167,13 @@ namespace FamilyHubs.Referral.Data.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReferralOrganisations_ReferralServiceId",
-                table: "ReferralOrganisations",
+                table: "Organisations",
                 column: "ReferralServiceId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReferralServices_ReferralId",
-                table: "ReferralServices",
+                table: "Services",
                 column: "ReferralId",
                 unique: true);
 
@@ -196,7 +196,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                 name: "Recipients");
 
             migrationBuilder.DropTable(
-                name: "ReferralOrganisations");
+                name: "Organisations");
 
             migrationBuilder.DropTable(
                 name: "ReferralStatuses");
@@ -205,7 +205,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                 name: "Referrers");
 
             migrationBuilder.DropTable(
-                name: "ReferralServices");
+                name: "Services");
 
             migrationBuilder.DropTable(
                 name: "Referrals");

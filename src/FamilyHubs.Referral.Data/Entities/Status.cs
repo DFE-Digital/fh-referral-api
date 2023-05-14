@@ -4,6 +4,9 @@
 
 public class Status : EntityBase<long>
 {
-    public string Name { get; set; }
+    public required string Name { get; set; }
+
     public byte SortOrder { get; set; }
+
+    public ICollection<Referral>? Referrals { get; set; }
 }

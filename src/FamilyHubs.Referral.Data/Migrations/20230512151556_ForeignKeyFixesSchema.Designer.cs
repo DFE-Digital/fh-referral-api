@@ -122,7 +122,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                     b.Property<long>("ReferralServiceId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("ReferrerId")
+                    b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -131,12 +131,12 @@ namespace FamilyHubs.Referral.Data.Migrations
 
                     b.HasIndex("ReferralServiceId");
 
-                    b.HasIndex("ReferrerId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Referrals");
                 });
 
-            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralOrganisation", b =>
+            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Organisation", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -175,10 +175,10 @@ namespace FamilyHubs.Referral.Data.Migrations
                     b.HasIndex("ReferralServiceId")
                         .IsUnique();
 
-                    b.ToTable("ReferralOrganisations");
+                    b.ToTable("Organisations");
                 });
 
-            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralService", b =>
+            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Services", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -211,7 +211,7 @@ namespace FamilyHubs.Referral.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ReferralServices");
+                    b.ToTable("Services");
                 });
 
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralStatus", b =>
@@ -252,7 +252,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                     b.ToTable("ReferralStatuses");
                 });
 
-            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Referrer", b =>
+            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Users", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -289,7 +289,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                     b.Property<string>("Role")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Team")
+                    b.Property<string>("Teams")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -305,30 +305,30 @@ namespace FamilyHubs.Referral.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FamilyHubs.Referral.Data.Entities.ReferralService", "ReferralService")
+                    b.HasOne("FamilyHubs.Referral.Data.Entities.Services", "Services")
                         .WithMany()
                         .HasForeignKey("ReferralServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FamilyHubs.Referral.Data.Entities.Referrer", "Referrer")
+                    b.HasOne("FamilyHubs.Referral.Data.Entities.Users", "Users")
                         .WithMany()
-                        .HasForeignKey("ReferrerId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Recipient");
 
-                    b.Navigation("ReferralService");
+                    b.Navigation("Services");
 
-                    b.Navigation("Referrer");
+                    b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralOrganisation", b =>
+            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Organisation", b =>
                 {
-                    b.HasOne("FamilyHubs.Referral.Data.Entities.ReferralService", null)
-                        .WithOne("ReferralOrganisation")
-                        .HasForeignKey("FamilyHubs.Referral.Data.Entities.ReferralOrganisation", "ReferralServiceId")
+                    b.HasOne("FamilyHubs.Referral.Data.Entities.Services", null)
+                        .WithOne("Organisation")
+                        .HasForeignKey("FamilyHubs.Referral.Data.Entities.Organisation", "ReferralServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -347,9 +347,9 @@ namespace FamilyHubs.Referral.Data.Migrations
                     b.Navigation("Status");
                 });
 
-            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralService", b =>
+            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Services", b =>
                 {
-                    b.Navigation("ReferralOrganisation")
+                    b.Navigation("Organisation")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

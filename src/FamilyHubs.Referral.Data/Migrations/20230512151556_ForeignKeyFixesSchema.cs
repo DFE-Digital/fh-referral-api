@@ -16,7 +16,7 @@ namespace FamilyHubs.Referral.Data.Migrations
 
             migrationBuilder.DropForeignKey(
                 name: "FK_ReferralServices_Referrals_ReferralId",
-                table: "ReferralServices");
+                table: "Services");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_Referrers_Referrals_ReferralId",
@@ -28,7 +28,7 @@ namespace FamilyHubs.Referral.Data.Migrations
 
             migrationBuilder.DropIndex(
                 name: "IX_ReferralServices_ReferralId",
-                table: "ReferralServices");
+                table: "Services");
 
             migrationBuilder.DropIndex(
                 name: "IX_Recipients_ReferralId",
@@ -40,7 +40,7 @@ namespace FamilyHubs.Referral.Data.Migrations
 
             migrationBuilder.DropColumn(
                 name: "ReferralId",
-                table: "ReferralServices");
+                table: "Services");
 
             migrationBuilder.DropColumn(
                 name: "ReferralId",
@@ -61,7 +61,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                 defaultValue: 0L);
 
             migrationBuilder.AddColumn<long>(
-                name: "ReferrerId",
+                name: "UserId",
                 table: "Referrals",
                 type: "bigint",
                 nullable: false,
@@ -80,7 +80,7 @@ namespace FamilyHubs.Referral.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Referrals_ReferrerId",
                 table: "Referrals",
-                column: "ReferrerId");
+                column: "UserId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Referrals_Recipients_RecipientId",
@@ -94,14 +94,14 @@ namespace FamilyHubs.Referral.Data.Migrations
                 name: "FK_Referrals_ReferralServices_ReferralServiceId",
                 table: "Referrals",
                 column: "ReferralServiceId",
-                principalTable: "ReferralServices",
+                principalTable: "Services",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Referrals_Referrers_ReferrerId",
                 table: "Referrals",
-                column: "ReferrerId",
+                column: "UserId",
                 principalTable: "Referrers",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
@@ -143,7 +143,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                 table: "Referrals");
 
             migrationBuilder.DropColumn(
-                name: "ReferrerId",
+                name: "UserId",
                 table: "Referrals");
 
             migrationBuilder.AddColumn<long>(
@@ -155,7 +155,7 @@ namespace FamilyHubs.Referral.Data.Migrations
 
             migrationBuilder.AddColumn<long>(
                 name: "ReferralId",
-                table: "ReferralServices",
+                table: "Services",
                 type: "bigint",
                 nullable: false,
                 defaultValue: 0L);
@@ -175,7 +175,7 @@ namespace FamilyHubs.Referral.Data.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReferralServices_ReferralId",
-                table: "ReferralServices",
+                table: "Services",
                 column: "ReferralId",
                 unique: true);
 
@@ -195,7 +195,7 @@ namespace FamilyHubs.Referral.Data.Migrations
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ReferralServices_Referrals_ReferralId",
-                table: "ReferralServices",
+                table: "Services",
                 column: "ReferralId",
                 principalTable: "Referrals",
                 principalColumn: "Id",

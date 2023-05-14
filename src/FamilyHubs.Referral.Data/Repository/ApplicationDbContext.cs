@@ -2,6 +2,7 @@
 using FamilyHubs.Referral.Data.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using System.Reflection.Metadata;
 
 namespace FamilyHubs.Referral.Data.Repository;
 
@@ -23,6 +24,18 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
+        // Set the primary key of the Referrals table to be the composite key of the dimension table foreign keys
+        //modelBuilder.Entity<Entities.Referral>()
+        //    .HasKey(r => new
+        //    {
+        //        ServiceId = r.Service.Id,
+        //        //StatusId = r.Status.Id,
+        //        //RecipientId = r.Recipient.Id,
+        //        //TeamId = r.Team.Id,
+        //        //UserId = r.Referrer.Id
+        //    })
+        //    .HasName("PK_ServiceId_StatusId_RecipientId_TeamId_ReferrerId");
+
         base.OnModelCreating(modelBuilder);
     }
 
@@ -32,13 +45,30 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         optionsBuilder.AddInterceptors(_auditableEntitySaveChangesInterceptor);
     }
 
-    
-
     public DbSet<Data.Entities.Referral> Referrals => Set<Data.Entities.Referral>();
+
     public DbSet<Recipient> Recipients => Set<Recipient>();
-    public DbSet<ReferralOrganisation> ReferralOrganisations => Set<ReferralOrganisation>();
-    public DbSet<Entities.ReferralService> ReferralServices => Set<Entities.ReferralService>();
-    public DbSet<ReferralStatus> ReferralStatuses => Set<ReferralStatus>();
-    public DbSet<Referrer> Referrers => Set<Referrer>();
+
+    public DbSet<Organisation> Organisations => Set<Organisation>();
+
+    public DbSet<Entities.Service> Services => Set<Entities.Service>();
+
+    public DbSet<Status> Statuses => Set<Status>();
+
+    public DbSet<User> Users => Set<User>();
+
     public DbSet<Team> Teams => Set<Team>();
 }
+
+//public class ReferralPrimaryKey
+//{
+//    public long ServiceId { get; set; }
+
+//    public long StatusId { get; set; }
+
+//    public long RecipientId { get; set; }
+
+//    public long TeamId { get; set; }
+
+//    public long UserId { get; set; }
+//}
