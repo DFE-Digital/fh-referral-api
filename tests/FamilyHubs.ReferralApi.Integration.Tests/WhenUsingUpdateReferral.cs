@@ -64,8 +64,8 @@ public class WhenUsingUpdateReferral : DataIntegrationTestBase
     {
         await CreateReferral();
         var referral = TestDataProvider.GetReferralDto();
-        referral.ReferrerDto.EmailAddress = "unittestsomeone@email.com";
-        var expected = referral.ReferrerDto;
+        referral.UserDto.EmailAddress = "unittestsomeone@email.com";
+        var expected = referral.UserDto;
 
         UpdateReferralCommand command = new(referral.Id, referral);
         UpdateReferralCommandHandler handler = new(TestDbContext, Mapper, new Mock<ILogger<UpdateReferralCommandHandler>>().Object);
@@ -86,11 +86,11 @@ public class WhenUsingUpdateReferral : DataIntegrationTestBase
     {
         await CreateReferral();
         var referral = TestDataProvider.GetReferralDto();
-        referral.ReferralServiceDto.Name = "Unit Test Name";
-        referral.ReferralServiceDto.Description = "Unit Test Description";
-        referral.ReferralServiceDto.ReferralOrganisationDto.Name = "Unit Test Org Name";
-        referral.ReferralServiceDto.ReferralOrganisationDto.Description = "Unit Test Org Description";
-        var expected = referral.ReferralServiceDto;
+        referral.ServiceDto.Name = "Unit Test Name";
+        referral.ServiceDto.Description = "Unit Test Description";
+        referral.ServiceDto.OrganisationDto.Name = "Unit Test Org Name";
+        referral.ServiceDto.OrganisationDto.Description = "Unit Test Org Description";
+        var expected = referral.ServiceDto;
 
         UpdateReferralCommand command = new(referral.Id, referral);
         UpdateReferralCommandHandler handler = new(TestDbContext, Mapper, new Mock<ILogger<UpdateReferralCommandHandler>>().Object);
@@ -105,8 +105,8 @@ public class WhenUsingUpdateReferral : DataIntegrationTestBase
         actualService.Should().NotBeNull();
         actualService!.Service.Name.Should().Be(expected.Name);
         actualService!.Service.Description.Should().Be(expected.Description);
-        actualService!.Service.Organisation.Name.Should().Be(expected.ReferralOrganisationDto.Name);
-        actualService!.Service.Organisation.Description.Should().Be(expected.ReferralOrganisationDto.Description);
+        actualService!.Service.Organisation.Name.Should().Be(expected.OrganisationDto.Name);
+        actualService!.Service.Organisation.Description.Should().Be(expected.OrganisationDto.Description);
     }
 
 

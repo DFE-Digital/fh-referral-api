@@ -28,7 +28,7 @@ public class ApplicationDbContextInitialiser
                 else
                     await _context.Database.EnsureCreatedAsync();
 
-                //await SeedAsync();
+                await SeedAsync();
             }
         }
         catch (Exception ex)
@@ -53,12 +53,27 @@ public class ApplicationDbContextInitialiser
 
     public async Task TrySeedAsync()
     {
-        if (_context.Referrals.Any())
+        if (_context.Statuses.Any())
             return;
 
         IReadOnlyCollection<Entities.Status> statuses = StatusSeedData.SeedStatuses();
 
         _context.Statuses.AddRange(statuses);
+
+        await _context.SaveChangesAsync();
+
+        IReadOnlyCollection<Entities.Referral> referrals = ReferralSeedData.SeedReferral();
+
+        foreach(Entities.Referral referral in referrals)
+        {
+            var status = _context.Statuses.FirstOrDefault(x => x.Id == referral.Status.Id); 
+            if (status != null)
+            {
+                referral.Status = status; 
+            }
+        }
+
+        _context.Referrals.AddRange(referrals);
         
         await _context.SaveChangesAsync();
 

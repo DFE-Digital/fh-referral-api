@@ -11,19 +11,22 @@ public class AutoMappingProfiles : Profile
         CreateMap<ReferralDto, Data.Entities.Referral>()
             .ForMember(dest => dest.Created, opt => opt.Ignore())
             .ForMember(dest => dest.LastModified, opt => opt.Ignore())
-            .ForMember(dest => dest.Referrer, opt => opt.MapFrom(src => src.ReferrerDto))
+            .ForMember(dest => dest.Team, opt => opt.MapFrom(src => src.TeamDto))
+            .ForMember(dest => dest.Referrer, opt => opt.MapFrom(src => src.UserDto))
             .ForMember(dest => dest.Recipient, opt => opt.MapFrom(src => src.RecipientDto))
-            .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.ReferralServiceDto))
+            .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.ServiceDto))
             .ReverseMap()
             .ForMember(dest => dest.Created, opt => opt.MapFrom(src => src.Created))
             .ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => src.LastModified));
-        //CreateMap<ReferralStatusDto, ReferralStatus>().ReverseMap();
-        CreateMap<ReferrerDto, User>().ReverseMap();
+        CreateMap<StatusDto, Status>().ReverseMap();
+        CreateMap<RoleDto, Role>().ReverseMap();
+        CreateMap<TeamDto, Team>().ReverseMap();
+        CreateMap<UserDto, User>().ReverseMap();
         CreateMap<RecipientDto, Recipient>().ReverseMap();
-        CreateMap<ReferralServiceDto, Data.Entities.Service>()
-            .ForMember(dest => dest.Organisation, opt => opt.MapFrom(src => src.ReferralOrganisationDto))
+        CreateMap<ServiceDto, Data.Entities.Service>()
+            .ForMember(dest => dest.Organisation, opt => opt.MapFrom(src => src.OrganisationDto))
             .ReverseMap();
-        CreateMap<ReferralOrganisationDto, Organisation>().ReverseMap();
+        CreateMap<OrganisationDto, Organisation>().ReverseMap();
         CreateMap<Organisation, Organisation>();
     }
 }

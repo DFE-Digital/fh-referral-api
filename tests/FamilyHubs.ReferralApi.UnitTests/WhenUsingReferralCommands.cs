@@ -8,7 +8,6 @@ using FamilyHubs.ReferralService.Shared.Dto;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Xunit.Abstractions;
 
 namespace FamilyHubs.Referral.UnitTests
 {
@@ -50,7 +49,7 @@ namespace FamilyHubs.Referral.UnitTests
             mockApplicationDbContext.Referrals.Add(ReferralSeedData.SeedReferral().ElementAt(0));
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
-            testReferral.ReferrerDto = mapper.Map<ReferrerDto>(ReferralSeedData.SeedReferral().ElementAt(0).Referrer);
+            testReferral.UserDto = mapper.Map<UserDto>(ReferralSeedData.SeedReferral().ElementAt(0).Referrer);
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
 
@@ -186,7 +185,7 @@ namespace FamilyHubs.Referral.UnitTests
             mockApplicationDbContext.Referrals.Add(ReferralSeedData.SeedReferral().ElementAt(0));
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
-            testReferral.ReferralServiceDto = mapper.Map<ReferralServiceDto>(ReferralSeedData.SeedReferral().ElementAt(0).Service);
+            testReferral.ServiceDto = mapper.Map<ServiceDto>(ReferralSeedData.SeedReferral().ElementAt(0).Service);
 
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
@@ -244,7 +243,7 @@ namespace FamilyHubs.Referral.UnitTests
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
             await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralsByReferrerCommand getcommand = new("Bob.Users@email.com", 1,10, null);
+            GetReferralsByReferrerCommand getcommand = new(testReferral.UserDto.EmailAddress, 1,10, null);
             GetReferralsByReferrerCommandHandler gethandler = new(mockApplicationDbContext, mapper);
             
 
@@ -274,7 +273,7 @@ namespace FamilyHubs.Referral.UnitTests
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
             await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralsByReferrerCommand getcommand = new("Bob.Users@email.com", 1, 10, searchText);
+            GetReferralsByReferrerCommand getcommand = new(testReferral.UserDto.EmailAddress, 1, 10, searchText);
             GetReferralsByReferrerCommandHandler gethandler = new(mockApplicationDbContext, mapper);
 
 
@@ -391,34 +390,37 @@ namespace FamilyHubs.Referral.UnitTests
                     Country = "Country",
                     PostCode = "B30 2TV"
                 },
-                ReferrerDto = new ReferrerDto
+                UserDto = new UserDto
                 {
                     Id = 2,
-                    EmailAddress = "Bob.Users@email.com",
-                    Name = "Bob Users",
+                    EmailAddress = "Bob.User@email.com",
+                    Name = "Bob User",
                     PhoneNumber = "1234567890",
-                    Role = "Role",
-                    Team = "Teams"
+                    OrganisationId = 2,
                 },
-                Status = new List<ReferralStatusDto>
+                Status = new StatusDto
                 {
-                    new ReferralStatusDto
-                    {
-                        Id = 2,
-                        Status = "New"
-                    }
+                    Id = 1,
+                    Name = "New",
+                    SortOrder = 1
                 },
-                ReferralServiceDto = new ReferralServiceDto
+                ServiceDto = new ServiceDto
                 {
                     Id = 2,
                     Name = "Services",
                     Description = "Services Description",
-                    ReferralOrganisationDto = new ReferralOrganisationDto
+                    OrganisationDto = new OrganisationDto
                     {
                         Id = 2,
                         Name = "Organisation",
                         Description = "Organisation Description",
                     }
+                },
+                TeamDto = new TeamDto
+                {
+                    Id = 1,
+                    Name = "Team",
+                    OrganisationId = 2
                 }
 
             };

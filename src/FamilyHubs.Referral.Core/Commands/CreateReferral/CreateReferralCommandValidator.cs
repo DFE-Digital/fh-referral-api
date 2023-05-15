@@ -12,7 +12,7 @@ public class CreateReferralCommandValidator : AbstractValidator<CreateReferralCo
         RuleFor(v => v.ReferralDto.Id)
             .Equal(0);
 
-        RuleFor(v => v.ReferralDto.ReferralServiceDto)
+        RuleFor(v => v.ReferralDto.ServiceDto)
             .NotNull()
             .NotEmpty();
 
@@ -20,7 +20,7 @@ public class CreateReferralCommandValidator : AbstractValidator<CreateReferralCo
             .NotNull()
             .NotEmpty();
 
-        RuleFor(v => v.ReferralDto.ReferrerDto)
+        RuleFor(v => v.ReferralDto.UserDto)
             .NotNull()
             .NotEmpty();
 

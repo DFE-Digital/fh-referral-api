@@ -10,5 +10,5 @@ public class Service : EntityBase<long>
     public virtual required Organisation Organisation { get; set; }
 
     // A Service is associated with one or many Referrals
-    public virtual required ICollection<Referral> Referrals { get; set; }
+    //public virtual required ICollection<Referral> Referrals { get; set; }
 }

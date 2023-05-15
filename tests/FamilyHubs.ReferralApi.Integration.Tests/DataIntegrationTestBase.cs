@@ -72,11 +72,49 @@ public abstract class DataIntegrationTestBase : IDisposable, IAsyncDisposable
 
     protected async Task<ReferralDto> CreateReferral(ReferralDto? newReferral = null)
     {
-
         var referral = Mapper.Map<Data.Entities.Referral>(newReferral ?? TestDataProvider.GetReferralDto());
 
-        TestDbContext.Referrals.Add(referral);
+        Team? team = TestDbContext.Teams.SingleOrDefault(x => x.Name == TestDataProvider.GetReferralDto().TeamDto.Name);
+        if (team == null)
+        {
+            var organisation = Mapper.Map<Organisation>(TestDataProvider.GetReferralDto().ServiceDto.OrganisationDto);
+            Organisation? dborganisation = TestDbContext.Organisations.SingleOrDefault(x => x.Id == organisation.Id);
+            if (dborganisation != null)
+            {
+                organisation = dborganisation;
+            }
+            team = new Team
+            {
+                Organisation = organisation,
+                Name = TestDataProvider.GetReferralDto().TeamDto.Name,
+            };
 
+            TestDbContext.Teams.Add(team);
+            TestDbContext.SaveChanges();
+
+        }
+
+
+        var status = TestDbContext.Statuses.SingleOrDefault(x => x.Id == referral.Status.Id);
+        if (status != null)
+        {
+            referral.Status = status;
+        }
+
+        var existingteam = TestDbContext.Teams.SingleOrDefault(x => x.Id == referral.Team.Id);
+        if (existingteam != null) 
+        {
+            referral.Team = existingteam;
+        }
+
+        var existingOrganisation = TestDbContext.Organisations.SingleOrDefault(x => x.Id == referral.Service.Organisation.Id);
+        if (existingOrganisation != null)
+        {
+            referral.Service.Organisation = existingOrganisation;
+        }
+
+        TestDbContext.Referrals.Add(referral);
+        
         await TestDbContext.SaveChangesAsync();
 
         return Mapper.Map(referral, newReferral ?? TestDataProvider.GetReferralDto());

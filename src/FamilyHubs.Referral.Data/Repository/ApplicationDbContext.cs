@@ -2,7 +2,6 @@
 using FamilyHubs.Referral.Data.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
-using System.Reflection.Metadata;
 
 namespace FamilyHubs.Referral.Data.Repository;
 
@@ -45,30 +44,14 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         optionsBuilder.AddInterceptors(_auditableEntitySaveChangesInterceptor);
     }
 
-    public DbSet<Data.Entities.Referral> Referrals => Set<Data.Entities.Referral>();
-
-    public DbSet<Recipient> Recipients => Set<Recipient>();
-
     public DbSet<Organisation> Organisations => Set<Organisation>();
-
+    public DbSet<Recipient> Recipients => Set<Recipient>();
+    public DbSet<Data.Entities.Referral> Referrals => Set<Data.Entities.Referral>();
+    public DbSet<Role> Roles => Set<Role>();
     public DbSet<Entities.Service> Services => Set<Entities.Service>();
-
     public DbSet<Status> Statuses => Set<Status>();
-
+    public DbSet<Team> Teams => Set<Team>();
     public DbSet<User> Users => Set<User>();
 
-    public DbSet<Team> Teams => Set<Team>();
+    
 }
-
-//public class ReferralPrimaryKey
-//{
-//    public long ServiceId { get; set; }
-
-//    public long StatusId { get; set; }
-
-//    public long RecipientId { get; set; }
-
-//    public long TeamId { get; set; }
-
-//    public long UserId { get; set; }
-//}

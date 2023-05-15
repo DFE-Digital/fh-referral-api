@@ -53,7 +53,7 @@ public class WhenUsingGetReferral : DataIntegrationTestBase
         await CreateReferral();
         var referral = TestDataProvider.GetReferralDto();
 
-        GetReferralsByReferrerCommand command = new(referral.ReferrerDto.EmailAddress, 1, 10, null);
+        GetReferralsByReferrerCommand command = new(referral.UserDto.EmailAddress, 1, 10, null);
         GetReferralsByReferrerCommandHandler handler = new(TestDbContext, Mapper);
 
         //Act

@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using FamilyHubs.ReferralService.Shared.Models;
 using FamilyHubs.ReferralService.Shared.Dto;
+using FamilyHubs.Referral.Data.Entities;
 
 namespace FamilyHubs.Referral.FunctionalTests;
 
@@ -95,31 +96,39 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 Country = "Country",
                 PostCode = "B31 2TV"
             },
-            ReferrerDto = new ReferrerDto
-            { 
-             
-                EmailAddress = "Bob.Users@email.com", 
+            UserDto = new UserDto
+            {
+
+                EmailAddress = "Bob.User@email.com",
+                PhoneNumber = "1234567890",
+                Name = "Bob.User",
+                OrganisationId = 1,
             },
-            Status = new List<ReferralStatusDto>
-            { 
-                new ReferralStatusDto
-                {
-                    Status = "New"
-                }
+            Status = new StatusDto
+            {
+                Id = 1,
+                Name = "New",
+                SortOrder = 1
             },
-            ReferralServiceDto = new ReferralServiceDto
+            ServiceDto = new ServiceDto
             {
                 Id = 3,
                 Name = "New Services",
                 Description = "Services Description",
-                ReferralOrganisationDto = new ReferralOrganisationDto
+                OrganisationDto = new OrganisationDto
                 { 
                     Id = 3,
                     Name = "New Organisation",
                     Description = "Organisation Description",
                 }
+            },
+            TeamDto = new TeamDto
+            {
+                Id = 1,
+                Name = "Team",
+                OrganisationId = 1
             }
-            
+
         };
 
         
@@ -240,29 +249,37 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 Country = "Country",
                 PostCode = "B30 2TV"
             },
-            ReferrerDto = new ReferrerDto
+            UserDto = new UserDto
             {
                 Id = 1,
-                EmailAddress = "Bob.Users@email.com",
+                EmailAddress = "Bob.User@email.com",
+                PhoneNumber = "1234567890",
+                Name = "Bob.User",
+                OrganisationId = 1,
             },
-            Status = new List<ReferralStatusDto>
+            Status = new StatusDto
             {
-                new ReferralStatusDto
-                {
-                    Status = "New"
-                }
+                Id = 1,
+                Name = "New",
+                SortOrder = 1
             },
-            ReferralServiceDto = new ReferralServiceDto
+            ServiceDto = new ServiceDto
             {
                 Id = 1,
                 Name = "Services",
                 Description = "Services Description",
-                ReferralOrganisationDto = new ReferralOrganisationDto
+                OrganisationDto = new OrganisationDto
                 {
                     Id = 1,
                     Name = "Organisation",
                     Description = "Organisation Description",
                 }
+            },
+            TeamDto = new TeamDto
+            {
+                Id = 1,
+                OrganisationId = 1,
+                Name = "Social Work team North",
             }
 
         };
@@ -290,7 +307,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Accept Connection")
+            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Accepted")
         };
 #if UseAuthoriseHeader
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
@@ -302,7 +319,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var stringResult = await response.Content.ReadAsStringAsync();
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-        stringResult.ToString().Should().Be("Accept Connection");
+        stringResult.ToString().Should().Be("Accepted");
     }
     
     

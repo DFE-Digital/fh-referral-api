@@ -41,8 +41,13 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
             .Include(x => x.Status)
             .Include(x => x.Referrer)
             .Include(x => x.Recipient)
+            .Include(x => x.Team)
+            .ThenInclude(x => x.Organisation)
             .Include(x => x.Service)
             .ThenInclude(x => x.Organisation)
+            .Include(x => x.Service)
+            .ThenInclude(x => x.Organisation)
+            .ThenInclude(x => x.Roles)
             .FirstOrDefault(x => x.Id == request.Id);
         if (entity == null)
         {
@@ -52,6 +57,7 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
         try
         {
             entity = _mapper.Map(request.ReferralDto, entity);
+            entity = AttachExistingStatus(entity);
             await _context.SaveChangesAsync(cancellationToken);
         }
         catch (Exception ex)
@@ -61,6 +67,16 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
         }
 
         return entity.Id;
+    }
+
+    private Data.Entities.Referral AttachExistingStatus(Data.Entities.Referral entity)
+    {
+        Status? status = _context.Statuses.SingleOrDefault(x => x.Name == entity.Status.Name);
+        if (status != null)
+        {
+            entity.Status = status;
+        }
+        return entity;
     }
 }
 

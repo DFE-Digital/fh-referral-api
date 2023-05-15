@@ -14,6 +14,7 @@ public static class TestDataProvider
             Id = 2,
             ReasonForSupport = "Reason For Support",
             EngageWithFamily = "Engage With Family",
+            Created = DateTime.UtcNow,
             RecipientDto = new RecipientDto
             {
                 Id = 2,
@@ -27,30 +28,37 @@ public static class TestDataProvider
                 Country = "Country",
                 PostCode = "B30 2TV"
             },
-            ReferrerDto = new ReferrerDto
+            UserDto = new UserDto
             {
                 Id = 2,
-                EmailAddress = "Bob.Users@email.com",
+                EmailAddress = "Bob.User@email.com",
+                PhoneNumber = "1234567890",
+                Name = "Bob.User",
+                OrganisationId = 2,
             },
-            Status = new List<ReferralStatusDto>
+            Status = new StatusDto
             {
-                new ReferralStatusDto
-                {
-                    Id = 2,
-                    Status = "New"
-                }
+                Id = 1,
+                Name = "New",
+                SortOrder = 1
             },
-            ReferralServiceDto = new ReferralServiceDto
+            ServiceDto = new ServiceDto
             {
                 Id = 2,
                 Name = "Services",
                 Description = "Services Description",
-                ReferralOrganisationDto = new ReferralOrganisationDto
+                OrganisationDto = new OrganisationDto
                 {
                     Id = 2,
                     Name = "Organisation",
                     Description = "Organisation Description",
                 }
+            },
+            TeamDto = new TeamDto
+            { 
+                Id = 2,
+                Name = "Team",
+                OrganisationId = 2
             }
 
         };
