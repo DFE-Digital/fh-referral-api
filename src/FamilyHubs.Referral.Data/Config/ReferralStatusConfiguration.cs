@@ -8,11 +8,11 @@ public class ReferralStatusConfiguration : IEntityTypeConfiguration<ReferralStat
 {
     public void Configure(EntityTypeBuilder<ReferralStatus> builder)
     {
-        builder.Property(t => t.Status)
+        builder.Property(t => t.Name)
             .IsRequired()
             .HasMaxLength(256);
 
-        builder.Property(t => t.ReferralId)
+        builder.Property(t => t.SortOrder)
             .IsRequired();
 
         builder.Property(t => t.Created)

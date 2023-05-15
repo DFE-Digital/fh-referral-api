@@ -11,6 +11,7 @@ public class AutoMappingProfiles : Profile
         CreateMap<ReferralDto, Data.Entities.Referral>()
             .ForMember(dest => dest.Created, opt => opt.Ignore())
             .ForMember(dest => dest.LastModified, opt => opt.Ignore())
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
             .ForMember(dest => dest.Referrer, opt => opt.MapFrom(src => src.ReferrerDto))
             .ForMember(dest => dest.Recipient, opt => opt.MapFrom(src => src.RecipientDto))
             .ForMember(dest => dest.ReferralService, opt => opt.MapFrom(src => src.ReferralServiceDto))

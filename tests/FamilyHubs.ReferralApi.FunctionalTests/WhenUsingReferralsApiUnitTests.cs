@@ -100,12 +100,11 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
              
                 EmailAddress = "Bob.Referrer@email.com", 
             },
-            Status = new List<ReferralStatusDto>
-            { 
-                new ReferralStatusDto
-                {
-                    Status = "New"
-                }
+            Status = new ReferralStatusDto
+            {
+                Id = 1,
+                Name = "New",
+                SortOrder = 0
             },
             ReferralServiceDto = new ReferralServiceDto
             {
@@ -245,12 +244,11 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 Id = 1,
                 EmailAddress = "Bob.Referrer@email.com",
             },
-            Status = new List<ReferralStatusDto>
+            Status = new ReferralStatusDto
             {
-                new ReferralStatusDto
-                {
-                    Status = "New"
-                }
+                Id = 1,
+                Name = "New",
+                SortOrder = 0
             },
             ReferralServiceDto = new ReferralServiceDto
             {
@@ -290,7 +288,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Accept Connection")
+            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Opened")
         };
 #if UseAuthoriseHeader
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
@@ -302,7 +300,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var stringResult = await response.Content.ReadAsStringAsync();
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-        stringResult.ToString().Should().Be("Accept Connection");
+        stringResult.ToString().Should().Be("Opened");
     }
     
     

@@ -12,7 +12,6 @@
 		<PackageReference Include="AutoMapper.Collection.EntityFrameworkCore" Version="9.0.0" />
 		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
 		<PackageReference Include="EncryptColumn.Core" Version="1.0.0" />
-		<PackageReference Include="FamilyHubs.ReferralService.Shared" Version="1.0.2" />
 		<PackageReference Include="FamilyHubs.SharedKernel" Version="2.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.5" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.5" />
@@ -30,6 +29,10 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\fh-referral-shared\src\FamilyHubs.ReferralService.Shared\FamilyHubs.ReferralService.Shared.csproj" />
   </ItemGroup>
 
 </Project>

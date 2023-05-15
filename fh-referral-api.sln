@@ -19,6 +19,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.Referral.Integra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.Referral.UnitTests", "tests\FamilyHubs.ReferralApi.UnitTests\FamilyHubs.Referral.UnitTests.csproj", "{3D5EA105-2126-4CFB-8100-268E8404AAE1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B2847081-94CA-454D-AE4F-EA73E44D1D09}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.ReferralService.Shared", "..\fh-referral-shared\src\FamilyHubs.ReferralService.Shared\FamilyHubs.ReferralService.Shared.csproj", "{B6019825-0BF3-49E3-9027-7708C2ED2542}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +53,10 @@ Global
 		{3D5EA105-2126-4CFB-8100-268E8404AAE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D5EA105-2126-4CFB-8100-268E8404AAE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D5EA105-2126-4CFB-8100-268E8404AAE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6019825-0BF3-49E3-9027-7708C2ED2542}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6019825-0BF3-49E3-9027-7708C2ED2542}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6019825-0BF3-49E3-9027-7708C2ED2542}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6019825-0BF3-49E3-9027-7708C2ED2542}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

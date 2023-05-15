@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FamilyHubs.Referral.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace FamilyHubs.Referral.Data.Repository;
@@ -53,13 +54,28 @@ public class ApplicationDbContextInitialiser
 
     public async Task TrySeedAsync()
     {
-        if (_context.Referrals.Any())
+        if (_context.ReferralStatuses.Any())
             return;
 
-        IReadOnlyCollection<Data.Entities.Referral> referrals = ReferralSeedData.SeedReferral();
+        IReadOnlyCollection<ReferralStatus> statuses = ReferralSeedData.SeedStatuses();
+
+        _context.ReferralStatuses.AddRange(statuses);
+
+        await _context.SaveChangesAsync();
+
+        IReadOnlyCollection<Entities.Referral> referrals = ReferralSeedData.SeedReferral();
+
+        foreach (Entities.Referral referral in referrals)
+        {
+            var status = _context.ReferralStatuses.SingleOrDefault(x => x.Name == referral.Status.Name);
+            if (status != null)
+            {
+                referral.Status = status;
+            }
+        }
 
         _context.Referrals.AddRange(referrals);
-        
+
         await _context.SaveChangesAsync();
 
     }
