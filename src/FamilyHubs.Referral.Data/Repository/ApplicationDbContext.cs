@@ -23,6 +23,9 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
+        modelBuilder.Entity<Data.Entities.Referral>()
+            .HasKey(o => new { o.ReferralServiceId, o.ReferralStatusId, o.RecipientId, o.ReferrerId });
+
         base.OnModelCreating(modelBuilder);
     }
 
