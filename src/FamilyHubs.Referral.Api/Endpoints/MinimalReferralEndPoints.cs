@@ -2,6 +2,7 @@
 using FamilyHubs.Referral.Core.Commands.SetReferralStatus;
 using FamilyHubs.Referral.Core.Commands.UpdateReferral;
 using FamilyHubs.Referral.Core.Queries.GetReferrals;
+using FamilyHubs.Referral.Core.Queries.GetReferralStatus;
 using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -62,5 +63,13 @@ public class MinimalReferralEndPoints
             return result;
 
         }).WithMetadata(new SwaggerOperationAttribute("Referrals", "Set Referral Status") { Tags = new[] { "Referrals" } });
+
+        app.MapGet("api/referralstatuses", [Authorize] async (CancellationToken cancellationToken, ISender _mediator) =>
+        {
+            GetReferralStatusesCommand request = new();
+            var result = await _mediator.Send(request, cancellationToken);
+            return result;
+
+        }).WithMetadata(new SwaggerOperationAttribute("Get Referral Statuses", "Get Referral Statuses") { Tags = new[] { "Referrals" } });
     }
 }
