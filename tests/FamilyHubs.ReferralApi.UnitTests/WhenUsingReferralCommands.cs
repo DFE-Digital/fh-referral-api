@@ -398,6 +398,37 @@ namespace FamilyHubs.Referral.UnitTests
             result.Count.Should().Be(statuses.Count);
         }
 
+        [Theory]
+        [InlineData(null,null,null,null)]
+        [InlineData(null, 1L, null, null)]
+        [InlineData(null, null, 2L, null)]
+        [InlineData(null, null, null, 2L)]
+        [InlineData(2L, 1L, 2L, 2L)]
+        public async Task ThenGetReferralsByCompositeKey(long? serviceId, long? statusId, long? recipientId, long? referralId)
+        {
+            //Arange
+            var myProfile = new AutoMappingProfiles();
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            IMapper mapper = new Mapper(configuration);
+            var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
+            var mockApplicationDbContext = GetApplicationDbContext();
+            var testReferral = GetReferralDto();
+            CreateReferralCommand command = new(testReferral);
+            CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
+            await handler.Handle(command, new System.Threading.CancellationToken());
+
+            GetReferralByServiceIdStatusIdRecipientIdReferrerIdCommand getcommand = new(serviceId, statusId, recipientId, referralId);
+            GetReferralByServiceIdStatusIdRecipientIdReferrerIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
+
+
+            //Act
+            var result = await gethandler.Handle(getcommand, new System.Threading.CancellationToken());
+
+            //Assert
+            result.Should().NotBeNull();
+            result.Count.Should().Be(1);
+        }
+
         public static ReferralDto GetReferralDto()
         {
             return new ReferralDto
