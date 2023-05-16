@@ -1,4 +1,5 @@
 ﻿using FamilyHubs.Referral.Data.EMailServices;
+using FamilyHubs.ReferralService.Shared.Models;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;

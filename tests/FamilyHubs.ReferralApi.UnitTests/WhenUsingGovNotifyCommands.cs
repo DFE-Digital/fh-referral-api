@@ -1,5 +1,6 @@
 ﻿using FamilyHubs.Referral.Core.Commands.CreateNotification;
 using FamilyHubs.Referral.Data.EMailServices;
+using FamilyHubs.ReferralService.Shared.Models;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;

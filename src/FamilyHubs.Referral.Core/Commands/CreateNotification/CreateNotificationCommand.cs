@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using FamilyHubs.Referral.Core.Interfaces.Commands;
+using FamilyHubs.ReferralService.Shared.Models;
 
 namespace FamilyHubs.Referral.Core.Commands.CreateNotification;
 

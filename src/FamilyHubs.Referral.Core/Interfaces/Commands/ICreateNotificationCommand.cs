@@ -1,4 +1,4 @@
-﻿using FamilyHubs.Referral.Data.EMailServices;
+﻿using FamilyHubs.ReferralService.Shared.Models;
 
 namespace FamilyHubs.Referral.Core.Interfaces.Commands;
 

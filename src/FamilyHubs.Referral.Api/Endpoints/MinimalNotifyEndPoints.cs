@@ -1,12 +1,8 @@
 ﻿using FamilyHubs.Referral.Core.Commands.CreateNotification;
-using FamilyHubs.Referral.Core.Commands.CreateReferral;
-using FamilyHubs.Referral.Data.EMailServices;
-using FamilyHubs.ReferralService.Shared.Dto;
+using FamilyHubs.ReferralService.Shared.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Diagnostics;
-using System.Threading;
 
 namespace FamilyHubs.Referral.Api.Endpoints;
 

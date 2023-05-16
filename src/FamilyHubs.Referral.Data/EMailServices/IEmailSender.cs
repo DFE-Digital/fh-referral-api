@@ -1,4 +1,6 @@
-﻿namespace FamilyHubs.Referral.Data.EMailServices;
+﻿using FamilyHubs.ReferralService.Shared.Models;
+
+namespace FamilyHubs.Referral.Data.EMailServices;
 
 public interface IEmailSender
 {

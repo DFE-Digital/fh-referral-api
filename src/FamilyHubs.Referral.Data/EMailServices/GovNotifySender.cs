@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using FamilyHubs.ReferralService.Shared.Models;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Notify.Client;
 using Notify.Interfaces;
