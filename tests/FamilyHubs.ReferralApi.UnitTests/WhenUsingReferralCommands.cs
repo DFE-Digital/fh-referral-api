@@ -4,6 +4,7 @@ using FamilyHubs.Referral.Core.Commands.CreateReferral;
 using FamilyHubs.Referral.Core.Commands.SetReferralStatus;
 using FamilyHubs.Referral.Core.Commands.UpdateReferral;
 using FamilyHubs.Referral.Core.Queries.GetReferrals;
+using FamilyHubs.Referral.Core.Queries.GetReferralStatus;
 using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
@@ -372,6 +373,29 @@ namespace FamilyHubs.Referral.UnitTests
             result.Id.Should().Be(id);
             result.Created.Should().NotBeNull();
             result.Should().BeEquivalentTo(testReferral, options => options.Excluding(x => x.Created).Excluding(x => x.LastModified));
+        }
+
+        [Fact]
+        public async Task ThenGetReferralStatusList()
+        {
+            //Arange
+            var myProfile = new AutoMappingProfiles();
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            IMapper mapper = new Mapper(configuration);
+            var mockApplicationDbContext = GetApplicationDbContext();
+            IReadOnlyCollection<ReferralStatus> statuses = ReferralSeedData.SeedStatuses();
+            mockApplicationDbContext.ReferralStatuses.AddRange(statuses);
+            await mockApplicationDbContext.SaveChangesAsync();
+            GetReferralStatusesCommand command = new();
+            GetReferralStatusesCommandHandler handler = new(mockApplicationDbContext, mapper);
+
+
+            //Act
+            var result = await handler.Handle(command, new System.Threading.CancellationToken());
+
+            //Assert
+            result.Should().NotBeNull();
+            result.Count.Should().Be(statuses.Count);
         }
 
         public static ReferralDto GetReferralDto()

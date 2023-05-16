@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using FamilyHubs.ReferralService.Shared.Models;
 using FamilyHubs.ReferralService.Shared.Dto;
+using static MassTransit.ValidationResultExtensions;
 
 namespace FamilyHubs.Referral.FunctionalTests;
 
@@ -302,8 +303,30 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
         stringResult.ToString().Should().Be("Opened");
     }
-    
-    
-    
-    
+
+    [Fact]
+    public async Task ThenReferralStatusListIsRetrieved()
+    {
+
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Get,
+            RequestUri = new Uri(Client.BaseAddress + "api/referralstatuses"),
+        };
+#if UseAuthoriseHeader
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+#endif
+        using var response = await Client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        var retVal = await JsonSerializer.DeserializeAsync<List<ReferralStatusDto>>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        ArgumentNullException.ThrowIfNull(retVal);
+        retVal.Should().NotBeNull();
+        retVal.Count.Should().Be(ReferralSeedData.SeedStatuses().Count);
+    }
+
+
 }
