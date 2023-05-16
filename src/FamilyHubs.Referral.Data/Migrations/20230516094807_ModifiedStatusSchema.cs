@@ -13,8 +13,8 @@ namespace FamilyHubs.Referral.Data.Migrations
             migrationBuilder.Sql("DELETE FROM ReferralStatuses", true);
             migrationBuilder.Sql("DELETE FROM ReferralOrganisations", true);
             migrationBuilder.Sql("DELETE FROM ReferralServices", true);
-            migrationBuilder.Sql("DELETE FROM Recipients", true);
             migrationBuilder.Sql("DELETE FROM Referrers", true);
+            migrationBuilder.Sql("DELETE FROM Recipients", true);
             migrationBuilder.Sql("DELETE FROM Referrals", true);
 
             migrationBuilder.DropForeignKey(
