@@ -56,7 +56,15 @@ public class MinimalReferralEndPoints
             
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referral By Id") { Tags = new[] { "Referrals" } });
 
-        app.MapPost("api/referralStatus/{referralId}/{status}", [Authorize] async (long referralId, string status, CancellationToken cancellationToken, ISender _mediator, ILogger<MinimalReferralEndPoints> logger) =>
+        app.MapGet("api/referral/compositekeys", [Authorize] async (long? serviceId, long? statusId, long? recipientId, long? referralId, CancellationToken cancellationToken, ISender _mediator) =>
+        {
+            GetReferralByServiceIdStatusIdRecipientIdReferrerIdCommand request = new(serviceId, statusId, recipientId, referralId);
+            var result = await _mediator.Send(request, cancellationToken);
+            return result;
+
+        }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referral By Composite Keys") { Tags = new[] { "Referrals" } });
+
+        app.MapPost("api/referralStatus/{referralId}/{status}", async (long referralId, string status, CancellationToken cancellationToken, ISender _mediator, ILogger<MinimalReferralEndPoints> logger) =>
         {
             SetReferralStatusCommand command = new(referralId, status);
             var result = await _mediator.Send(command, cancellationToken);
