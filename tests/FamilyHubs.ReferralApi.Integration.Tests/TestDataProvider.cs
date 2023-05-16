@@ -32,13 +32,11 @@ public static class TestDataProvider
                 Id = 2,
                 EmailAddress = "Bob.Referrer@email.com",
             },
-            Status = new List<ReferralStatusDto>
+            Status = new ReferralStatusDto
             {
-                new ReferralStatusDto
-                {
-                    Id = 2,
-                    Status = "New"
-                }
+                Id = 1,
+                Name = "New",
+                SortOrder = 0
             },
             ReferralServiceDto = new ReferralServiceDto
             {

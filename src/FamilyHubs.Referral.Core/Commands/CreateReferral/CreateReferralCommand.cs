@@ -51,26 +51,26 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         Data.Entities.Referral entity = _mapper.Map<Data.Entities.Referral>(request.ReferralDto);
         ArgumentNullException.ThrowIfNull(entity);
 
-        if (entity.Status != null)
-        {
-            for (int i = entity.Status.Count - 1; i >= 0; i--)
-            {
-                var referralStatus = _context.ReferralStatuses.FirstOrDefault(x => x.Id == entity.Status.ElementAt(i).Id);
-                if (referralStatus != null)
-                {
-                    entity.Status.Remove(entity.Status.ElementAt(i));
-                    entity.Status.Add(referralStatus);
-                }
-            }
-        }
-
+        entity = AttachExistingStatus(entity);
         entity = AttachExistingReferrer(entity);
         entity = AttachExistingRecipient(entity);
         entity = AttachExistingService(entity);
 
         _context.Referrals.Add(entity);
 
+        _context.SaveChanges();
+
         return entity.Id;
+    }
+
+    private Data.Entities.Referral AttachExistingStatus(Data.Entities.Referral entity)
+    {
+        ReferralStatus? referralStatus = _context.ReferralStatuses.SingleOrDefault(x => x.Name == entity.Status.Name);
+        if (referralStatus != null)
+        {
+            entity.Status = referralStatus;
+        }
+        return entity;
     }
 
     private Data.Entities.Referral AttachExistingReferrer(Data.Entities.Referral entity)

@@ -52,7 +52,7 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
         try
         {
             entity = _mapper.Map(request.ReferralDto, entity);
-            entity.Status = AttachExistingStatus(entity.Status.ToList());
+            entity = AttachExistingStatus(entity);
 
             await _context.SaveChangesAsync(cancellationToken);
         }
@@ -65,23 +65,14 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
         return entity.Id;
     }
 
-    private List<Data.Entities.ReferralStatus> AttachExistingStatus(List<Data.Entities.ReferralStatus> referralStatuses)
+    private Data.Entities.Referral AttachExistingStatus(Data.Entities.Referral entity)
     {
-        List<Data.Entities.ReferralStatus> list = new();
-        for (int i = 0; i < referralStatuses.Count; i++) 
+        ReferralStatus? referralStatus = _context.ReferralStatuses.SingleOrDefault(x => x.Name == entity.Status.Name);
+        if (referralStatus != null)
         {
-            ReferralStatus? status = _context.ReferralStatuses.SingleOrDefault(x => x.Id == referralStatuses[i].Id);
-            if (status != null) 
-            {
-                list.Add(status);
-            }
-            else
-            {
-                list.Add(referralStatuses[i]);
-            }
+            entity.Status = referralStatus;
         }
-
-        return list;
+        return entity;
     }
 }
 

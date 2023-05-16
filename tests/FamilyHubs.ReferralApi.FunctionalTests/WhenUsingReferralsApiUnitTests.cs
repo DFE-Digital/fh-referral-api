@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using FamilyHubs.ReferralService.Shared.Models;
 using FamilyHubs.ReferralService.Shared.Dto;
+using static MassTransit.ValidationResultExtensions;
 
 namespace FamilyHubs.Referral.FunctionalTests;
 
@@ -100,12 +101,11 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
              
                 EmailAddress = "Bob.Referrer@email.com", 
             },
-            Status = new List<ReferralStatusDto>
-            { 
-                new ReferralStatusDto
-                {
-                    Status = "New"
-                }
+            Status = new ReferralStatusDto
+            {
+                Id = 1,
+                Name = "New",
+                SortOrder = 0
             },
             ReferralServiceDto = new ReferralServiceDto
             {
@@ -245,12 +245,11 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 Id = 1,
                 EmailAddress = "Bob.Referrer@email.com",
             },
-            Status = new List<ReferralStatusDto>
+            Status = new ReferralStatusDto
             {
-                new ReferralStatusDto
-                {
-                    Status = "New"
-                }
+                Id = 1,
+                Name = "New",
+                SortOrder = 0
             },
             ReferralServiceDto = new ReferralServiceDto
             {
@@ -290,7 +289,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Accept Connection")
+            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Opened")
         };
 #if UseAuthoriseHeader
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
@@ -302,10 +301,32 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var stringResult = await response.Content.ReadAsStringAsync();
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-        stringResult.ToString().Should().Be("Accept Connection");
+        stringResult.ToString().Should().Be("Opened");
     }
-    
-    
-    
-    
+
+    [Fact]
+    public async Task ThenReferralStatusListIsRetrieved()
+    {
+
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Get,
+            RequestUri = new Uri(Client.BaseAddress + "api/referralstatuses"),
+        };
+#if UseAuthoriseHeader
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+#endif
+        using var response = await Client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        var retVal = await JsonSerializer.DeserializeAsync<List<ReferralStatusDto>>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        ArgumentNullException.ThrowIfNull(retVal);
+        retVal.Should().NotBeNull();
+        retVal.Count.Should().Be(ReferralSeedData.SeedStatuses().Count);
+    }
+
+
 }

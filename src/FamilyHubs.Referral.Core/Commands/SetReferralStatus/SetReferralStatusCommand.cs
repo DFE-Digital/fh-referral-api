@@ -3,6 +3,9 @@ using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Data.Repository;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using FamilyHubs.ReferralService.Shared.Dto;
+using Microsoft.EntityFrameworkCore;
+using Ardalis.GuardClauses;
 
 namespace FamilyHubs.Referral.Core.Commands.SetReferralStatus;
 
@@ -19,11 +22,11 @@ public class SetReferralStatusCommand: IRequest<string>, ISetReferralStatusComma
     public string Status { get; }
 }
 
-public class CreateReferralStatusCommandHandler : IRequestHandler<SetReferralStatusCommand, string>
+public class SetReferralStatusCommandHandler : IRequestHandler<SetReferralStatusCommand, string>
 {
     private readonly ApplicationDbContext _context;
-    private readonly ILogger<CreateReferralStatusCommandHandler> _logger;
-    public CreateReferralStatusCommandHandler(ApplicationDbContext context, ILogger<CreateReferralStatusCommandHandler> logger)
+    private readonly ILogger<SetReferralStatusCommandHandler> _logger;
+    public SetReferralStatusCommandHandler(ApplicationDbContext context, ILogger<SetReferralStatusCommandHandler> logger)
     {
         _logger = logger;
         _context = context;
@@ -32,20 +35,32 @@ public class CreateReferralStatusCommandHandler : IRequestHandler<SetReferralSta
     {
         try
         {
-            var currentStatus = _context.ReferralStatuses.Where(x => x.ReferralId == request.ReferralId).OrderBy(x => x.LastModified).LastOrDefault();
-            if (currentStatus != null && currentStatus.Status == request.Status) 
-            { 
-                return currentStatus.Status;
+            var entity = await _context.Referrals
+            .Include(x => x.Status)
+            .Include(x => x.Referrer)
+            .Include(x => x.Recipient)
+            .Include(x => x.ReferralService)
+            .ThenInclude(x => x.ReferralOrganisation)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == request.ReferralId, cancellationToken: cancellationToken);
+
+            if (entity == null)
+            {
+                throw new NotFoundException(nameof(Referral), request.ReferralId.ToString());
             }
 
-            var entity = new ReferralStatus
+            var updatedStatus = _context.ReferralStatuses.SingleOrDefault(x => x.Name == request.Status);
+
+            if (updatedStatus == null)
             {
-                ReferralId = request.ReferralId,
-                Status = request.Status,
-            };
-            
-            _context.ReferralStatuses.Add(entity);
+                throw new NotFoundException(nameof(ReferralStatus), request.Status);
+            }
+
+            entity.Status = updatedStatus;
+
             await _context.SaveChangesAsync(cancellationToken);
+
+           
         }
         catch (Exception ex)
         {

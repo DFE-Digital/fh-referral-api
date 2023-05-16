@@ -4,9 +4,12 @@ using FamilyHubs.Referral.Core.Commands.CreateReferral;
 using FamilyHubs.Referral.Core.Commands.SetReferralStatus;
 using FamilyHubs.Referral.Core.Commands.UpdateReferral;
 using FamilyHubs.Referral.Core.Queries.GetReferrals;
+using FamilyHubs.Referral.Core.Queries.GetReferralStatus;
+using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit.Abstractions;
@@ -372,6 +375,29 @@ namespace FamilyHubs.Referral.UnitTests
             result.Should().BeEquivalentTo(testReferral, options => options.Excluding(x => x.Created).Excluding(x => x.LastModified));
         }
 
+        [Fact]
+        public async Task ThenGetReferralStatusList()
+        {
+            //Arange
+            var myProfile = new AutoMappingProfiles();
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            IMapper mapper = new Mapper(configuration);
+            var mockApplicationDbContext = GetApplicationDbContext();
+            IReadOnlyCollection<ReferralStatus> statuses = ReferralSeedData.SeedStatuses();
+            mockApplicationDbContext.ReferralStatuses.AddRange(statuses);
+            await mockApplicationDbContext.SaveChangesAsync();
+            GetReferralStatusesCommand command = new();
+            GetReferralStatusesCommandHandler handler = new(mockApplicationDbContext, mapper);
+
+
+            //Act
+            var result = await handler.Handle(command, new System.Threading.CancellationToken());
+
+            //Assert
+            result.Should().NotBeNull();
+            result.Count.Should().Be(statuses.Count);
+        }
+
         public static ReferralDto GetReferralDto()
         {
             return new ReferralDto
@@ -401,13 +427,11 @@ namespace FamilyHubs.Referral.UnitTests
                     Role = "Role",
                     Team = "Team"
                 },
-                Status = new List<ReferralStatusDto>
+                Status = new ReferralStatusDto
                 {
-                    new ReferralStatusDto
-                    {
-                        Id = 2,
-                        Status = "New"
-                    }
+                    Id = 1,
+                    Name = "New",
+                    SortOrder = 0
                 },
                 ReferralServiceDto = new ReferralServiceDto
                 {
@@ -434,12 +458,14 @@ namespace FamilyHubs.Referral.UnitTests
             IMapper mapper = new Mapper(configuration);
             var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
+            mockApplicationDbContext.ReferralStatuses.AddRange(ReferralSeedData.SeedStatuses());
+            mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
             CreateReferralCommand createCommand = new(testReferral);
             CreateReferralCommandHandler createHandler = new(mockApplicationDbContext, mapper, logger.Object);
             var setupresult = await createHandler.Handle(createCommand, new System.Threading.CancellationToken());
-            SetReferralStatusCommand command = new(testReferral.Id, "Accept Connection");
-            CreateReferralStatusCommandHandler handler = new(mockApplicationDbContext, new Mock<ILogger<CreateReferralStatusCommandHandler>>().Object);
+            SetReferralStatusCommand command = new(testReferral.Id, "Opened");
+            SetReferralStatusCommandHandler handler = new(mockApplicationDbContext, new Mock<ILogger<SetReferralStatusCommandHandler>>().Object);
 
             //Act
             var result = await handler.Handle(command, new System.Threading.CancellationToken());
@@ -448,7 +474,7 @@ namespace FamilyHubs.Referral.UnitTests
             setupresult.Should().BeGreaterThan(0);
             setupresult.Should().Be(testReferral.Id);
             result.Should().NotBeNull();
-            result.Should().Be("Accept Connection");
+            result.Should().Be("Opened");
 
         }
     }
