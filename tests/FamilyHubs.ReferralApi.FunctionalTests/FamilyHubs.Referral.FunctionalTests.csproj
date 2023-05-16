@@ -28,4 +28,10 @@
     <ProjectReference Include="..\..\src\FamilyHubs.Referral.Api\FamilyHubs.Referral.Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="appsettings.test.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

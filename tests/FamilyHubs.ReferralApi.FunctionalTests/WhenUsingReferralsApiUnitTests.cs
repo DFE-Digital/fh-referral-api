@@ -5,6 +5,7 @@ using System.Text.Json;
 using FamilyHubs.ReferralService.Shared.Models;
 using FamilyHubs.ReferralService.Shared.Dto;
 using static MassTransit.ValidationResultExtensions;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace FamilyHubs.Referral.FunctionalTests;
 
@@ -32,9 +33,9 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             Method = HttpMethod.Get,
             RequestUri = new Uri(Client.BaseAddress + $"api/referrals/{referrer}?pageNumber=1&pageSize=10"),
         };
-#if UseAuthoriseHeader
+
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
-#endif
+
         using var response = await Client.SendAsync(request);
 
         response.EnsureSuccessStatusCode();
@@ -60,9 +61,9 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             Method = HttpMethod.Get,
             RequestUri = new Uri(Client.BaseAddress + $"api/referrals/{referrer}?pageNumber=1&pageSize=10&searchText={searchText}"),
         };
-#if UseAuthoriseHeader
+
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
-#endif
+
         using var response = await Client.SendAsync(request);
 
         response.EnsureSuccessStatusCode();
@@ -129,9 +130,9 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             RequestUri = new Uri(Client.BaseAddress + "api/referrals"),
             Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json"),
         };
-#if UseAuthoriseHeader
+
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
-#endif
+
         using var response = await Client.SendAsync(request);
 
         response.EnsureSuccessStatusCode();
@@ -154,9 +155,9 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             Method = HttpMethod.Get,
             RequestUri = new Uri(Client.BaseAddress + "api/organisationreferrals/1?pageNumber=1&pageSize=10"),
         };
-#if UseAuthoriseHeader
+
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
-#endif
+
         using var response = await Client.SendAsync(request);
 
         response.EnsureSuccessStatusCode();
@@ -181,9 +182,9 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             Method = HttpMethod.Get,
             RequestUri = new Uri(Client.BaseAddress + $"api/organisationreferrals/1?pageNumber=1&pageSize=10&searchText={searchText}"),
         };
-#if UseAuthoriseHeader
+
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
-#endif
+
         using var response = await Client.SendAsync(request);
 
         response.EnsureSuccessStatusCode();
@@ -205,9 +206,9 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             Method = HttpMethod.Get,
             RequestUri = new Uri(Client.BaseAddress + "api/referral/1"),
         };
-#if UseAuthoriseHeader
+
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
-#endif
+
         using var response = await Client.SendAsync(request);
 
         response.EnsureSuccessStatusCode();
@@ -272,9 +273,9 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             RequestUri = new Uri(Client.BaseAddress + "api/referrals/1"),
             Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json"),
         };
-#if UseAuthoriseHeader
+
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
-#endif
+
         using var response = await Client.SendAsync(request);
 
         response.EnsureSuccessStatusCode();
@@ -291,9 +292,9 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             Method = HttpMethod.Post,
             RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Opened")
         };
-#if UseAuthoriseHeader
+
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
-#endif
+
         using var response = await Client.SendAsync(request);
 
         response.EnsureSuccessStatusCode();
@@ -313,9 +314,9 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             Method = HttpMethod.Get,
             RequestUri = new Uri(Client.BaseAddress + "api/referralstatuses"),
         };
-#if UseAuthoriseHeader
+
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
-#endif
+
         using var response = await Client.SendAsync(request);
 
         response.EnsureSuccessStatusCode();
