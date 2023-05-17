@@ -234,6 +234,7 @@ namespace FamilyHubs.Referral.UnitTests
 
         [Theory]
         [InlineData(null, null, 2)]
+        [InlineData(ReferralOrderBy.NotSet, true, 2)]
         [InlineData(ReferralOrderBy.DateSent, true,2)]
         [InlineData(ReferralOrderBy.DateSent, false,1)]
         [InlineData(ReferralOrderBy.Status, true,1)]
