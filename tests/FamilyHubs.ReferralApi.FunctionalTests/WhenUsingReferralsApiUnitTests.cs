@@ -40,34 +40,6 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         retVal.Items.Count.Should().BeGreaterThan(0);
     }
 
-    [Theory]
-    [InlineData("0001")]
-    [InlineData("Test User")]
-    [InlineData("0001 Test User")]
-    public async Task ThenReferralsByReferrerAreRetrievedWithSearchText(string searchText)
-    {
-        var referrer = ReferralSeedData.SeedReferral().ElementAt(0).Referrer.EmailAddress;
-
-        var request = new HttpRequestMessage
-        {
-            Method = HttpMethod.Get,
-            RequestUri = new Uri(Client.BaseAddress + $"api/referrals/{referrer}?pageNumber=1&pageSize=10&searchText={searchText}"),
-        };
-#if UseAuthoriseHeader
-        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
-#endif
-        using var response = await Client.SendAsync(request);
-
-        response.EnsureSuccessStatusCode();
-
-        var retVal = await JsonSerializer.DeserializeAsync<PaginatedList<ReferralDto>>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-        ArgumentNullException.ThrowIfNull(retVal);
-        retVal.Should().NotBeNull();
-        retVal.Items.Count.Should().BeGreaterThan(0);
-    }
-
     [Fact]
     public async Task ThenTheOpenReferralIsCreated()
     {
@@ -146,33 +118,6 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         {
             Method = HttpMethod.Get,
             RequestUri = new Uri(Client.BaseAddress + "api/organisationreferrals/1?pageNumber=1&pageSize=10"),
-        };
-#if UseAuthoriseHeader
-        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
-#endif
-        using var response = await Client.SendAsync(request);
-
-        response.EnsureSuccessStatusCode();
-
-        var retVal = await JsonSerializer.DeserializeAsync<PaginatedList<ReferralDto>>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-        ArgumentNullException.ThrowIfNull(retVal);
-        retVal.Should().NotBeNull();
-        retVal.Items.Count.Should().BeGreaterThan(0);
-    }
-
-    [Theory]
-    [InlineData("0001")]
-    [InlineData("Test User")]
-    [InlineData("0001 Test User")]
-    public async Task ThenReferralsByOrganisationIdAreRetrievedWithSearchText(string searchText)
-    {
-
-        var request = new HttpRequestMessage
-        {
-            Method = HttpMethod.Get,
-            RequestUri = new Uri(Client.BaseAddress + $"api/organisationreferrals/1?pageNumber=1&pageSize=10&searchText={searchText}"),
         };
 #if UseAuthoriseHeader
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
@@ -326,7 +271,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Get,
-            RequestUri = new Uri(Client.BaseAddress + $"api/referral/compositekeys?serviceId=1&statusId=1&recipientId=1&referralId=1"),
+            RequestUri = new Uri(Client.BaseAddress + $"api/referral/compositekeys?serviceId=1&statusId=1&recipientId=1&referralId=1&pageNumber=1&pageSize=10"),
         };
 #if UseAuthoriseHeader
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
@@ -335,12 +280,12 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
 
         response.EnsureSuccessStatusCode();
 
-        var retVal = await JsonSerializer.DeserializeAsync<List<ReferralDto>>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var retVal = await JsonSerializer.DeserializeAsync<PaginatedList<ReferralDto>>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
         ArgumentNullException.ThrowIfNull(retVal);
         retVal.Should().NotBeNull();
-        retVal.Count.Should().BeGreaterThan(0);
+        retVal.Items.Count.Should().BeGreaterThan(0);
     }
 
 

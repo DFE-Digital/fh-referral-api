@@ -35,7 +35,7 @@ public static class ReferralSeedData
         };
     }
 
-    public static IReadOnlyCollection<Data.Entities.Referral> SeedReferral()
+    public static IReadOnlyCollection<Data.Entities.Referral> SeedReferral(bool testing = false)
     {
         List<Data.Entities.Referral> listReferrals = new()
         {
@@ -71,10 +71,57 @@ public static class ReferralSeedData
                 },
                 ReferralService = new Data.Entities.ReferralService
                 {
+                    Id = 1,
                     Name = "Test Service",
                     Description = "Test Service Description",
                     ReferralOrganisation = new ReferralOrganisation
                     {
+                        Id = 1,
+                        ReferralServiceId = 1,
+                        Name = "Test Organisation",
+                        Description = "Test Organisation Description",
+                    }
+                }
+            },
+
+            new Data.Entities.Referral
+            {
+                ReasonForSupport = "Reason For Support 2",
+                EngageWithFamily = "Engage With Family 2",
+                Recipient = new Recipient
+                {
+                    Name = "Test User 2",
+                    Email = "TestUser2@email.com",
+                    Telephone = "078873457",
+                    TextPhone = "078873457",
+                    AddressLine1 = "User 2 Address Line 1",
+                    AddressLine2 = "User 2 Address Line 2",
+                    TownOrCity = "Birmingham",
+                    Country = "Country",
+                    PostCode = "B31 2TV"
+                },
+                Referrer = new Referrer
+                {
+                    EmailAddress = "Joe.Professional@email.com",
+                    Name = "Joe Professional",
+                    PhoneNumber = "011 222 3333",
+                    Role = "Social Worker",
+                    Team = "zSocial Work team North"
+                },
+                Status = new ReferralStatus
+                {
+                    Id = 1,
+                    Name = "Opened",
+                    SortOrder = 1,
+                },
+                ReferralService = new Data.Entities.ReferralService
+                {
+                    Id = 1,
+                    Name = "Test Service",
+                    Description = "Test Service Description",
+                    ReferralOrganisation = new ReferralOrganisation
+                    {
+                        Id = 1,
                         ReferralServiceId = 1,
                         Name = "Test Organisation",
                         Description = "Test Organisation Description",
@@ -82,6 +129,11 @@ public static class ReferralSeedData
                 }
             }
         };
+
+        if (!testing)
+        {
+            listReferrals.RemoveAt(1);
+        }
 
         return listReferrals;
 

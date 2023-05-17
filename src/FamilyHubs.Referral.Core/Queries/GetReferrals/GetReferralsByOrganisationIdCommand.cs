@@ -1,5 +1,6 @@
 ﻿using Ardalis.GuardClauses;
 using AutoMapper;
+using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Models;
@@ -11,30 +12,30 @@ namespace FamilyHubs.Referral.Core.Queries.GetReferrals;
 
 public class GetReferralsByOrganisationIdCommand : IRequest<PaginatedList<ReferralDto>>
 {
-    public GetReferralsByOrganisationIdCommand(long organisationId, int? pageNumber, int? pageSize, string? searchText)
+    public GetReferralsByOrganisationIdCommand(long organisationId, ReferralOrderBy? orderBy, bool? isAssending, int? pageNumber, int? pageSize)
     {
         OrganisationId = organisationId;
+        OrderBy = orderBy;
+        IsAssending = isAssending;
         PageNumber = pageNumber != null ? pageNumber.Value : 1;
-        PageSize = pageSize != null ? pageSize.Value : 1;
-        SearchText = searchText;
+        PageSize = pageSize != null ? pageSize.Value : 10;
     }
 
     public long OrganisationId { get; set; }
+    public ReferralOrderBy? OrderBy { get; init; }
+    public bool? IsAssending { get; init; }
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 10;
-    public string? SearchText { get; set; }
 }
 
-public class GetReferralsByOrganisationIdCommandHandler : IRequestHandler<GetReferralsByOrganisationIdCommand, PaginatedList<ReferralDto>>
+public class GetReferralsByOrganisationIdCommandHandler : GetReferralsHandlerBase, IRequestHandler<GetReferralsByOrganisationIdCommand, PaginatedList<ReferralDto>>
 {
-    private readonly ApplicationDbContext _context;
-    private readonly IMapper _mapper;
-
     public GetReferralsByOrganisationIdCommandHandler(ApplicationDbContext context, IMapper mapper)
+         : base(context, mapper)
     {
-        _context = context;
-        _mapper = mapper;
+
     }
+    
     public async Task<PaginatedList<ReferralDto>> Handle(GetReferralsByOrganisationIdCommand request, CancellationToken cancellationToken)
     {
         var entities = _context.Referrals
@@ -51,43 +52,9 @@ public class GetReferralsByOrganisationIdCommandHandler : IRequestHandler<GetRef
             throw new NotFoundException(nameof(Referral), request.OrganisationId.ToString());
         }
 
-        IEnumerable<Data.Entities.Referral> referralList = await entities.ToListAsync();
-        if (request.SearchText != null)
-        {
-            referralList = FilterReferrals(referralList, request.SearchText);
-        }
+        entities = OrderBy(entities, request.OrderBy, request.IsAssending);
 
-        List<ReferralDto> pagelist;
-        if (request != null)
-        {
-            var list = referralList.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).ToList();
-            pagelist = _mapper.Map<List<ReferralDto>>(list);
-            var result = new PaginatedList<ReferralDto>(pagelist.ToList(), pagelist.Count, request.PageNumber, request.PageSize);
-            return result;
-        }
+        return await GetPaginatedList(request == null, entities, request?.PageNumber ?? 1, request?.PageSize ?? 10);
         
-        pagelist = _mapper.Map<List<ReferralDto>>(entities);
-        return new PaginatedList<ReferralDto>(pagelist.ToList(), pagelist.Count, 1, 10);
-        
-    }
-
-    private List<Data.Entities.Referral> FilterReferrals(IEnumerable<Data.Entities.Referral> entities, string searchString)
-    {
-        if (searchString == null)
-            return entities.ToList();
-
-        var predicate = PredicateBuilder.New<Data.Entities.Referral>();
-
-        string[] parts = searchString.Split(' ');
-
-        foreach (var str in parts)
-        {
-            var tmp = str.ToLower();
-            predicate = predicate.Or(o => o.Recipient.Name.ToLower().IndexOf(tmp) != -1).Or(x => x.Id.ToString("X").IndexOf(tmp) != 1);
-        }
-
-        var results = entities.Where(predicate).ToList();
-
-        return results;
     }
 }
