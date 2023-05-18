@@ -1,5 +1,5 @@
 ﻿using FamilyHubs.Referral.Core.Queries.GetReferrals;
-using FamilyHubs.Referral.Data.Entities;
+using FamilyHubs.ReferralService.Shared.Enums;
 using FluentAssertions;
 
 namespace FamilyHubs.Referral.Integration.Tests;

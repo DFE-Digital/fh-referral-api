@@ -15,12 +15,3 @@ public class Referral : EntityBase<long>
     public virtual required ReferralService ReferralService { get; set; }
 
 }
-
-public enum ReferralOrderBy
-{
-    NotSet,
-    DateSent,
-    Status,
-    RecipientName,
-    Team
-}

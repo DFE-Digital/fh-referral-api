@@ -8,6 +8,7 @@ using FamilyHubs.Referral.Core.Queries.GetReferralStatus;
 using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
+using FamilyHubs.ReferralService.Shared.Enums;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -282,7 +283,6 @@ namespace FamilyHubs.Referral.UnitTests
             var myProfile = new AutoMappingProfiles();
             var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
             IMapper mapper = new Mapper(configuration);
-            //var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
             await CreateReferrals(mockApplicationDbContext);
             GetReferralsByOrganisationIdCommand getcommand = new(1, referralOrderBy, isAssending, 1, 10);

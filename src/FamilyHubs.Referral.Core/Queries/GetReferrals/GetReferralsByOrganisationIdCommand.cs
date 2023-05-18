@@ -1,10 +1,9 @@
 ﻿using Ardalis.GuardClauses;
 using AutoMapper;
-using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
+using FamilyHubs.ReferralService.Shared.Enums;
 using FamilyHubs.ReferralService.Shared.Models;
-using LinqKit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
