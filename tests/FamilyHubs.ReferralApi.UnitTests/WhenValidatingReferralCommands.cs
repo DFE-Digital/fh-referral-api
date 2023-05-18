@@ -1,6 +1,7 @@
 ﻿using FamilyHubs.Referral.Core.Commands.CreateReferral;
 using FamilyHubs.Referral.Core.Commands.UpdateReferral;
 using FamilyHubs.Referral.Core.Queries.GetReferrals;
+using FamilyHubs.Referral.Data.Entities;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
@@ -63,7 +64,7 @@ public class WhenValidatingReferralCommands
     {
         //Arrange
         var validator = new GetReferralsByOrganisationIdCommandValidator();
-        var testModel = new GetReferralsByOrganisationIdCommand(1, 1, 99, null);
+        var testModel = new GetReferralsByOrganisationIdCommand(1, null, null, 1, 99);
 
         //Act
         var result = validator.Validate(testModel);
@@ -77,7 +78,7 @@ public class WhenValidatingReferralCommands
     {
         //Arrange
         var validator = new GetReferralsByReferrerCommandValidator();
-        var testModel = new GetReferralsByReferrerCommand("id", 1, 99, null);
+        var testModel = new GetReferralsByReferrerCommand("id", null, null, 1, 99);
 
         //Act
         var result = validator.Validate(testModel);

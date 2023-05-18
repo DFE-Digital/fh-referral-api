@@ -1,4 +1,5 @@
 ﻿using FamilyHubs.Referral.Core.Queries.GetReferrals;
+using FamilyHubs.ReferralService.Shared.Enums;
 using FluentAssertions;
 
 namespace FamilyHubs.Referral.Integration.Tests;
@@ -26,13 +27,21 @@ public class WhenUsingGetReferral : DataIntegrationTestBase
 
     }
 
-    [Fact]
-    public async Task ThenGetReferralsByOrganisationIdOnly()
+    [Theory]
+    [InlineData(ReferralOrderBy.DateSent, true)]
+    [InlineData(ReferralOrderBy.DateSent, false)]
+    [InlineData(ReferralOrderBy.Status, true)]
+    [InlineData(ReferralOrderBy.Status, false)]
+    [InlineData(ReferralOrderBy.RecipientName, true)]
+    [InlineData(ReferralOrderBy.RecipientName, false)]
+    [InlineData(ReferralOrderBy.Team, true)]
+    [InlineData(ReferralOrderBy.Team, false)]
+    public async Task ThenGetReferralsByOrganisationIdOnly(ReferralOrderBy referralOrderBy, bool isAssending)
     {
         await CreateReferral();
         var referral = TestDataProvider.GetReferralDto();
 
-        GetReferralsByOrganisationIdCommand command = new(2,1,10, null);
+        GetReferralsByOrganisationIdCommand command = new(2, referralOrderBy, isAssending,  1,10);
         GetReferralsByOrganisationIdCommandHandler handler = new(TestDbContext, Mapper);
 
         //Act
@@ -47,13 +56,21 @@ public class WhenUsingGetReferral : DataIntegrationTestBase
 
     }
 
-    [Fact]
-    public async Task ThenGetReferralsByReferrerOnly()
+    [Theory]
+    [InlineData(ReferralOrderBy.DateSent, true)]
+    [InlineData(ReferralOrderBy.DateSent, false)]
+    [InlineData(ReferralOrderBy.Status, true)]
+    [InlineData(ReferralOrderBy.Status, false)]
+    [InlineData(ReferralOrderBy.RecipientName, true)]
+    [InlineData(ReferralOrderBy.RecipientName, false)]
+    [InlineData(ReferralOrderBy.Team, true)]
+    [InlineData(ReferralOrderBy.Team, false)]
+    public async Task ThenGetReferralsByReferrerOnly(ReferralOrderBy referralOrderBy, bool isAssending)
     {
         await CreateReferral();
         var referral = TestDataProvider.GetReferralDto();
 
-        GetReferralsByReferrerCommand command = new(referral.ReferrerDto.EmailAddress, 1, 10, null);
+        GetReferralsByReferrerCommand command = new(referral.ReferrerDto.EmailAddress, referralOrderBy, isAssending, 1, 10);
         GetReferralsByReferrerCommandHandler handler = new(TestDbContext, Mapper);
 
         //Act
