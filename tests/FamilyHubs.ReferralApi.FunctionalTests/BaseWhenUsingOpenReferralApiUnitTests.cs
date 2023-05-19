@@ -1,10 +1,15 @@
 ﻿using FamilyHubs.Referral.Data.Repository;
+using FamilyHubs.SharedKernel.Identity.Authentication.Gov;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.KeyVaultExtensions;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace FamilyHubs.Referral.FunctionalTests;
 
@@ -15,7 +20,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
     private readonly CustomWebApplicationFactory _webAppFactory;
     private bool _disposed;
     protected readonly JwtSecurityToken _token;
-
+   
     protected BaseWhenUsingOpenReferralApiUnitTests()
     {
         _disposed = false;
@@ -25,32 +30,26 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
                  .AddEnvironmentVariables()
                  .Build();
 
-        List<Claim> authClaims = new List<Claim> { new Claim(ClaimTypes.Role, "Professional") };
-        _token = CreateToken(authClaims, config);
+        var jti = Guid.NewGuid().ToString();
+        var key = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(config["GovUkOidcConfiguration:BearerTokenSigningKey"]!));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
+        _token = new JwtSecurityToken(
+            claims: new List<Claim>
+               {
+                    new Claim("sub", config["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
+                    new Claim("jti", jti),
+                    new Claim(ClaimTypes.Role, "Professional")
 
-
+               },
+            signingCredentials: creds,
+        expires: DateTime.UtcNow.AddMinutes(5)
+            );
+       
         _webAppFactory = new CustomWebApplicationFactory();
         _webAppFactory.SetupTestDatabaseAndSeedData();
 
         Client = _webAppFactory.CreateDefaultClient();
         Client.BaseAddress = new Uri("https://localhost:7192/");
-    }
-
-    private JwtSecurityToken CreateToken(List<Claim> authClaims, IConfiguration configuration)
-    {
-        var secret = configuration["GovUkOidcConfiguration:Oidc:PrivateKey"] ?? "";
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
-        
-
-        var token = new JwtSecurityToken(
-            configuration["JWT:ValidIssuer"],
-            audience: configuration["JWT:ValidAudience"],
-            expires: DateTime.Now.AddMinutes(5),
-            claims: authClaims,
-            signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-            );
-
-        return token;
     }
 
     protected virtual void Dispose(bool disposing)
