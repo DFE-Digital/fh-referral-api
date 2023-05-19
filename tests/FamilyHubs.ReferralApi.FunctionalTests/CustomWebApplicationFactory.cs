@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using FamilyHubs.Referral.Data.Repository;
 using Microsoft.Extensions.Logging;
 using FamilyHubs.Referral.Api;
+using FamilyHubs.Referral.Data.Entities;
 
 namespace FamilyHubs.Referral.FunctionalTests;
 
@@ -75,11 +76,31 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         {
             var context = scopedServices.GetRequiredService<ApplicationDbContext>();
 
-            IReadOnlyCollection<Data.Entities.Referral> referrals = ReferralSeedData.SeedReferral();
 
-            context.Referrals.AddRange(referrals);
+            IReadOnlyCollection<ReferralStatus> statuses = ReferralSeedData.SeedStatuses();
 
-            context.SaveChanges();
+            if (!context.ReferralStatuses.Any())
+            {
+                context.ReferralStatuses.AddRange(statuses);
+                context.SaveChanges();
+            }
+
+            if (!context.Referrals.Any())
+            {
+                IReadOnlyCollection<Data.Entities.Referral> referrals = ReferralSeedData.SeedReferral();
+
+                foreach (Data.Entities.Referral referral in referrals)
+                {
+                    var status = context.ReferralStatuses.SingleOrDefault(x => x.Name == referral.Status.Name);
+                    if (status != null)
+                    {
+                        referral.Status = status;
+                    }
+                }
+
+                context.Referrals.AddRange(referrals);
+                context.SaveChanges();
+            }
 
         }
         catch (Exception ex)
