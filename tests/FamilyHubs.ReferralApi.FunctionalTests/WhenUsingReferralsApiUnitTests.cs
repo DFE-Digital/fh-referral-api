@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Json;
 
 //Only run locally
-#if DEBUG
+#if ISLOCAL
 
 namespace FamilyHubs.Referral.FunctionalTests;
 
