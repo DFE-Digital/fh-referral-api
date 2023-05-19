@@ -238,12 +238,16 @@ namespace FamilyHubs.Referral.UnitTests
         [InlineData(ReferralOrderBy.NotSet, true, 2)]
         [InlineData(ReferralOrderBy.DateSent, true,2)]
         [InlineData(ReferralOrderBy.DateSent, false,1)]
+        [InlineData(ReferralOrderBy.DateUpdated, true, 2)]
+        [InlineData(ReferralOrderBy.DateUpdated, false, 1)]
         [InlineData(ReferralOrderBy.Status, true,1)]
         [InlineData(ReferralOrderBy.Status, false,2)]
         [InlineData(ReferralOrderBy.RecipientName, true,1)]
         [InlineData(ReferralOrderBy.RecipientName, false,2)]
         [InlineData(ReferralOrderBy.Team, true,1)]
         [InlineData(ReferralOrderBy.Team, false,2)]
+        [InlineData(ReferralOrderBy.ServiceName, true, 2)]
+        [InlineData(ReferralOrderBy.ServiceName, false, 2)]
         public async Task ThenGetReferralsByReferrer(ReferralOrderBy? referralOrderBy, bool? isAssending, int firstId)
         {
             //Arange
@@ -271,12 +275,16 @@ namespace FamilyHubs.Referral.UnitTests
         [Theory]
         [InlineData(ReferralOrderBy.DateSent, true, 2)]
         [InlineData(ReferralOrderBy.DateSent, false, 1)]
+        [InlineData(ReferralOrderBy.DateUpdated, true, 2)]
+        [InlineData(ReferralOrderBy.DateUpdated, false, 1)]
         [InlineData(ReferralOrderBy.Status, true, 1)]
         [InlineData(ReferralOrderBy.Status, false, 2)]
         [InlineData(ReferralOrderBy.RecipientName, true, 1)]
         [InlineData(ReferralOrderBy.RecipientName, false, 2)]
         [InlineData(ReferralOrderBy.Team, true, 1)]
         [InlineData(ReferralOrderBy.Team, false, 2)]
+        [InlineData(ReferralOrderBy.ServiceName, true, 2)]
+        [InlineData(ReferralOrderBy.ServiceName, false, 2)]
         public async Task ThenGetReferralsByOrganisationId(ReferralOrderBy referralOrderBy, bool isAssending, int firstId)
         {
             //Arange

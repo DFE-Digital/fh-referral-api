@@ -50,6 +50,11 @@ public abstract class GetReferralsHandlerBase
                     return currentList.OrderBy(x => x.Created);
                 return currentList.OrderByDescending(x => x.Created);
 
+            case ReferralOrderBy.DateUpdated:
+                if (isAssending.Value)
+                    return currentList.OrderBy(x => x.LastModified);
+                return currentList.OrderByDescending(x => x.LastModified);
+
             case ReferralOrderBy.Status:
                 if (isAssending.Value)
                     return currentList.OrderBy(x => x.Status.SortOrder);
@@ -59,6 +64,11 @@ public abstract class GetReferralsHandlerBase
                 if (isAssending.Value)
                     return currentList.OrderBy(x => x.Recipient.Name);
                 return currentList.OrderByDescending(x => x.Recipient.Name);
+
+            case ReferralOrderBy.ServiceName:
+                if (isAssending.Value)
+                    return currentList.OrderBy(x => x.ReferralService.Name);
+                return currentList.OrderByDescending(x => x.ReferralService.Name);
 
         }
 
