@@ -8,11 +8,10 @@ using FamilyHubs.Referral.Core.Queries.GetReferralStatus;
 using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
+using FamilyHubs.ReferralService.Shared.Enums;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Xunit.Abstractions;
 
 namespace FamilyHubs.Referral.UnitTests
 {
@@ -234,21 +233,28 @@ namespace FamilyHubs.Referral.UnitTests
             result.Should().Be(testReferral.Id);
         }
 
-        [Fact]
-        public async Task ThenGetReferralsByReferrer()
+        [Theory]
+        [InlineData(null, null, 2)]
+        [InlineData(ReferralOrderBy.NotSet, true, 2)]
+        [InlineData(ReferralOrderBy.DateSent, true,2)]
+        [InlineData(ReferralOrderBy.DateSent, false,1)]
+        [InlineData(ReferralOrderBy.Status, true,1)]
+        [InlineData(ReferralOrderBy.Status, false,2)]
+        [InlineData(ReferralOrderBy.RecipientName, true,1)]
+        [InlineData(ReferralOrderBy.RecipientName, false,2)]
+        [InlineData(ReferralOrderBy.Team, true,1)]
+        [InlineData(ReferralOrderBy.Team, false,2)]
+        public async Task ThenGetReferralsByReferrer(ReferralOrderBy? referralOrderBy, bool? isAssending, int firstId)
         {
             //Arange
             var myProfile = new AutoMappingProfiles();
             var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
             IMapper mapper = new Mapper(configuration);
-            var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
-            var testReferral = GetReferralDto();
-            CreateReferralCommand command = new(testReferral);
-            CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
-            await handler.Handle(command, new System.Threading.CancellationToken());
+            await CreateReferrals(mockApplicationDbContext);
+            
 
-            GetReferralsByReferrerCommand getcommand = new("Bob.Referrer@email.com", 1,10, null);
+            GetReferralsByReferrerCommand getcommand = new("Joe.Professional@email.com", referralOrderBy, isAssending, 1, 10);
             GetReferralsByReferrerCommandHandler gethandler = new(mockApplicationDbContext, mapper);
             
 
@@ -257,54 +263,29 @@ namespace FamilyHubs.Referral.UnitTests
 
             //Assert
             result.Should().NotBeNull();
-            result.Items.Count.Should().Be(1);
+            result.Items.Count.Should().Be(2);
             result.Items[0].Created.Should().NotBeNull();
+            result.Items[0].Id.Should().Be(firstId);
         }
 
         [Theory]
-        [InlineData("0002")]
-        [InlineData("Joe Blogs")]
-        [InlineData("0002 Joe Blogs")]
-        public async Task ThenGetReferralsByReferrerWithSearchText(string searchText)
+        [InlineData(ReferralOrderBy.DateSent, true, 2)]
+        [InlineData(ReferralOrderBy.DateSent, false, 1)]
+        [InlineData(ReferralOrderBy.Status, true, 1)]
+        [InlineData(ReferralOrderBy.Status, false, 2)]
+        [InlineData(ReferralOrderBy.RecipientName, true, 1)]
+        [InlineData(ReferralOrderBy.RecipientName, false, 2)]
+        [InlineData(ReferralOrderBy.Team, true, 1)]
+        [InlineData(ReferralOrderBy.Team, false, 2)]
+        public async Task ThenGetReferralsByOrganisationId(ReferralOrderBy referralOrderBy, bool isAssending, int firstId)
         {
             //Arange
             var myProfile = new AutoMappingProfiles();
             var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
             IMapper mapper = new Mapper(configuration);
-            var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
-            var testReferral = GetReferralDto();
-            CreateReferralCommand command = new(testReferral);
-            CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
-            await handler.Handle(command, new System.Threading.CancellationToken());
-
-            GetReferralsByReferrerCommand getcommand = new("Bob.Referrer@email.com", 1, 10, searchText);
-            GetReferralsByReferrerCommandHandler gethandler = new(mockApplicationDbContext, mapper);
-
-
-            //Act
-            var result = await gethandler.Handle(getcommand, new System.Threading.CancellationToken());
-
-            //Assert
-            result.Should().NotBeNull();
-            result.Items.Count.Should().Be(1);
-        }
-
-        [Fact]
-        public async Task ThenGetReferralsByOrganisationId()
-        {
-            //Arange
-            var myProfile = new AutoMappingProfiles();
-            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
-            IMapper mapper = new Mapper(configuration);
-            var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
-            var mockApplicationDbContext = GetApplicationDbContext();
-            var testReferral = GetReferralDto();
-            CreateReferralCommand command = new(testReferral);
-            CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
-            await handler.Handle(command, new System.Threading.CancellationToken());
-
-            GetReferralsByOrganisationIdCommand getcommand = new(2, 1, 10, null);
+            await CreateReferrals(mockApplicationDbContext);
+            GetReferralsByOrganisationIdCommand getcommand = new(1, referralOrderBy, isAssending, 1, 10);
             GetReferralsByOrganisationIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
 
 
@@ -313,38 +294,12 @@ namespace FamilyHubs.Referral.UnitTests
 
             //Assert
             result.Should().NotBeNull();
-            result.Items.Count.Should().Be(1);
+            result.Items.Count.Should().Be(2);
             result.Items[0].Created.Should().NotBeNull();
+            result.Items[0].Id.Should().Be(firstId);
         }
 
-        [Theory]
-        [InlineData("0002")]
-        [InlineData("Joe Blogs")]
-        [InlineData("0002 Joe Blogs")]
-        public async Task ThenGetReferralsByOrganisationIdWithSearchText(string searchText)
-        {
-            //Arange
-            var myProfile = new AutoMappingProfiles();
-            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
-            IMapper mapper = new Mapper(configuration);
-            var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
-            var mockApplicationDbContext = GetApplicationDbContext();
-            var testReferral = GetReferralDto();
-            CreateReferralCommand command = new(testReferral);
-            CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
-            await handler.Handle(command, new System.Threading.CancellationToken());
-
-            GetReferralsByOrganisationIdCommand getcommand = new(2, 1, 10, searchText);
-            GetReferralsByOrganisationIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
-
-
-            //Act
-            var result = await gethandler.Handle(getcommand, new System.Threading.CancellationToken());
-
-            //Assert
-            result.Should().NotBeNull();
-            result.Items.Count.Should().Be(1);
-        }
+        
 
         [Fact]
         public async Task ThenGetReferralsById()
@@ -417,7 +372,7 @@ namespace FamilyHubs.Referral.UnitTests
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
             await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralByServiceIdStatusIdRecipientIdReferrerIdCommand getcommand = new(serviceId, statusId, recipientId, referralId);
+            GetReferralByServiceIdStatusIdRecipientIdReferrerIdCommand getcommand = new(serviceId, statusId, recipientId, referralId, ReferralOrderBy.RecipientName, true,1, 10);
             GetReferralByServiceIdStatusIdRecipientIdReferrerIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
 
 
@@ -426,7 +381,7 @@ namespace FamilyHubs.Referral.UnitTests
 
             //Assert
             result.Should().NotBeNull();
-            result.Count.Should().Be(1);
+            result.Items.Count.Should().Be(1);
         }
 
         public static ReferralDto GetReferralDto()
