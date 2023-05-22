@@ -61,7 +61,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 AddressLine1 = "Unit Test Address Line 1",
                 AddressLine2 = "Unit Test Address Line 2",
                 TownOrCity = "Town or City",
-                Country = "Country",
+                County = "County",
                 PostCode = "B31 2TV"
             },
             ReferrerDto = new ReferrerDto
@@ -178,7 +178,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 AddressLine1 = "Address Line 1",
                 AddressLine2 = "Address Line 2",
                 TownOrCity = "Town or City",
-                Country = "Country",
+                County = "County",
                 PostCode = "B30 2TV"
             },
             ReferrerDto = new ReferrerDto

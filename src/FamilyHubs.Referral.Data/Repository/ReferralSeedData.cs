@@ -52,7 +52,7 @@ public static class ReferralSeedData
                     AddressLine1 = "Address Line 1",
                     AddressLine2 = "Address Line 2",
                     TownOrCity = "Birmingham",
-                    Country = "Country",
+                    County = "Country",
                     PostCode = "B30 2TV"
                 },
                 Referrer = new Referrer
@@ -97,7 +97,7 @@ public static class ReferralSeedData
                     AddressLine1 = "User 2 Address Line 1",
                     AddressLine2 = "User 2 Address Line 2",
                     TownOrCity = "Birmingham",
-                    Country = "Country",
+                    County = "Country",
                     PostCode = "B31 2TV"
                 },
                 Referrer = new Referrer
