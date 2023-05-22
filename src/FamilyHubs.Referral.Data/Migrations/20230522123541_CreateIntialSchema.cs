@@ -24,7 +24,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                     AddressLine1 = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AddressLine2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TownOrCity = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    County = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PostCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
@@ -40,8 +40,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                 name: "ReferralServices",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<long>(type: "bigint", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -97,8 +96,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                 name: "ReferralOrganisations",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<long>(type: "bigint", nullable: false),
                     ReferralServiceId = table.Column<long>(type: "bigint", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyHubs.Referral.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230522100955_CorrectedRecipientProperty")]
-    partial class CorrectedRecipientProperty
+    [Migration("20230522123541_CreateIntialSchema")]
+    partial class CreateIntialSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -144,10 +144,7 @@ namespace FamilyHubs.Referral.Data.Migrations
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralOrganisation", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime?>("Created")
                         .IsRequired()
@@ -186,10 +183,7 @@ namespace FamilyHubs.Referral.Data.Migrations
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralService", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime?>("Created")
                         .IsRequired()

@@ -141,10 +141,7 @@ namespace FamilyHubs.Referral.Data.Migrations
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralOrganisation", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime?>("Created")
                         .IsRequired()
@@ -183,10 +180,7 @@ namespace FamilyHubs.Referral.Data.Migrations
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralService", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime?>("Created")
                         .IsRequired()
