@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Azure.Core;
 using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
@@ -31,20 +30,22 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         _context = context;
         _mapper = mapper;
     }
+
     public async Task<long> Handle(CreateReferralCommand request, CancellationToken cancellationToken)
     {
-        long id = 0;
+        long id;
         if (_context.Database.IsSqlServer()) 
         {
-            using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = await _context.Database.BeginTransactionAsync(cancellationToken))
             {
                 try
                 {
                     id = await CreateAndUpdateReferral(request, cancellationToken);
+                    await transaction.CommitAsync(cancellationToken);
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
+                    await transaction.RollbackAsync(cancellationToken);
                     _logger.LogError(ex, "An error occurred creating referral. {exceptionMessage}", ex.Message);
                     throw;
                 }
