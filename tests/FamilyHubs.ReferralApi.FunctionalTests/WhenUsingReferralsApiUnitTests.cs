@@ -66,8 +66,11 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             },
             ReferrerDto = new ReferrerDto
             { 
-             
-                EmailAddress = "Bob.Referrer@email.com", 
+                EmailAddress = "Bob.Referrer@email.com",
+                Name = "Bob Referrer",
+                PhoneNumber = "011 222 5555",
+                Role = "Social Worker",
+                Team = "Social Work team North"
             },
             Status = new ReferralStatusDto
             {
