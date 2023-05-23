@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
+using FamilyHubs.SharedKernel.GovLogin.AppStart;
 
 namespace FamilyHubs.Referral.Api;
 
@@ -41,6 +42,8 @@ public static class StartupExtensions
 
     public static void RegisterApplicationComponents(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddBearerAuthentication(configuration);
+
         services.RegisterAppDbContext(configuration);
 
         services.RegisterMinimalEndPoints();

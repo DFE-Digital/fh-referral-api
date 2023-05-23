@@ -30,12 +30,17 @@ public class WhenUsingGetReferral : DataIntegrationTestBase
     [Theory]
     [InlineData(ReferralOrderBy.DateSent, true)]
     [InlineData(ReferralOrderBy.DateSent, false)]
+    [InlineData(ReferralOrderBy.DateUpdated, true)]
+    [InlineData(ReferralOrderBy.DateUpdated, false)]
     [InlineData(ReferralOrderBy.Status, true)]
     [InlineData(ReferralOrderBy.Status, false)]
     [InlineData(ReferralOrderBy.RecipientName, true)]
     [InlineData(ReferralOrderBy.RecipientName, false)]
     [InlineData(ReferralOrderBy.Team, true)]
     [InlineData(ReferralOrderBy.Team, false)]
+    [InlineData(ReferralOrderBy.ServiceName, true)]
+    [InlineData(ReferralOrderBy.ServiceName, false)]
+
     public async Task ThenGetReferralsByOrganisationIdOnly(ReferralOrderBy referralOrderBy, bool isAssending)
     {
         await CreateReferral();
@@ -59,12 +64,16 @@ public class WhenUsingGetReferral : DataIntegrationTestBase
     [Theory]
     [InlineData(ReferralOrderBy.DateSent, true)]
     [InlineData(ReferralOrderBy.DateSent, false)]
+    [InlineData(ReferralOrderBy.DateUpdated, true)]
+    [InlineData(ReferralOrderBy.DateUpdated, false)]
     [InlineData(ReferralOrderBy.Status, true)]
     [InlineData(ReferralOrderBy.Status, false)]
     [InlineData(ReferralOrderBy.RecipientName, true)]
     [InlineData(ReferralOrderBy.RecipientName, false)]
     [InlineData(ReferralOrderBy.Team, true)]
     [InlineData(ReferralOrderBy.Team, false)]
+    [InlineData(ReferralOrderBy.ServiceName, true)]
+    [InlineData(ReferralOrderBy.ServiceName, false)]
     public async Task ThenGetReferralsByReferrerOnly(ReferralOrderBy referralOrderBy, bool isAssending)
     {
         await CreateReferral();

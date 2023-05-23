@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyHubs.Referral.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230516124001_CreateIntialSchema")]
+    [Migration("20230522123541_CreateIntialSchema")]
     partial class CreateIntialSchema
     {
         /// <inheritdoc />
@@ -39,7 +39,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                     b.Property<string>("AddressLine2")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Country")
+                    b.Property<string>("County")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("Created")
@@ -144,10 +144,7 @@ namespace FamilyHubs.Referral.Data.Migrations
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralOrganisation", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime?>("Created")
                         .IsRequired()
@@ -186,10 +183,7 @@ namespace FamilyHubs.Referral.Data.Migrations
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralService", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime?>("Created")
                         .IsRequired()

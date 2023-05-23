@@ -23,6 +23,9 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
+        modelBuilder.Entity<Entities.ReferralService>().Property(c => c.Id).ValueGeneratedNever();
+        modelBuilder.Entity<Entities.ReferralOrganisation>().Property(c => c.Id).ValueGeneratedNever();
+
         base.OnModelCreating(modelBuilder);
     }
 

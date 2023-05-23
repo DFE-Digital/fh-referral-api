@@ -9,6 +9,6 @@ public class Recipient : EntityBase<long>
     public string? AddressLine1 { get; set; }
     public string? AddressLine2 { get; set; }
     public string? TownOrCity { get; set; }
-    public string? Country { get; set; }
+    public string? County { get; set; }
     public string? PostCode { get; set; }
 }

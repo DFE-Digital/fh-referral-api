@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace FamilyHubs.Referral.Core.Commands.CreateReferral;
@@ -32,33 +34,67 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
     public async Task<long> Handle(CreateReferralCommand request, CancellationToken cancellationToken)
     {
         long id = 0;
-        try
+        if (_context.Database.IsSqlServer()) 
         {
-            id = CreateReferral(request);
-            await _context.SaveChangesAsync(cancellationToken);
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    id = await CreateAndUpdateReferral(request, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    _logger.LogError(ex, "An error occurred creating referral. {exceptionMessage}", ex.Message);
+                    throw;
+                }
+            }
         }
-        catch (Exception ex)
+        else
         {
-            _logger.LogError(ex, "An error occurred creating referral. {exceptionMessage}", ex.Message);
-            throw;
+            try
+            {
+                id = await CreateAndUpdateReferral(request, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred creating referral. {exceptionMessage}", ex.Message);
+                throw;
+            }
         }
+            
 
         return id;
     }
 
-    private long CreateReferral(CreateReferralCommand request)
+    private async Task<long> CreateAndUpdateReferral(CreateReferralCommand request, CancellationToken cancellationToken)
     {
         Data.Entities.Referral entity = _mapper.Map<Data.Entities.Referral>(request.ReferralDto);
         ArgumentNullException.ThrowIfNull(entity);
 
+        entity.Recipient.Id = 0;
+
         entity = AttachExistingStatus(entity);
         entity = AttachExistingReferrer(entity);
-        entity = AttachExistingRecipient(entity);
         entity = AttachExistingService(entity);
 
         _context.Referrals.Add(entity);
 
-        _context.SaveChanges();
+        await _context.SaveChangesAsync(cancellationToken);
+
+        //Make sure all Dto Id's are correctly updated
+        request.ReferralDto.Id = entity.Id;
+        request.ReferralDto.Status.Id = entity.Status.Id;
+        request.ReferralDto.RecipientDto.Id = entity.Recipient.Id;
+        request.ReferralDto.ReferrerDto.Id = entity.Referrer.Id;
+        request.ReferralDto.ReferralServiceDto.Id = entity.ReferralService.Id;
+        request.ReferralDto.ReferralServiceDto.ReferralOrganisationDto.Id = entity.ReferralService.ReferralOrganisation.Id;
+
+
+        //Update Referrer / Recipient / Service / Organisation with latest details
+        entity = _mapper.Map(request.ReferralDto, entity);
+
+        await _context.SaveChangesAsync(cancellationToken);
 
         return entity.Id;
     }
@@ -82,42 +118,12 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         }
         return entity;
     }
-
-    private Data.Entities.Referral AttachExistingRecipient(Data.Entities.Referral entity)
-    {
-        Recipient? recipient = null;
-        if (!string.IsNullOrEmpty(entity.Recipient.Telephone))
-        {
-            recipient = _context.Recipients.SingleOrDefault(x => x.Telephone == entity.Recipient.Telephone);
-        }
-        else if (!string.IsNullOrEmpty(entity.Recipient.TextPhone))
-        {
-            recipient = _context.Recipients.SingleOrDefault(x => x.TextPhone == entity.Recipient.Telephone);
-        }
-        else if (!string.IsNullOrEmpty(entity.Recipient.Email))
-        {
-            recipient = _context.Recipients.SingleOrDefault(x => !string.IsNullOrEmpty(x.Email) && x.Email.ToLower() == entity.Recipient.Email.ToLower());
-        }
-        else if (!string.IsNullOrEmpty(entity.Recipient.Name) && !string.IsNullOrEmpty(entity.Recipient.PostCode))
-        {
-            recipient = _context.Recipients.SingleOrDefault(x => !string.IsNullOrEmpty(x.Name) && !string.IsNullOrEmpty(x.PostCode) && x.Name.ToLower() == entity.Recipient.Name.ToLower() && x.PostCode.ToLower() == entity.Recipient.PostCode.ToLower());
-        }
-
-        if (recipient != null) 
-        {
-            entity.Recipient = recipient;
-        }
-
-
-        return entity;
-    }
-
     private Data.Entities.Referral AttachExistingService(Data.Entities.Referral entity)
     {
-        Data.Entities.ReferralService? referrer = _context.ReferralServices.SingleOrDefault(x => x.Name.ToLower() == entity.ReferralService.Name.ToLower() && x.ReferralOrganisation.Name.ToLower() == entity.ReferralService.ReferralOrganisation.Name.ToLower());
-        if (referrer != null)
+        Data.Entities.ReferralService? referralService = _context.ReferralServices.SingleOrDefault(x => x.Id == entity.ReferralService.Id);
+        if (referralService != null)
         {
-            entity.ReferralService = referrer;
+            entity.ReferralService = referralService;
         }
         return entity;
     }

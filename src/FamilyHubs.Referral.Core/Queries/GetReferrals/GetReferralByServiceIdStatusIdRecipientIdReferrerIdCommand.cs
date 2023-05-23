@@ -1,6 +1,5 @@
 ﻿using Ardalis.GuardClauses;
 using AutoMapper;
-using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Enums;

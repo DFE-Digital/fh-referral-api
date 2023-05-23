@@ -29,7 +29,10 @@ namespace FamilyHubs.Referral.UnitTests
             IMapper mapper = new Mapper(configuration);
             var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
+            mockApplicationDbContext.ReferralStatuses.AddRange(ReferralSeedData.SeedStatuses());
+            mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
+            testReferral.Status.Id = 0;
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
 
@@ -54,6 +57,7 @@ namespace FamilyHubs.Referral.UnitTests
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
             testReferral.ReferrerDto = mapper.Map<ReferrerDto>(ReferralSeedData.SeedReferral().ElementAt(0).Referrer);
+            testReferral.ReferrerDto.Id = mockApplicationDbContext.Referrers.First().Id;
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
 
@@ -78,7 +82,8 @@ namespace FamilyHubs.Referral.UnitTests
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
             testReferral.RecipientDto = new RecipientDto
-            { 
+            {
+                Id = mockApplicationDbContext.Recipients.First().Id,
                 Name = ReferralSeedData.SeedReferral().ElementAt(0).Recipient.Name,
                 Email = ReferralSeedData.SeedReferral().ElementAt(0).Recipient.Email,
             };
@@ -107,6 +112,7 @@ namespace FamilyHubs.Referral.UnitTests
             var testReferral = GetReferralDto();
             testReferral.RecipientDto = new RecipientDto
             {
+                Id = mockApplicationDbContext.Recipients.First().Id,
                 Name = ReferralSeedData.SeedReferral().ElementAt(0).Recipient.Name,
                 Telephone = ReferralSeedData.SeedReferral().ElementAt(0).Recipient.Telephone,
             };
@@ -135,6 +141,7 @@ namespace FamilyHubs.Referral.UnitTests
             var testReferral = GetReferralDto();
             testReferral.RecipientDto = new RecipientDto
             {
+                Id = mockApplicationDbContext.Recipients.First().Id,
                 Name = ReferralSeedData.SeedReferral().ElementAt(0).Recipient.Name,
                 TextPhone = ReferralSeedData.SeedReferral().ElementAt(0).Recipient.TextPhone,
             };
@@ -163,6 +170,7 @@ namespace FamilyHubs.Referral.UnitTests
             var testReferral = GetReferralDto();
             testReferral.RecipientDto = new RecipientDto
             {
+                Id = mockApplicationDbContext.Recipients.First().Id,
                 Name = ReferralSeedData.SeedReferral().ElementAt(0).Recipient.Name,
                 PostCode = ReferralSeedData.SeedReferral().ElementAt(0).Recipient.PostCode,
             };
@@ -178,7 +186,7 @@ namespace FamilyHubs.Referral.UnitTests
         }
 
         [Fact]
-        public async Task ThenCreateReferralWithExitingService()
+        public async Task ThenCreateReferralWithExitingServiceAndUpdateSubProporties()
         {
             //Arange
             var myProfile = new AutoMappingProfiles();
@@ -191,6 +199,20 @@ namespace FamilyHubs.Referral.UnitTests
             var testReferral = GetReferralDto();
             testReferral.ReferralServiceDto = mapper.Map<ReferralServiceDto>(ReferralSeedData.SeedReferral().ElementAt(0).ReferralService);
 
+            testReferral.ReasonForSupport = "New Reason For Support";
+            testReferral.EngageWithFamily = "New Engage With Family";
+            testReferral.RecipientDto.Telephone = "078123459";
+            testReferral.RecipientDto.TextPhone = "078123459";
+            testReferral.RecipientDto.AddressLine1 = "Address Line 1A";
+            testReferral.RecipientDto.AddressLine2 = "Address Line 2A";
+            testReferral.RecipientDto.TownOrCity = "Town or CityA";
+            testReferral.RecipientDto.County = "CountyA";
+            testReferral.ReferrerDto.PhoneNumber = "1234567899";
+            testReferral.ReferralServiceDto.Name = "Service A";
+            testReferral.ReferralServiceDto.Description = "Service Description A";
+            testReferral.ReferralServiceDto.ReferralOrganisationDto.Name = "Organisation A";
+            testReferral.ReferralServiceDto.ReferralOrganisationDto.Description = "Organisation Description A";
+
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
 
@@ -200,6 +222,16 @@ namespace FamilyHubs.Referral.UnitTests
             //Assert
             result.Should().BeGreaterThan(0);
             result.Should().Be(testReferral.Id);
+
+            GetReferralByIdCommand getcommand = new(testReferral.Id);
+            GetReferralByIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
+
+
+            //Check and Assert
+            var getresult = await gethandler.Handle(getcommand, new System.Threading.CancellationToken());
+            getresult.Should().BeEquivalentTo(testReferral, options => options.Excluding(x => x.Created).Excluding(x => x.LastModified));
+            
+
         }
 
         [Fact]
@@ -238,12 +270,16 @@ namespace FamilyHubs.Referral.UnitTests
         [InlineData(ReferralOrderBy.NotSet, true, 2)]
         [InlineData(ReferralOrderBy.DateSent, true,2)]
         [InlineData(ReferralOrderBy.DateSent, false,1)]
+        [InlineData(ReferralOrderBy.DateUpdated, true, 2)]
+        [InlineData(ReferralOrderBy.DateUpdated, false, 1)]
         [InlineData(ReferralOrderBy.Status, true,1)]
         [InlineData(ReferralOrderBy.Status, false,2)]
         [InlineData(ReferralOrderBy.RecipientName, true,1)]
         [InlineData(ReferralOrderBy.RecipientName, false,2)]
         [InlineData(ReferralOrderBy.Team, true,1)]
         [InlineData(ReferralOrderBy.Team, false,2)]
+        [InlineData(ReferralOrderBy.ServiceName, true, 2)]
+        [InlineData(ReferralOrderBy.ServiceName, false, 2)]
         public async Task ThenGetReferralsByReferrer(ReferralOrderBy? referralOrderBy, bool? isAssending, int firstId)
         {
             //Arange
@@ -271,12 +307,16 @@ namespace FamilyHubs.Referral.UnitTests
         [Theory]
         [InlineData(ReferralOrderBy.DateSent, true, 2)]
         [InlineData(ReferralOrderBy.DateSent, false, 1)]
+        [InlineData(ReferralOrderBy.DateUpdated, true, 2)]
+        [InlineData(ReferralOrderBy.DateUpdated, false, 1)]
         [InlineData(ReferralOrderBy.Status, true, 1)]
         [InlineData(ReferralOrderBy.Status, false, 2)]
         [InlineData(ReferralOrderBy.RecipientName, true, 1)]
         [InlineData(ReferralOrderBy.RecipientName, false, 2)]
         [InlineData(ReferralOrderBy.Team, true, 1)]
         [InlineData(ReferralOrderBy.Team, false, 2)]
+        [InlineData(ReferralOrderBy.ServiceName, true, 2)]
+        [InlineData(ReferralOrderBy.ServiceName, false, 2)]
         public async Task ThenGetReferralsByOrganisationId(ReferralOrderBy referralOrderBy, bool isAssending, int firstId)
         {
             //Arange
@@ -356,9 +396,9 @@ namespace FamilyHubs.Referral.UnitTests
         [Theory]
         [InlineData(null,null,null,null)]
         [InlineData(null, 1L, null, null)]
-        [InlineData(null, null, 2L, null)]
+        [InlineData(null, null, 1L, null)]
         [InlineData(null, null, null, 2L)]
-        [InlineData(2L, 1L, 2L, 2L)]
+        [InlineData(2L, 1L, 1L, 2L)]
         public async Task ThenGetReferralsByCompositeKey(long? serviceId, long? statusId, long? recipientId, long? referralId)
         {
             //Arange
@@ -401,7 +441,7 @@ namespace FamilyHubs.Referral.UnitTests
                     AddressLine1 = "Address Line 1",
                     AddressLine2 = "Address Line 2",
                     TownOrCity = "Town or City",
-                    Country = "Country",
+                    County = "County",
                     PostCode = "B30 2TV"
                 },
                 ReferrerDto = new ReferrerDto
