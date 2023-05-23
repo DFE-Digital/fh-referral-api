@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
@@ -50,9 +51,10 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         Data.Entities.Referral entity = _mapper.Map<Data.Entities.Referral>(request.ReferralDto);
         ArgumentNullException.ThrowIfNull(entity);
 
+        entity.Recipient.Id = 0;
+
         entity = AttachExistingStatus(entity);
         entity = AttachExistingReferrer(entity);
-        entity = AttachExistingRecipient(entity);
         entity = AttachExistingService(entity);
 
         _context.Referrals.Add(entity);
@@ -96,34 +98,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         return entity;
     }
 
-    private Data.Entities.Referral AttachExistingRecipient(Data.Entities.Referral entity)
-    {
-        var recipientFilter = _context.Recipients.Where(x => x.Name.ToLower() == entity.Recipient.Name.ToLower());
-
-        if (!string.IsNullOrEmpty(entity.Recipient.Telephone))
-        {
-            recipientFilter = recipientFilter.Where(x => x.Telephone == entity.Recipient.Telephone);
-        }
-        if (!string.IsNullOrEmpty(entity.Recipient.TextPhone))
-        {
-            recipientFilter = recipientFilter.Where(x => x.TextPhone == entity.Recipient.TextPhone);
-        }
-        if (!string.IsNullOrEmpty(entity.Recipient.Email))
-        {
-            recipientFilter = recipientFilter.Where(x => !string.IsNullOrEmpty(x.Email) && x.Email.ToLower() == entity.Recipient.Email.ToLower());
-        }
-        if (!string.IsNullOrEmpty(entity.Recipient.PostCode))
-        {
-            recipientFilter = recipientFilter.Where(x => !string.IsNullOrEmpty(x.Name) && !string.IsNullOrEmpty(x.PostCode) && x.Name.ToLower() == entity.Recipient.Name.ToLower() && x.PostCode.ToLower() == entity.Recipient.PostCode.ToLower());
-        }
-
-        if (recipientFilter != null && recipientFilter.Count() == 1) 
-        {
-            entity.Recipient = recipientFilter.First();
-        }
-
-        return entity;
-    }
+    
 
     private Data.Entities.Referral AttachExistingService(Data.Entities.Referral entity)
     {

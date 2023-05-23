@@ -393,9 +393,9 @@ namespace FamilyHubs.Referral.UnitTests
         [Theory]
         [InlineData(null,null,null,null)]
         [InlineData(null, 1L, null, null)]
-        [InlineData(null, null, 2L, null)]
+        [InlineData(null, null, 1L, null)]
         [InlineData(null, null, null, 2L)]
-        [InlineData(2L, 1L, 2L, 2L)]
+        [InlineData(2L, 1L, 1L, 2L)]
         public async Task ThenGetReferralsByCompositeKey(long? serviceId, long? statusId, long? recipientId, long? referralId)
         {
             //Arange
