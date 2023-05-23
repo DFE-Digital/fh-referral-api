@@ -29,7 +29,10 @@ namespace FamilyHubs.Referral.UnitTests
             IMapper mapper = new Mapper(configuration);
             var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
+            mockApplicationDbContext.ReferralStatuses.AddRange(ReferralSeedData.SeedStatuses());
+            mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
+            testReferral.Status.Id = 0;
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
 

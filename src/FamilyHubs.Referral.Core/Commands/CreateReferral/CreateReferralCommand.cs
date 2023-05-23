@@ -5,6 +5,7 @@ using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace FamilyHubs.Referral.Core.Commands.CreateReferral;
@@ -33,15 +34,35 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
     public async Task<long> Handle(CreateReferralCommand request, CancellationToken cancellationToken)
     {
         long id = 0;
-        try
+        if (_context.Database.IsSqlServer()) 
         {
-            id = await CreateAndUpdateReferral(request, cancellationToken);
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    id = await CreateAndUpdateReferral(request, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    _logger.LogError(ex, "An error occurred creating referral. {exceptionMessage}", ex.Message);
+                    throw;
+                }
+            }
         }
-        catch (Exception ex)
+        else
         {
-            _logger.LogError(ex, "An error occurred creating referral. {exceptionMessage}", ex.Message);
-            throw;
+            try
+            {
+                id = await CreateAndUpdateReferral(request, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred creating referral. {exceptionMessage}", ex.Message);
+                throw;
+            }
         }
+            
 
         return id;
     }
@@ -63,6 +84,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
         //Make sure all Dto Id's are correctly updated
         request.ReferralDto.Id = entity.Id;
+        request.ReferralDto.Status.Id = entity.Status.Id;
         request.ReferralDto.RecipientDto.Id = entity.Recipient.Id;
         request.ReferralDto.ReferrerDto.Id = entity.Referrer.Id;
         request.ReferralDto.ReferralServiceDto.Id = entity.ReferralService.Id;
@@ -71,7 +93,6 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
         //Update Referrer / Recipient / Service / Organisation with latest details
         entity = _mapper.Map(request.ReferralDto, entity);
-        entity = AttachExistingStatus(entity);
 
         await _context.SaveChangesAsync(cancellationToken);
 
@@ -97,9 +118,6 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         }
         return entity;
     }
-
-    
-
     private Data.Entities.Referral AttachExistingService(Data.Entities.Referral entity)
     {
         Data.Entities.ReferralService? referralService = _context.ReferralServices.SingleOrDefault(x => x.Id == entity.ReferralService.Id);
