@@ -98,29 +98,29 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     private Data.Entities.Referral AttachExistingRecipient(Data.Entities.Referral entity)
     {
-        Recipient? recipient = null;
+        var recipientFilter = _context.Recipients.Where(x => x.Name.ToLower() == entity.Recipient.Name.ToLower());
+
         if (!string.IsNullOrEmpty(entity.Recipient.Telephone))
         {
-            recipient = _context.Recipients.SingleOrDefault(x => x.Telephone == entity.Recipient.Telephone);
+            recipientFilter = recipientFilter.Where(x => x.Telephone == entity.Recipient.Telephone);
         }
-        else if (!string.IsNullOrEmpty(entity.Recipient.TextPhone))
+        if (!string.IsNullOrEmpty(entity.Recipient.TextPhone))
         {
-            recipient = _context.Recipients.SingleOrDefault(x => x.TextPhone == entity.Recipient.TextPhone);
+            recipientFilter = recipientFilter.Where(x => x.TextPhone == entity.Recipient.TextPhone);
         }
-        else if (!string.IsNullOrEmpty(entity.Recipient.Email))
+        if (!string.IsNullOrEmpty(entity.Recipient.Email))
         {
-            recipient = _context.Recipients.SingleOrDefault(x => !string.IsNullOrEmpty(x.Email) && x.Email.ToLower() == entity.Recipient.Email.ToLower());
+            recipientFilter = recipientFilter.Where(x => !string.IsNullOrEmpty(x.Email) && x.Email.ToLower() == entity.Recipient.Email.ToLower());
         }
-        else if (!string.IsNullOrEmpty(entity.Recipient.Name) && !string.IsNullOrEmpty(entity.Recipient.PostCode))
+        if (!string.IsNullOrEmpty(entity.Recipient.PostCode))
         {
-            recipient = _context.Recipients.SingleOrDefault(x => !string.IsNullOrEmpty(x.Name) && !string.IsNullOrEmpty(x.PostCode) && x.Name.ToLower() == entity.Recipient.Name.ToLower() && x.PostCode.ToLower() == entity.Recipient.PostCode.ToLower());
+            recipientFilter = recipientFilter.Where(x => !string.IsNullOrEmpty(x.Name) && !string.IsNullOrEmpty(x.PostCode) && x.Name.ToLower() == entity.Recipient.Name.ToLower() && x.PostCode.ToLower() == entity.Recipient.PostCode.ToLower());
         }
 
-        if (recipient != null) 
+        if (recipientFilter != null && recipientFilter.Count() == 1) 
         {
-            entity.Recipient = recipient;
+            entity.Recipient = recipientFilter.First();
         }
-
 
         return entity;
     }
