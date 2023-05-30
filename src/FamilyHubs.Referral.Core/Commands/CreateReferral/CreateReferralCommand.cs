@@ -34,21 +34,19 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
     public async Task<long> Handle(CreateReferralCommand request, CancellationToken cancellationToken)
     {
         long id;
-        if (_context.Database.IsSqlServer()) 
+        if (_context.Database.IsSqlServer())
         {
-            using (var transaction = await _context.Database.BeginTransactionAsync(cancellationToken))
+            await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+            try
             {
-                try
-                {
-                    id = await CreateAndUpdateReferral(request, cancellationToken);
-                    await transaction.CommitAsync(cancellationToken);
-                }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync(cancellationToken);
-                    _logger.LogError(ex, "An error occurred creating referral. {exceptionMessage}", ex.Message);
-                    throw;
-                }
+                id = await CreateAndUpdateReferral(request, cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                _logger.LogError(ex, "An error occurred creating referral. {exceptionMessage}", ex.Message);
+                throw;
             }
         }
         else
