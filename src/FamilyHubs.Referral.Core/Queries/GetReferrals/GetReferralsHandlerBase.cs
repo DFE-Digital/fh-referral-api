@@ -19,17 +19,18 @@ public abstract class GetReferralsHandlerBase
     }
     protected async Task<PaginatedList<ReferralDto>> GetPaginatedList(bool requestIsNull, IQueryable<Data.Entities.Referral> referralList, int pageNumber, int pageSize)
     {
+        int totalRecords = referralList.Count();
         List<ReferralDto> pagelist;
         if (!requestIsNull)
         {
             pagelist = await referralList.Skip((pageNumber - 1) * pageSize).Take(pageSize)
                 .ProjectTo<ReferralDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
-            return new PaginatedList<ReferralDto>(pagelist, pagelist.Count, pageNumber, pageSize);
+            return new PaginatedList<ReferralDto>(pagelist, totalRecords, pageNumber, pageSize);
         }
 
         pagelist = _mapper.Map<List<ReferralDto>>(referralList);
-        var result = new PaginatedList<ReferralDto>(pagelist.ToList(), pagelist.Count, 1, 10);
+        var result = new PaginatedList<ReferralDto>(pagelist.ToList(), totalRecords, 1, 10);
         return result;
     }
 
