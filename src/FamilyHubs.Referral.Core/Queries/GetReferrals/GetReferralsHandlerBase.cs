@@ -58,8 +58,8 @@ public abstract class GetReferralsHandlerBase
 
             case ReferralOrderBy.Status:
                 if (isAssending.Value)
-                    return currentList.OrderBy(x => x.Status.SortOrder);
-                return currentList.OrderByDescending(x => x.Status.SortOrder);
+                    return currentList.OrderBy(x => x.Status.SortOrder).ThenBy(x => x.Created);
+                return currentList.OrderByDescending(x => x.Status.SortOrder).ThenByDescending(x => x.Created);
 
             case ReferralOrderBy.RecipientName:
                 if (isAssending.Value)
