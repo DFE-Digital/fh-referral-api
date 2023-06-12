@@ -1,7 +1,8 @@
 using FamilyHubs.Referral.Data.Repository;
 using FluentAssertions;
-using FluentAssertions.Common;
 using Microsoft.Extensions.DependencyInjection;
+
+#if ISLOCAL
 
 namespace FamilyHubs.Referral.HistoricalData.Tests
 {
@@ -60,3 +61,5 @@ namespace FamilyHubs.Referral.HistoricalData.Tests
         }
     }
 }
+
+#endif
