@@ -25,6 +25,7 @@
 		<PackageReference Include="NETStandard.Library" Version="2.0.3" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.1" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0" />
+		<PackageReference Include="Quartz.Extensions.Hosting" Version="3.6.2" />
 		<PackageReference Include="SQLite" Version="3.13.0" />
 	</ItemGroup>
 

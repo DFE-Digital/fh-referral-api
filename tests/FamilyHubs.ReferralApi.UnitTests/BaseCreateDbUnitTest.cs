@@ -14,7 +14,7 @@ public class BaseCreateDbUnitTest
     protected static ApplicationDbContext GetApplicationDbContext()
     {
         var options = CreateNewContextOptions();
-        var auditableEntitySaveChangesInterceptor = new AuditableEntitySaveChangesInterceptor();
+        var auditableEntitySaveChangesInterceptor = new AuditableEntitySaveChangesInterceptor(new DateTimeService());
 
 #if _USE_EVENT_DISPATCHER
         var mockApplicationDbContext = new ApplicationDbContext(options, new Mock<IDomainEventDispatcher>().Object, auditableEntitySaveChangesInterceptor, configuration);

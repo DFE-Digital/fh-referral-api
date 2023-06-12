@@ -35,7 +35,7 @@ public abstract class DataIntegrationTestBase : IDisposable, IAsyncDisposable
     {
         var serviceDirectoryConnection = $"Data Source=sd-{Random.Shared.Next().ToString()}.db;Mode=ReadWriteCreate;Cache=Shared;Foreign Keys=True;Recursive Triggers=True;Default Timeout=30;Pooling=True";
 
-        var auditableEntitySaveChangesInterceptor = new AuditableEntitySaveChangesInterceptor();
+        var auditableEntitySaveChangesInterceptor = new AuditableEntitySaveChangesInterceptor(new DateTimeService());
 
         return new ServiceCollection()
             .AddEntityFrameworkSqlite()

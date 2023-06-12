@@ -7,6 +7,11 @@ namespace FamilyHubs.Referral.Data.Interceptors;
 
 public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
 {
+    private readonly IDateTime _dateTime;
+    public AuditableEntitySaveChangesInterceptor(IDateTime dateTime)
+    {
+        _dateTime = dateTime;
+    }
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
         UpdateEntities(eventData.Context);
@@ -30,13 +35,13 @@ public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
             if (entry.State == EntityState.Added)
             {
                 entry.Entity.CreatedBy = "System";
-                entry.Entity.Created = DateTime.UtcNow;
+                entry.Entity.Created = _dateTime.Now;
             }
 
             if (entry.State is EntityState.Added or EntityState.Modified || entry.HasChangedOwnedEntities())
             {
                 entry.Entity.LastModifiedBy = "System";
-                entry.Entity.LastModified = DateTime.UtcNow;
+                entry.Entity.LastModified = _dateTime.Now;
             }
         }
     }

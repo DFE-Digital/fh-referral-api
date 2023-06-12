@@ -16,6 +16,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
 using FamilyHubs.SharedKernel.GovLogin.AppStart;
+using Quartz;
 
 namespace FamilyHubs.Referral.Api;
 
@@ -51,6 +52,8 @@ public static class StartupExtensions
         services.RegisterAutoMapper();
 
         services.RegisterMediator();
+
+        services.RegisterQuartzScheduler();
     }
 
     private static void RegisterMinimalEndPoints(this IServiceCollection services)
@@ -73,6 +76,7 @@ public static class StartupExtensions
 
     private static void RegisterAppDbContext(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddTransient<IDateTime, DateTimeService>();
         services.AddTransient<AuditableEntitySaveChangesInterceptor>();
         services.AddTransient<ApplicationDbContextInitialiser>();
 
@@ -103,6 +107,33 @@ public static class StartupExtensions
                         .MigrationsHistoryTable("ReferralMigrationHistory"));
             }
         });
+    }
+
+    public static void RegisterQuartzScheduler(this IServiceCollection services)
+    {
+        services.AddQuartz(q =>
+        {
+            // Use a Scoped container to create jobs. I'll touch on this later
+            q.UseMicrosoftDependencyInjectionJobFactory();
+
+            // Create a "key" for the job
+            var jobKey = new JobKey("DeleteHistoricalDataJob");
+
+            // Register the job with the DI container
+            q.AddJob<ObfuscateHistoricalDataJob>(opts => opts.WithIdentity(jobKey));
+
+            // Create a trigger for the job
+            q.AddTrigger(opts => opts
+                .ForJob(jobKey) // link to the HelloWorldJob
+                .WithIdentity("DeleteHistoricalDataJob-trigger") // give the trigger a unique name
+                .WithCronSchedule("0 0 1 * * ?")); // run every day at 1am
+
+        });
+
+        // Add the Quartz.NET hosted service
+
+        services.AddQuartzHostedService(
+            q => q.WaitForJobsToComplete = true);
     }
 
     public static void RegisterMediator(this IServiceCollection services)
