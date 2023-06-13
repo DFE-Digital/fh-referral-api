@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Quartz;
 using System.Text;
 
@@ -8,18 +9,21 @@ namespace FamilyHubs.Referral.Data.Repository;
 public class ObfuscateHistoricalDataJob : IJob
 {
     private readonly ApplicationDbContext _applicationDbContext;
+    private readonly IConfiguration _configuration;
     private readonly ILogger<ObfuscateHistoricalDataJob> _logger;
     private static Random random = new Random();
-    public ObfuscateHistoricalDataJob(ApplicationDbContext applicationDbContext, ILogger<ObfuscateHistoricalDataJob> logger)
+    public ObfuscateHistoricalDataJob(ApplicationDbContext applicationDbContext, IConfiguration configuration, ILogger<ObfuscateHistoricalDataJob> logger)
     {
         _applicationDbContext = applicationDbContext;
+        _configuration = configuration;
         _logger = logger;
     }
     public async Task Execute(IJobExecutionContext context)
     {
         try
         {
-            var recipients = _applicationDbContext.Recipients.Where(r => r.Created < DateTime.UtcNow.AddYears(-7) && !r.Name.Contains("Obfuscated")).ToList();
+            int days = _configuration.GetValue<int>("ObfuscatePIIDataInDays");
+            var recipients = _applicationDbContext.Recipients.Where(r => r.Created < DateTime.UtcNow.AddDays(days) && !r.Name.Contains("Obfuscated")).ToList();
 
             if (recipients != null && recipients.Any())
             {

@@ -63,7 +63,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         //Create a new trigger with a new schedule
         var newTrigger = TriggerBuilder.Create()
             .WithIdentity("DeleteHistoricalDataJob-trigger")
-            .WithCronSchedule("0/5 * * * * ?") // run every day at 1am
+            .WithCronSchedule("0/5 * * * * ?") // run every 5 seconds
             .Build();
 
         //Reschedule the job with the new trigger

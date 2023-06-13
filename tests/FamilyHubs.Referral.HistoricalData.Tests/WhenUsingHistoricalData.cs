@@ -19,7 +19,7 @@ namespace FamilyHubs.Referral.HistoricalData.Tests
             int milliseconds = 8000;
             Thread.Sleep(milliseconds);
             
-            var recipients = context.Recipients.Where(r => r.Created < DateTime.UtcNow.AddYears(-7)).ToList();
+            var recipients = context.Recipients.Where(r => r.Created < DateTime.UtcNow.AddDays(-2556)).ToList();
 
             if (recipients.Any()) 
             {
