@@ -9,7 +9,7 @@ Api for the management of a person/family referral to a Local Authority, Volunta
 
 This API is for the management of a person/family referrals to a Local Authority, Voluntary, Charitable or Faith organisations.
 
-This repos has been built using the "Clean Architecture Design" taken from Steve Smith (ardalis)
+This repos was originally built using the "Clean Architecture Design" taken from Steve Smith (ardalis), but now follows the service directory project layout
 
 ## Local running
 
