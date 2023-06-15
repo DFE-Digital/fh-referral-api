@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Json;
 
 //Only run locally
-//#if ISLOCAL
+#if ISLOCAL
 
 namespace FamilyHubs.Referral.FunctionalTests;
 
@@ -325,4 +325,4 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
 
 }
 
-//#endif
+#endif
