@@ -8,7 +8,6 @@ using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 
 namespace FamilyHubs.Referral.Core.Commands.UpdateReferral;
 
@@ -51,7 +50,20 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
 
         try
         {
-            entity = _mapper.Map(request.ReferralDto, entity);
+            if (!_context.Referrers.Any(x => x.Id == request.ReferralDto.ReferrerDto.Id)) 
+            {
+                _context.Referrals.Remove(entity);
+                await _context.SaveChangesAsync(cancellationToken);
+
+                entity = _mapper.Map<Data.Entities.Referral>(request.ReferralDto);
+                ArgumentNullException.ThrowIfNull(entity);
+            }
+            else
+            {
+                entity = _mapper.Map(request.ReferralDto, entity);
+            }
+
+            
             entity = AttachExistingStatus(entity);
 
             await _context.SaveChangesAsync(cancellationToken);
@@ -72,6 +84,13 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
         {
             entity.Status = referralStatus;
         }
+
+        //Referrer? referrer = _context.Referrers.SingleOrDefault(x => x.Id == entity.Referrer.Id);
+        //if (referrer != null)
+        //{
+        //    entity.Referrer = referrer;
+        //}
+
         return entity;
     }
 }

@@ -24,5 +24,7 @@ public class CreateReferralCommandValidator : AbstractValidator<CreateReferralCo
             .NotNull()
             .NotEmpty();
 
+        RuleFor(v => v.ReferralDto.ReferrerDto.Id)
+            .GreaterThan(0);
     }
 }

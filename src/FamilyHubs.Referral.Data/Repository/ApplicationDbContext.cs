@@ -25,6 +25,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
         modelBuilder.Entity<Entities.ReferralService>().Property(c => c.Id).ValueGeneratedNever();
         modelBuilder.Entity<Entities.ReferralOrganisation>().Property(c => c.Id).ValueGeneratedNever();
+        modelBuilder.Entity<Entities.Referrer>().Property(c => c.Id).ValueGeneratedNever();
 
         base.OnModelCreating(modelBuilder);
     }
