@@ -1,13 +1,7 @@
 ﻿using FamilyHubs.Referral.Core.Commands.CreateReferral;
 using FamilyHubs.Referral.Core.Commands.UpdateReferral;
 using FamilyHubs.Referral.Core.Queries.GetReferrals;
-using FamilyHubs.Referral.Data.Entities;
 using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FamilyHubs.Referral.UnitTests;
 
@@ -31,6 +25,23 @@ public class WhenValidatingReferralCommands
     }
 
     [Fact]
+    public void ThenShouldErrorWhenReferrerIdIsZero()
+    {
+        //Arrange
+        var testReferral = WhenUsingReferralCommands.GetReferralDto();
+        testReferral.Id = 0;
+        var validator = new CreateReferralCommandValidator();
+        var testModel = new CreateReferralCommand(testReferral);
+        testReferral.ReferrerDto.Id = 0;
+
+        //Act
+        var result = validator.Validate(testModel);
+
+        //Assert
+        result.Errors.Any().Should().BeTrue();
+    }
+
+    [Fact]
     public void ThenShouldNotErrorWhenUpdateReferralCommandModelIsValid()
     {
         //Arrange
@@ -43,6 +54,22 @@ public class WhenValidatingReferralCommands
 
         //Assert
         result.Errors.Any().Should().BeFalse();
+    }
+
+    [Fact]
+    public void ThenShouldErrorWhenUpdateReferralCommandModelIsValidButRefferIdIsZero()
+    {
+        //Arrange
+        var testReferral = WhenUsingReferralCommands.GetReferralDto();
+        var validator = new UpdateReferralCommandValidator();
+        var testModel = new UpdateReferralCommand(testReferral.Id, testReferral);
+        testReferral.ReferrerDto.Id = 0;
+
+        //Act
+        var result = validator.Validate(testModel);
+
+        //Assert
+        result.Errors.Any().Should().BeTrue();
     }
 
     [Fact]

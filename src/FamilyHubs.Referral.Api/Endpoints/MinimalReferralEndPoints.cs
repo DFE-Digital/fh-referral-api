@@ -3,7 +3,6 @@ using FamilyHubs.Referral.Core.Commands.SetReferralStatus;
 using FamilyHubs.Referral.Core.Commands.UpdateReferral;
 using FamilyHubs.Referral.Core.Queries.GetReferrals;
 using FamilyHubs.Referral.Core.Queries.GetReferralStatus;
-using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Enums;
 using MediatR;
@@ -41,6 +40,14 @@ public class MinimalReferralEndPoints
             return result;
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Referrer") { Tags = new[] { "Referrals" } });
+
+        app.MapGet("api/referralsByReferrer/{referrerId}", [Authorize] async (long referrerId, ReferralOrderBy? orderBy, bool? isAssending, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
+        {
+            GetReferralsByReferrerByReferrerIdCommand request = new(referrerId, orderBy, isAssending, pageNumber, pageSize);
+            var result = await _mediator.Send(request, cancellationToken);
+            return result;
+
+        }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Referrer Id") { Tags = new[] { "Referrals" } });
 
         app.MapGet("api/organisationreferrals/{organisationId}", [Authorize] async (long organisationId, ReferralOrderBy? orderBy, bool? isAssending, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
         {

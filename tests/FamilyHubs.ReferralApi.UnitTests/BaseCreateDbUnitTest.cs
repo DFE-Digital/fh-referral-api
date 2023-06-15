@@ -52,7 +52,7 @@ public class BaseCreateDbUnitTest
             await context.SaveChangesAsync();
         }
 
-        if (!context.ReferralServices.Any()) 
+        if (!context.ReferralServices.Any())
         {
             var referralService = new Data.Entities.ReferralService
             {
@@ -71,12 +71,18 @@ public class BaseCreateDbUnitTest
             context.ReferralServices.Add(referralService);
             await context.SaveChangesAsync();
         }
-        
+
 
         IReadOnlyCollection<Data.Entities.Referral> referrals = ReferralSeedData.SeedReferral(true);
 
         foreach (Data.Entities.Referral referral in referrals)
         {
+            var referrer = context.Referrers.SingleOrDefault(x => x.Id == referral.Referrer.Id);
+            if (referrer != null)
+            {
+                referral.Referrer = referrer;
+            }
+
             var status = context.ReferralStatuses.SingleOrDefault(x => x.Name == referral.Status.Name);
             if (status != null)
             {
@@ -88,10 +94,10 @@ public class BaseCreateDbUnitTest
             {
                 referral.ReferralService = service;
             }
-        }
 
-        context.Referrals.AddRange(referrals);
+            context.Referrals.Add(referral);
 
-        await context.SaveChangesAsync();
+            await context.SaveChangesAsync();
+        }        
     }
 }
