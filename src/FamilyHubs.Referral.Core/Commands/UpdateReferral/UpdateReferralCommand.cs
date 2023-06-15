@@ -85,12 +85,6 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
             entity.Status = referralStatus;
         }
 
-        //Referrer? referrer = _context.Referrers.SingleOrDefault(x => x.Id == entity.Referrer.Id);
-        //if (referrer != null)
-        //{
-        //    entity.Referrer = referrer;
-        //}
-
         return entity;
     }
 }

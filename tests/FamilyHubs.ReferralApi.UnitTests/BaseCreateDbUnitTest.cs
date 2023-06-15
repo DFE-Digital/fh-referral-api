@@ -43,71 +43,61 @@ public class BaseCreateDbUnitTest
 
     protected static async Task CreateReferrals(ApplicationDbContext context)
     {
-        try
+        if (!context.ReferralStatuses.Any())
         {
-            if (!context.ReferralStatuses.Any())
+            IReadOnlyCollection<ReferralStatus> statuses = ReferralSeedData.SeedStatuses();
+
+            context.ReferralStatuses.AddRange(statuses);
+
+            await context.SaveChangesAsync();
+        }
+
+        if (!context.ReferralServices.Any())
+        {
+            var referralService = new Data.Entities.ReferralService
             {
-                IReadOnlyCollection<ReferralStatus> statuses = ReferralSeedData.SeedStatuses();
-
-                context.ReferralStatuses.AddRange(statuses);
-
-                await context.SaveChangesAsync();
-            }
-
-            if (!context.ReferralServices.Any())
-            {
-                var referralService = new Data.Entities.ReferralService
+                Id = 1,
+                Name = "Test Service",
+                Description = "Test Service Description",
+                ReferralOrganisation = new ReferralOrganisation
                 {
                     Id = 1,
-                    Name = "Test Service",
-                    Description = "Test Service Description",
-                    ReferralOrganisation = new ReferralOrganisation
-                    {
-                        Id = 1,
-                        ReferralServiceId = 1,
-                        Name = "Test Organisation",
-                        Description = "Test Organisation Description",
-                    }
-                };
-
-                context.ReferralServices.Add(referralService);
-                await context.SaveChangesAsync();
-            }
-
-
-            IReadOnlyCollection<Data.Entities.Referral> referrals = ReferralSeedData.SeedReferral(true);
-
-            foreach (Data.Entities.Referral referral in referrals)
-            {
-                var referrer = context.Referrers.SingleOrDefault(x => x.Id == referral.Referrer.Id);
-                if (referrer != null)
-                {
-                    referral.Referrer = referrer;
+                    ReferralServiceId = 1,
+                    Name = "Test Organisation",
+                    Description = "Test Organisation Description",
                 }
+            };
 
-                var status = context.ReferralStatuses.SingleOrDefault(x => x.Name == referral.Status.Name);
-                if (status != null)
-                {
-                    referral.Status = status;
-                }
-
-                var service = context.ReferralServices.SingleOrDefault(x => x.Id == referral.ReferralService.Id);
-                if (service != null)
-                {
-                    referral.ReferralService = service;
-                }
-
-                context.Referrals.Add(referral);
-
-                await context.SaveChangesAsync();
-            }
-
-            
+            context.ReferralServices.Add(referralService);
+            await context.SaveChangesAsync();
         }
-        catch(Exception ex) 
+
+
+        IReadOnlyCollection<Data.Entities.Referral> referrals = ReferralSeedData.SeedReferral(true);
+
+        foreach (Data.Entities.Referral referral in referrals)
         {
-            throw;
-        }
-        
+            var referrer = context.Referrers.SingleOrDefault(x => x.Id == referral.Referrer.Id);
+            if (referrer != null)
+            {
+                referral.Referrer = referrer;
+            }
+
+            var status = context.ReferralStatuses.SingleOrDefault(x => x.Name == referral.Status.Name);
+            if (status != null)
+            {
+                referral.Status = status;
+            }
+
+            var service = context.ReferralServices.SingleOrDefault(x => x.Id == referral.ReferralService.Id);
+            if (service != null)
+            {
+                referral.ReferralService = service;
+            }
+
+            context.Referrals.Add(referral);
+
+            await context.SaveChangesAsync();
+        }        
     }
 }
