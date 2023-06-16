@@ -161,34 +161,5 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
         }
     }
 
-    private Data.Entities.Referral AttachExistingStatus(Data.Entities.Referral entity)
-    {
-        ReferralStatus? referralStatus = _context.ReferralStatuses.SingleOrDefault(x => x.Name == entity.Status.Name);
-        if (referralStatus != null)
-        {
-            entity.StatusId = referralStatus.Id;
-            entity.Status = referralStatus;
-        }
-
-        Recipient? recipient = _context.Recipients.SingleOrDefault(x => x.Id == entity.Recipient.Id);
-        if (recipient != null)
-        {
-            entity.Recipient = recipient;
-        }
-
-        Data.Entities.ReferralService referralService = _context.ReferralServices.SingleOrDefault(x => x.Id == entity.ReferralService.Id);
-        if (referralService != null)
-        {
-            entity.ReferralService = referralService;
-        }
-
-        Referrer? referrer = _context.Referrers.SingleOrDefault(x => x.Id == entity.Referrer.Id);
-        if (referrer != null)
-        {
-            entity.Referrer = referrer;
-        }
-
-        return entity;
-    }
 }
 
