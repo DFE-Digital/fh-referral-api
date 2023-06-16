@@ -63,7 +63,7 @@ public class ApplicationDbContextInitialiser
             await _context.SaveChangesAsync();
         }
 
-        if (_context.Database.IsSqlite() && !_context.Referrals.Any())
+        //if (_context.Database.IsSqlite() && !_context.Referrals.Any())
         {
             IReadOnlyCollection<Entities.Referral> referrals = ReferralSeedData.SeedReferral();
 

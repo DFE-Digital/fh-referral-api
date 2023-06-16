@@ -266,20 +266,20 @@ namespace FamilyHubs.Referral.UnitTests
         }
 
         [Theory]
-        [InlineData(null, null, 2)]
-        [InlineData(ReferralOrderBy.NotSet, true, 2)]
-        [InlineData(ReferralOrderBy.DateSent, true,2)]
-        [InlineData(ReferralOrderBy.DateSent, false,1)]
-        [InlineData(ReferralOrderBy.DateUpdated, true, 2)]
-        [InlineData(ReferralOrderBy.DateUpdated, false, 1)]
-        [InlineData(ReferralOrderBy.Status, true,1)]
-        [InlineData(ReferralOrderBy.Status, false,2)]
-        [InlineData(ReferralOrderBy.RecipientName, true,1)]
-        [InlineData(ReferralOrderBy.RecipientName, false,2)]
-        [InlineData(ReferralOrderBy.Team, true,1)]
-        [InlineData(ReferralOrderBy.Team, false,2)]
-        [InlineData(ReferralOrderBy.ServiceName, true, 2)]
-        [InlineData(ReferralOrderBy.ServiceName, false, 2)]
+        [InlineData(null, null, 1)]
+        [InlineData(ReferralOrderBy.NotSet, true, 1)]
+        [InlineData(ReferralOrderBy.DateSent, true, 1)]
+        [InlineData(ReferralOrderBy.DateSent, false, 2)]
+        [InlineData(ReferralOrderBy.DateUpdated, true, 1)]
+        [InlineData(ReferralOrderBy.DateUpdated, false, 2)]
+        [InlineData(ReferralOrderBy.Status, true, 1)]
+        [InlineData(ReferralOrderBy.Status, false, 2)]
+        [InlineData(ReferralOrderBy.RecipientName, true, 1)]
+        [InlineData(ReferralOrderBy.RecipientName, false, 2)]
+        [InlineData(ReferralOrderBy.Team, true, 1)]
+        [InlineData(ReferralOrderBy.Team, false, 1)]
+        [InlineData(ReferralOrderBy.ServiceName, true, 1)]
+        [InlineData(ReferralOrderBy.ServiceName, false, 1)]
         public async Task ThenGetReferralsByReferrer(ReferralOrderBy? referralOrderBy, bool? isAssending, int firstId)
         {
             //Arange
@@ -304,19 +304,60 @@ namespace FamilyHubs.Referral.UnitTests
             result.Items[0].Id.Should().Be(firstId);
         }
 
+        //
         [Theory]
-        [InlineData(ReferralOrderBy.DateSent, true, 2)]
-        [InlineData(ReferralOrderBy.DateSent, false, 1)]
-        [InlineData(ReferralOrderBy.DateUpdated, true, 2)]
-        [InlineData(ReferralOrderBy.DateUpdated, false, 1)]
+        [InlineData(null, null, 1)]
+        [InlineData(ReferralOrderBy.NotSet, true, 1)]
+        [InlineData(ReferralOrderBy.DateSent, true, 1)]
+        [InlineData(ReferralOrderBy.DateSent, false, 2)]
+        [InlineData(ReferralOrderBy.DateUpdated, true, 1)]
+        [InlineData(ReferralOrderBy.DateUpdated, false, 2)]
         [InlineData(ReferralOrderBy.Status, true, 1)]
         [InlineData(ReferralOrderBy.Status, false, 2)]
         [InlineData(ReferralOrderBy.RecipientName, true, 1)]
         [InlineData(ReferralOrderBy.RecipientName, false, 2)]
         [InlineData(ReferralOrderBy.Team, true, 1)]
-        [InlineData(ReferralOrderBy.Team, false, 2)]
-        [InlineData(ReferralOrderBy.ServiceName, true, 2)]
-        [InlineData(ReferralOrderBy.ServiceName, false, 2)]
+        [InlineData(ReferralOrderBy.Team, false, 1)]
+        [InlineData(ReferralOrderBy.ServiceName, true, 1)]
+        [InlineData(ReferralOrderBy.ServiceName, false, 1)]
+        public async Task ThenGetReferralsByReferrerId(ReferralOrderBy? referralOrderBy, bool? isAssending, int firstId)
+        {
+            //Arange
+            var myProfile = new AutoMappingProfiles();
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            IMapper mapper = new Mapper(configuration);
+            var mockApplicationDbContext = GetApplicationDbContext();
+            await CreateReferrals(mockApplicationDbContext);
+
+
+            GetReferralsByReferrerByReferrerIdCommand getcommand = new(1, referralOrderBy, isAssending, 1, 10);
+            GetReferralsByReferrerByReferrerIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
+
+
+            //Act
+            var result = await gethandler.Handle(getcommand, new System.Threading.CancellationToken());
+
+            //Assert
+            result.Should().NotBeNull();
+            result.Items.Count.Should().Be(2);
+            result.Items[0].Created.Should().NotBeNull();
+            result.Items[0].Id.Should().Be(firstId);
+        }
+        //
+
+        [Theory]
+        [InlineData(ReferralOrderBy.DateSent, true, 1)]
+        [InlineData(ReferralOrderBy.DateSent, false, 2)]
+        [InlineData(ReferralOrderBy.DateUpdated, true, 1)]
+        [InlineData(ReferralOrderBy.DateUpdated, false, 2)]
+        [InlineData(ReferralOrderBy.Status, true, 1)]
+        [InlineData(ReferralOrderBy.Status, false, 2)]
+        [InlineData(ReferralOrderBy.RecipientName, true, 1)]
+        [InlineData(ReferralOrderBy.RecipientName, false, 2)]
+        [InlineData(ReferralOrderBy.Team, true, 1)]
+        [InlineData(ReferralOrderBy.Team, false, 1)]
+        [InlineData(ReferralOrderBy.ServiceName, true, 1)]
+        [InlineData(ReferralOrderBy.ServiceName, false, 1)]
         public async Task ThenGetReferralsByOrganisationId(ReferralOrderBy referralOrderBy, bool isAssending, int firstId)
         {
             //Arange
@@ -490,7 +531,7 @@ namespace FamilyHubs.Referral.UnitTests
             CreateReferralCommand createCommand = new(testReferral);
             CreateReferralCommandHandler createHandler = new(mockApplicationDbContext, mapper, logger.Object);
             var setupresult = await createHandler.Handle(createCommand, new System.Threading.CancellationToken());
-            SetReferralStatusCommand command = new(testReferral.Id, "Opened");
+            SetReferralStatusCommand command = new(testReferral.Id, "Declined", "Unable to help");
             SetReferralStatusCommandHandler handler = new(mockApplicationDbContext, new Mock<ILogger<SetReferralStatusCommandHandler>>().Object);
 
             //Act
@@ -500,7 +541,7 @@ namespace FamilyHubs.Referral.UnitTests
             setupresult.Should().BeGreaterThan(0);
             setupresult.Should().Be(testReferral.Id);
             result.Should().NotBeNull();
-            result.Should().Be("Opened");
+            result.Should().Be("Declined");
 
         }
     }

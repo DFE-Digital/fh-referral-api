@@ -44,6 +44,29 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
     }
 
     [Fact]
+    public async Task ThenReferralsByReferrerIdAreRetrieved()
+    {
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Get,
+            RequestUri = new Uri(Client.BaseAddress + "api/referralsByReferrer/1?pageNumber=1&pageSize=10"),
+        };
+
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+
+        using var response = await Client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        var retVal = await JsonSerializer.DeserializeAsync<PaginatedList<ReferralDto>>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        ArgumentNullException.ThrowIfNull(retVal);
+        retVal.Should().NotBeNull();
+        retVal.Items.Count.Should().BeGreaterThan(0);
+    }
+
+    [Fact]
     public async Task ThenTheOpenReferralIsCreated()
     {
         var command = new ReferralDto
@@ -66,6 +89,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             },
             ReferrerDto = new ReferrerDto
             { 
+                Id = 2,
                 EmailAddress = "Bob.Referrer@email.com",
                 Name = "Bob Referrer",
                 PhoneNumber = "011 222 5555",
@@ -186,8 +210,12 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             },
             ReferrerDto = new ReferrerDto
             {
-                Id = 1,
+                Id = 2,
                 EmailAddress = "Bob.Referrer@email.com",
+                Name = "Bob Referrer",
+                PhoneNumber = "011 222 5555",
+                Role = "Social Worker",
+                Team = "Social Work team North"
             },
             Status = new ReferralStatusDto
             {
@@ -226,14 +254,13 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
     }
 
-
     [Fact]
-    public async Task ThenTheOpenReferralStatusIsSet()
+    public async Task ThenAcceptedReferralStatusIsSet()
     {
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Opened")
+            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Accepted")
         };
 
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
@@ -245,7 +272,29 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var stringResult = await response.Content.ReadAsStringAsync();
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-        stringResult.ToString().Should().Be("Opened");
+        stringResult.ToString().Should().Be("Accepted");
+    }
+
+
+    [Fact]
+    public async Task ThenDeclinedReferralStatusIsSet()
+    {
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Post,
+            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Declined/Unable to help")
+        };
+
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+
+        using var response = await Client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        var stringResult = await response.Content.ReadAsStringAsync();
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        stringResult.ToString().Should().Be("Declined");
     }
 
     [Fact]

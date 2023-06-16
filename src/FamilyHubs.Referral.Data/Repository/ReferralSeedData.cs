@@ -57,6 +57,7 @@ public static class ReferralSeedData
                 },
                 Referrer = new Referrer
                 {
+                    Id = 1,
                     EmailAddress = "Joe.Professional@email.com",
                     Name = "Joe Professional",
                     PhoneNumber = "011 222 3333",
@@ -102,11 +103,12 @@ public static class ReferralSeedData
                 },
                 Referrer = new Referrer
                 {
+                    Id = 1,
                     EmailAddress = "Joe.Professional@email.com",
                     Name = "Joe Professional",
                     PhoneNumber = "011 222 3333",
                     Role = "Social Worker",
-                    Team = "zSocial Work team North"
+                    Team = "Social Work team North"
                 },
                 Status = new ReferralStatus
                 {
