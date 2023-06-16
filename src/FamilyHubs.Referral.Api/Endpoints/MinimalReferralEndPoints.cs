@@ -3,7 +3,6 @@ using FamilyHubs.Referral.Core.Commands.SetReferralStatus;
 using FamilyHubs.Referral.Core.Commands.UpdateReferral;
 using FamilyHubs.Referral.Core.Queries.GetReferrals;
 using FamilyHubs.Referral.Core.Queries.GetReferralStatus;
-using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Enums;
 using MediatR;
@@ -42,6 +41,14 @@ public class MinimalReferralEndPoints
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Referrer") { Tags = new[] { "Referrals" } });
 
+        app.MapGet("api/referralsByReferrer/{referrerId}", [Authorize] async (long referrerId, ReferralOrderBy? orderBy, bool? isAssending, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
+        {
+            GetReferralsByReferrerByReferrerIdCommand request = new(referrerId, orderBy, isAssending, pageNumber, pageSize);
+            var result = await _mediator.Send(request, cancellationToken);
+            return result;
+
+        }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Referrer Id") { Tags = new[] { "Referrals" } });
+
         app.MapGet("api/organisationreferrals/{organisationId}", [Authorize] async (long organisationId, ReferralOrderBy? orderBy, bool? isAssending, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
         {
             GetReferralsByOrganisationIdCommand request = new(organisationId, orderBy, isAssending, pageNumber, pageSize);
@@ -68,7 +75,15 @@ public class MinimalReferralEndPoints
 
         app.MapPost("api/referralStatus/{referralId}/{status}", [Authorize] async (long referralId, string status, CancellationToken cancellationToken, ISender _mediator, ILogger<MinimalReferralEndPoints> logger) =>
         {
-            SetReferralStatusCommand command = new(referralId, status);
+            SetReferralStatusCommand command = new(referralId, status, default!);
+            var result = await _mediator.Send(command, cancellationToken);
+            return result;
+
+        }).WithMetadata(new SwaggerOperationAttribute("Referrals", "Set Referral Status") { Tags = new[] { "Referrals" } });
+
+        app.MapPost("api/referralStatus/{referralId}/{status}/{reasonForDecliningSupport}", [Authorize] async (long referralId, string status, string reasonForDecliningSupport, CancellationToken cancellationToken, ISender _mediator, ILogger<MinimalReferralEndPoints> logger) =>
+        {
+            SetReferralStatusCommand command = new(referralId, status, reasonForDecliningSupport);
             var result = await _mediator.Send(command, cancellationToken);
             return result;
 
