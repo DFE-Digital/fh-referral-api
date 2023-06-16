@@ -290,7 +290,7 @@ namespace FamilyHubs.Referral.UnitTests
             await CreateReferrals(mockApplicationDbContext);
             
 
-            GetReferralsByReferrerCommand getcommand = new("Joe.Professional@email.com", referralOrderBy, isAssending, 1, 10);
+            GetReferralsByReferrerCommand getcommand = new("Joe.Professional@email.com", referralOrderBy, isAssending, null, 1, 10);
             GetReferralsByReferrerCommandHandler gethandler = new(mockApplicationDbContext, mapper);
             
 
@@ -330,7 +330,7 @@ namespace FamilyHubs.Referral.UnitTests
             await CreateReferrals(mockApplicationDbContext);
 
 
-            GetReferralsByReferrerByReferrerIdCommand getcommand = new(1, referralOrderBy, isAssending, 1, 10);
+            GetReferralsByReferrerByReferrerIdCommand getcommand = new(1, referralOrderBy, isAssending, false, 1, 10);
             GetReferralsByReferrerByReferrerIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
 
 
@@ -366,7 +366,7 @@ namespace FamilyHubs.Referral.UnitTests
             IMapper mapper = new Mapper(configuration);
             var mockApplicationDbContext = GetApplicationDbContext();
             await CreateReferrals(mockApplicationDbContext);
-            GetReferralsByOrganisationIdCommand getcommand = new(1, referralOrderBy, isAssending, 1, 10);
+            GetReferralsByOrganisationIdCommand getcommand = new(1, referralOrderBy, isAssending, null, 1, 10);
             GetReferralsByOrganisationIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
 
 
@@ -453,7 +453,7 @@ namespace FamilyHubs.Referral.UnitTests
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
             await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralByServiceIdStatusIdRecipientIdReferrerIdCommand getcommand = new(serviceId, statusId, recipientId, referralId, ReferralOrderBy.RecipientName, true,1, 10);
+            GetReferralByServiceIdStatusIdRecipientIdReferrerIdCommand getcommand = new(serviceId, statusId, recipientId, referralId, ReferralOrderBy.RecipientName, true, null, 1, 10);
             GetReferralByServiceIdStatusIdRecipientIdReferrerIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
 
 
