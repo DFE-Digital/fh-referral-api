@@ -531,7 +531,7 @@ namespace FamilyHubs.Referral.UnitTests
             CreateReferralCommand createCommand = new(testReferral);
             CreateReferralCommandHandler createHandler = new(mockApplicationDbContext, mapper, logger.Object);
             var setupresult = await createHandler.Handle(createCommand, new System.Threading.CancellationToken());
-            SetReferralStatusCommand command = new(testReferral.Id, "Opened");
+            SetReferralStatusCommand command = new(testReferral.Id, "Declined", "Unable to help");
             SetReferralStatusCommandHandler handler = new(mockApplicationDbContext, new Mock<ILogger<SetReferralStatusCommandHandler>>().Object);
 
             //Act
@@ -541,7 +541,7 @@ namespace FamilyHubs.Referral.UnitTests
             setupresult.Should().BeGreaterThan(0);
             setupresult.Should().Be(testReferral.Id);
             result.Should().NotBeNull();
-            result.Should().Be("Opened");
+            result.Should().Be("Declined");
 
         }
     }

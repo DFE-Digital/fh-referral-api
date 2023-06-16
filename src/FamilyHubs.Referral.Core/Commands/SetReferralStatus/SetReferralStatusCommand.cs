@@ -1,25 +1,28 @@
-﻿using FamilyHubs.Referral.Data.Entities;
+﻿using Ardalis.GuardClauses;
 using FamilyHubs.Referral.Core.Interfaces.Commands;
+using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using MediatR;
-using Microsoft.Extensions.Logging;
-using FamilyHubs.ReferralService.Shared.Dto;
 using Microsoft.EntityFrameworkCore;
-using Ardalis.GuardClauses;
+using Microsoft.Extensions.Logging;
 
 namespace FamilyHubs.Referral.Core.Commands.SetReferralStatus;
 
 public class SetReferralStatusCommand: IRequest<string>, ISetReferralStatusCommand
 {
-    public SetReferralStatusCommand(long referralId, string status)
+    public SetReferralStatusCommand(long referralId, string status, string reasonForDecliningSupport)
     {
         Status = status;
         ReferralId = referralId;
+        ReasonForDecliningSupport = reasonForDecliningSupport;
     }
 
     public long ReferralId { get; }
 
     public string Status { get; }
+
+    public string ReasonForDecliningSupport { get; }
+
 }
 
 public class SetReferralStatusCommandHandler : IRequestHandler<SetReferralStatusCommand, string>
@@ -41,7 +44,6 @@ public class SetReferralStatusCommandHandler : IRequestHandler<SetReferralStatus
             .Include(x => x.Recipient)
             .Include(x => x.ReferralService)
             .ThenInclude(x => x.ReferralOrganisation)
-            .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == request.ReferralId, cancellationToken: cancellationToken);
 
             if (entity == null)
@@ -56,10 +58,12 @@ public class SetReferralStatusCommandHandler : IRequestHandler<SetReferralStatus
                 throw new NotFoundException(nameof(ReferralStatus), request.Status);
             }
 
+            entity.ReasonForDecliningSupport = request.ReasonForDecliningSupport;
+            entity.StatusId = updatedStatus.Id;
             entity.Status = updatedStatus;
-
             await _context.SaveChangesAsync(cancellationToken);
 
+            return entity.Status.Name;
            
         }
         catch (Exception ex)
@@ -68,9 +72,5 @@ public class SetReferralStatusCommandHandler : IRequestHandler<SetReferralStatus
             throw;
         }
 
-        if (request is not null && request.Status is not null)
-            return request.Status;
-        else
-            return string.Empty;
     }
 }
