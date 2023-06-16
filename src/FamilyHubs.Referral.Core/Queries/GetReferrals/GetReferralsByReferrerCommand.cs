@@ -11,7 +11,7 @@ namespace FamilyHubs.Referral.Core.Queries.GetReferrals;
 
 public class GetReferralsByReferrerCommand : IRequest<PaginatedList<ReferralDto>>
 {
-    public GetReferralsByReferrerCommand(string referrer, ReferralOrderBy? orderBy, bool? isAssending, int? pageNumber, int? pageSize)
+    public GetReferralsByReferrerCommand(string referrer, ReferralOrderBy? orderBy, bool? isAssending, bool? includeDeclined, int? pageNumber, int? pageSize)
     {
         EmailAddress = referrer;
         OrderBy = orderBy;
@@ -23,6 +23,7 @@ public class GetReferralsByReferrerCommand : IRequest<PaginatedList<ReferralDto>
     public string EmailAddress { get; set; }
     public ReferralOrderBy? OrderBy { get; init; }
     public bool? IsAssending { get; init; }
+    public bool? IncludeDeclined { get; init; }
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 10;
 }
@@ -46,9 +47,16 @@ public class GetReferralsByReferrerCommandHandler : GetReferralsHandlerBase, IRe
             .ThenInclude(x => x.ReferralOrganisation)
 
             .AsSplitQuery()
-            .AsNoTracking()
+            .AsNoTracking();
 
-            .Where(x => x.Referrer.EmailAddress == request.EmailAddress);
+        if (request.IncludeDeclined != null && request.IncludeDeclined == true)
+        {
+            entities = entities.Where(x => x.Referrer.EmailAddress == request.EmailAddress);
+        }
+        else
+        {
+            entities = entities.Where(x => x.Referrer.EmailAddress == request.EmailAddress && x.Status.Name != "Declined");
+        }
 
         if (entities == null)
         {

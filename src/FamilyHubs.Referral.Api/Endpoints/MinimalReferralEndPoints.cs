@@ -33,25 +33,25 @@ public class MinimalReferralEndPoints
         }).WithMetadata(new SwaggerOperationAttribute("Update Referral", "Update Referral By Id") { Tags = new[] { "Referrals" } });
 
 
-        app.MapGet("api/referrals/{referrer}", [Authorize] async (string referrer, ReferralOrderBy? orderBy, bool? isAssending, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapGet("api/referrals/{referrer}", [Authorize] async (string referrer, ReferralOrderBy? orderBy, bool? isAssending, bool? includeDeclined, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
         {
-            GetReferralsByReferrerCommand request = new(referrer, orderBy, isAssending, pageNumber, pageSize);
+            GetReferralsByReferrerCommand request = new(referrer, orderBy, isAssending, includeDeclined, pageNumber, pageSize);
             var result = await _mediator.Send(request, cancellationToken);
             return result;
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Referrer") { Tags = new[] { "Referrals" } });
 
-        app.MapGet("api/referralsByReferrer/{referrerId}", [Authorize] async (long referrerId, ReferralOrderBy? orderBy, bool? isAssending, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapGet("api/referralsByReferrer/{referrerId}", [Authorize] async (long referrerId, ReferralOrderBy? orderBy, bool? isAssending, bool? includeDeclined, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
         {
-            GetReferralsByReferrerByReferrerIdCommand request = new(referrerId, orderBy, isAssending, pageNumber, pageSize);
+            GetReferralsByReferrerByReferrerIdCommand request = new(referrerId, orderBy, isAssending, includeDeclined, pageNumber, pageSize);
             var result = await _mediator.Send(request, cancellationToken);
             return result;
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Referrer Id") { Tags = new[] { "Referrals" } });
 
-        app.MapGet("api/organisationreferrals/{organisationId}", [Authorize] async (long organisationId, ReferralOrderBy? orderBy, bool? isAssending, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapGet("api/organisationreferrals/{organisationId}", [Authorize] async (long organisationId, ReferralOrderBy? orderBy, bool? isAssending, bool? includeDeclined, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
         {
-            GetReferralsByOrganisationIdCommand request = new(organisationId, orderBy, isAssending, pageNumber, pageSize);
+            GetReferralsByOrganisationIdCommand request = new(organisationId, orderBy, isAssending, includeDeclined, pageNumber, pageSize);
             var result = await _mediator.Send(request, cancellationToken);
             return result;
 
@@ -65,9 +65,9 @@ public class MinimalReferralEndPoints
             
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referral By Id") { Tags = new[] { "Referrals" } });
 
-        app.MapGet("api/referral/compositekeys", [Authorize] async (long? serviceId, long? statusId, long? recipientId, long? referralId, ReferralOrderBy? orderBy, bool? isAssending, int ? pageNumber, int ? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapGet("api/referral/compositekeys", [Authorize] async (long? serviceId, long? statusId, long? recipientId, long? referralId, ReferralOrderBy? orderBy, bool? isAssending, bool? includeDeclined, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
         {
-            GetReferralByServiceIdStatusIdRecipientIdReferrerIdCommand request = new(serviceId, statusId, recipientId, referralId,orderBy, isAssending, pageNumber, pageSize);
+            GetReferralByServiceIdStatusIdRecipientIdReferrerIdCommand request = new(serviceId, statusId, recipientId, referralId,orderBy, isAssending, includeDeclined, pageNumber, pageSize);
             var result = await _mediator.Send(request, cancellationToken);
             return result;
 

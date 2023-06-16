@@ -46,7 +46,7 @@ public class WhenUsingGetReferral : DataIntegrationTestBase
         await CreateReferral();
         var referral = TestDataProvider.GetReferralDto();
 
-        GetReferralsByOrganisationIdCommand command = new(2, referralOrderBy, isAssending,  1,10);
+        GetReferralsByOrganisationIdCommand command = new(2, referralOrderBy, isAssending, false,  1,10);
         GetReferralsByOrganisationIdCommandHandler handler = new(TestDbContext, Mapper);
 
         //Act
@@ -79,7 +79,7 @@ public class WhenUsingGetReferral : DataIntegrationTestBase
         await CreateReferral();
         var referral = TestDataProvider.GetReferralDto();
 
-        GetReferralsByReferrerCommand command = new(referral.ReferrerDto.EmailAddress, referralOrderBy, isAssending, 1, 10);
+        GetReferralsByReferrerCommand command = new(referral.ReferrerDto.EmailAddress, referralOrderBy, isAssending, null, 1, 10);
         GetReferralsByReferrerCommandHandler handler = new(TestDbContext, Mapper);
 
         //Act

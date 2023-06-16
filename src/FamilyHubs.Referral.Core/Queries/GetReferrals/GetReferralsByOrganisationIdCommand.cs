@@ -11,7 +11,7 @@ namespace FamilyHubs.Referral.Core.Queries.GetReferrals;
 
 public class GetReferralsByOrganisationIdCommand : IRequest<PaginatedList<ReferralDto>>
 {
-    public GetReferralsByOrganisationIdCommand(long organisationId, ReferralOrderBy? orderBy, bool? isAssending, int? pageNumber, int? pageSize)
+    public GetReferralsByOrganisationIdCommand(long organisationId, ReferralOrderBy? orderBy, bool? isAssending, bool? includeDeclined, int? pageNumber, int? pageSize)
     {
         OrganisationId = organisationId;
         OrderBy = orderBy;
@@ -23,6 +23,7 @@ public class GetReferralsByOrganisationIdCommand : IRequest<PaginatedList<Referr
     public long OrganisationId { get; set; }
     public ReferralOrderBy? OrderBy { get; init; }
     public bool? IsAssending { get; init; }
+    public bool? IncludeDeclined { get; init; }
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 10;
 }
@@ -45,6 +46,15 @@ public class GetReferralsByOrganisationIdCommandHandler : GetReferralsHandlerBas
             .ThenInclude(x => x.ReferralOrganisation)
             .AsNoTracking()
             .Where(x => x.ReferralService.ReferralOrganisation.Id == request.OrganisationId);
+
+        if (request.IncludeDeclined != null && request.IncludeDeclined == true)
+        {
+            entities = entities.Where(x => x.ReferralService.ReferralOrganisation.Id == request.OrganisationId);
+        }
+        else
+        {
+            entities = entities.Where(x => x.ReferralService.ReferralOrganisation.Id == request.OrganisationId && x.Status.Name != "Declined");
+        }
 
         if (entities == null)
         {

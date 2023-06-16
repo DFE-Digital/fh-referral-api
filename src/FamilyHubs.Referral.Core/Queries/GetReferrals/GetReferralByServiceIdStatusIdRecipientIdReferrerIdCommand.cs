@@ -11,7 +11,7 @@ namespace FamilyHubs.Referral.Core.Queries.GetReferrals;
 
 public class GetReferralByServiceIdStatusIdRecipientIdReferrerIdCommand : IRequest<PaginatedList<ReferralDto>>
 {
-    public GetReferralByServiceIdStatusIdRecipientIdReferrerIdCommand(long? serviceId, long? statusId, long? recipientId, long? referralId, ReferralOrderBy? orderBy, bool? isAssending, int? pageNumber, int? pageSize)
+    public GetReferralByServiceIdStatusIdRecipientIdReferrerIdCommand(long? serviceId, long? statusId, long? recipientId, long? referralId, ReferralOrderBy? orderBy, bool? isAssending, bool? includeDeclined, int? pageNumber, int? pageSize)
     {
         ServiceId = serviceId; 
         StatusId = statusId;
@@ -19,6 +19,7 @@ public class GetReferralByServiceIdStatusIdRecipientIdReferrerIdCommand : IReque
         ReferralId = referralId;
         OrderBy = orderBy;
         IsAssending = isAssending;
+        IncludeDeclined = includeDeclined;
         PageNumber = pageNumber != null ? pageNumber.Value : 1;
         PageSize = pageSize != null ? pageSize.Value : 10;
     }
@@ -29,6 +30,7 @@ public class GetReferralByServiceIdStatusIdRecipientIdReferrerIdCommand : IReque
     public long? RecipientId { get; init; }
     public ReferralOrderBy? OrderBy { get; init; }
     public bool? IsAssending { get; init; }
+    public bool? IncludeDeclined { get; init; }
     public int PageNumber { get; init; } = 1;
     public int PageSize { get; init; } = 10;
 }
@@ -68,6 +70,11 @@ public class GetReferralByServiceIdStatusIdRecipientIdReferrerIdCommandHandler :
         if (request.ReferralId != null)
         {
             entities = entities.Where(x => x.Id == request.ReferralId);
+        }
+
+        if (request.IncludeDeclined == null || request.IncludeDeclined == false)
+        {
+            entities = entities.Where(x => x.Status.Name != "Declined");
         }
 
         if (entities == null)
