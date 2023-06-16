@@ -254,14 +254,13 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
     }
 
-
     [Fact]
-    public async Task ThenTheOpenReferralStatusIsSet()
+    public async Task ThenAcceptedReferralStatusIsSet()
     {
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Opened")
+            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Accepted")
         };
 
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
@@ -273,7 +272,29 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var stringResult = await response.Content.ReadAsStringAsync();
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-        stringResult.ToString().Should().Be("Opened");
+        stringResult.ToString().Should().Be("Accepted");
+    }
+
+
+    [Fact]
+    public async Task ThenDeclinedReferralStatusIsSet()
+    {
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Post,
+            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Declined/Unable to help")
+        };
+
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+
+        using var response = await Client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        var stringResult = await response.Content.ReadAsStringAsync();
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        stringResult.ToString().Should().Be("Declined");
     }
 
     [Fact]

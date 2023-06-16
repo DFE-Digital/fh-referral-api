@@ -32,6 +32,32 @@ public class WhenUsingUpdateReferral : DataIntegrationTestBase
     }
 
     [Fact]
+    public async Task ThenUpdateStatusOnly()
+    {
+        await CreateReferral();
+        var referral = TestDataProvider.GetReferralDto();
+        referral.Status = new ReferralService.Shared.Dto.ReferralStatusDto
+        {
+            Id = 2,
+            Name = "Opened",
+            SortOrder = 1
+        };
+
+        UpdateReferralCommand command = new(referral.Id, referral);
+        UpdateReferralCommandHandler handler = new(TestDbContext, Mapper, new Mock<ILogger<UpdateReferralCommandHandler>>().Object);
+
+        //Act
+        var result = await handler.Handle(command, new System.Threading.CancellationToken());
+
+        //Assert
+        result.Should().NotBe(0);
+        result.Should().Be(referral.Id);
+        var actualService = TestDbContext.Referrals.SingleOrDefault(s => s.Id == referral.Id);
+        actualService.Should().NotBeNull();
+        actualService!.Status.Id.Should().Be(referral.Status.Id);
+    }
+
+    [Fact]
     public async Task ThenUpdateRecipientOnly()
     {
         await CreateReferral();

@@ -36,37 +36,24 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
     }
     public async Task<long> Handle(UpdateReferralCommand request, CancellationToken cancellationToken)
     {
-        var entity = _context.Referrals
-            .Include(x => x.Status)
-            .Include(x => x.Referrer)
-            .Include(x => x.Recipient)
-            .Include(x => x.ReferralService)
-            .ThenInclude(x => x.ReferralOrganisation)
-            .FirstOrDefault(x => x.Id == request.Id);
-        if (entity == null)
-        {
-            throw new NotFoundException(nameof(Referral), request.Id.ToString());
-        }
+
+        Data.Entities.Referral entity = GetReferral(request);
 
         try
         {
-            if (!_context.Referrers.Any(x => x.Id == request.ReferralDto.ReferrerDto.Id)) 
+            if (entity.Status.Id != request.ReferralDto.Status.Id || entity.Referrer.Id != request.ReferralDto.ReferrerDto.Id) 
             {
                 _context.Referrals.Remove(entity);
                 await _context.SaveChangesAsync(cancellationToken);
-
                 entity = _mapper.Map<Data.Entities.Referral>(request.ReferralDto);
-                ArgumentNullException.ThrowIfNull(entity);
-            }
-            else
-            {
-                entity = _mapper.Map(request.ReferralDto, entity);
+                entity = AttachExistingStatus(entity);
+                _context.Referrals.Add(entity);
+                await _context.SaveChangesAsync(cancellationToken);
             }
 
-            
-            entity = AttachExistingStatus(entity);
-
+            entity = _mapper.Map(request.ReferralDto, entity);
             await _context.SaveChangesAsync(cancellationToken);
+
         }
         catch (Exception ex)
         {
@@ -77,12 +64,49 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
         return entity.Id;
     }
 
+    private Data.Entities.Referral GetReferral(UpdateReferralCommand request)
+    {
+        var entity = _context.Referrals
+            .Include(x => x.Status)
+            .Include(x => x.Referrer)
+            .Include(x => x.Recipient)
+            .Include(x => x.ReferralService)
+            .ThenInclude(x => x.ReferralOrganisation)
+            .FirstOrDefault(x => x.Id == request.Id);
+
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(Referral), request.Id.ToString());
+        }
+
+        return entity;
+    }
+
     private Data.Entities.Referral AttachExistingStatus(Data.Entities.Referral entity)
     {
         ReferralStatus? referralStatus = _context.ReferralStatuses.SingleOrDefault(x => x.Name == entity.Status.Name);
         if (referralStatus != null)
         {
+            entity.StatusId = referralStatus.Id;
             entity.Status = referralStatus;
+        }
+
+        Recipient? recipient = _context.Recipients.SingleOrDefault(x => x.Id == entity.Recipient.Id);
+        if (recipient != null)
+        {
+            entity.Recipient = recipient;
+        }
+
+        Data.Entities.ReferralService referralService = _context.ReferralServices.SingleOrDefault(x => x.Id == entity.ReferralService.Id);
+        if (referralService != null) 
+        { 
+            entity.ReferralService = referralService;
+        }
+
+        Referrer? referrer = _context.Referrers.SingleOrDefault(x => x.Id == entity.Referrer.Id);
+        if (referrer != null)
+        {
+            entity.Referrer = referrer;
         }
 
         return entity;
