@@ -12,13 +12,6 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Security.Claims;
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
-using System.Threading;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
-
 namespace FamilyHubs.Referral.Api.Endpoints;
 
 public class MinimalReferralEndPoints
@@ -65,15 +58,6 @@ public class MinimalReferralEndPoints
             return result;
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Organisation Id") { Tags = new[] { "Referrals" } });
-
-        //app.MapGet("api/referral/{id}", [Authorize] async (long id, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
-        //{
-            
-        //    GetReferralByIdCommand request = new(id);
-        //    var result = await _mediator.Send(request, cancellationToken);
-        //    return result;
-            
-        //}).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referral By Id") { Tags = new[] { "Referrals" } });
 
         app.MapGet("api/referral/{id}", [Authorize] async (long id, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
         {
