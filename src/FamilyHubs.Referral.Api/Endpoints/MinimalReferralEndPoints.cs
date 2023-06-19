@@ -8,7 +8,9 @@ using FamilyHubs.ReferralService.Shared.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Security.Claims;
 
 namespace FamilyHubs.Referral.Api.Endpoints;
 
@@ -57,13 +59,25 @@ public class MinimalReferralEndPoints
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Organisation Id") { Tags = new[] { "Referrals" } });
 
-        app.MapGet("api/referral/{id}", [Authorize] async (long id, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapGet("api/referral/{id}", [Authorize] async (long id, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
         {
+            (string role, long organisationId) = GetUserRoleAndOrgansationFromClaims(httpContext);
+           
             GetReferralByIdCommand request = new(id);
             var result = await _mediator.Send(request, cancellationToken);
-            return result;
-            
+            if (result != null && (role == "VcsProfessional" || role == "VcsDualRole" || result.ReferralServiceDto.ReferralOrganisationDto.Id == organisationId))
+            {
+                return result;
+            }
+                
+            var actionContext = new ActionContext(httpContext, httpContext.GetRouteData(), new ActionDescriptor());
+            var statusCodeResult = new StatusCodeResult(StatusCodes.Status403Forbidden);
+            await statusCodeResult.ExecuteResultAsync(actionContext);
+            return default!;
+           
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referral By Id") { Tags = new[] { "Referrals" } });
+
+        
 
         app.MapGet("api/referral/compositekeys", [Authorize] async (long? serviceId, long? statusId, long? recipientId, long? referralId, ReferralOrderBy? orderBy, bool? isAssending, bool? includeDeclined, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
         {
@@ -97,4 +111,24 @@ public class MinimalReferralEndPoints
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referral Statuses", "Get Referral Statuses") { Tags = new[] { "Referrals" } });
     }
+
+    private (string role, long organisationId) GetUserRoleAndOrgansationFromClaims(HttpContext httpContext)
+    {
+        string role = string.Empty;
+        long organisationId = 0;
+        var organisationIdClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == "OrganisationId");
+        if (organisationIdClaim != null) 
+        {
+            long.TryParse(organisationIdClaim.Value, out organisationId);
+        }
+
+        var roleClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+        if (roleClaim != null) 
+        {
+            role = roleClaim.Value;
+        }
+
+        return (role, organisationId);
+    }
+
 }

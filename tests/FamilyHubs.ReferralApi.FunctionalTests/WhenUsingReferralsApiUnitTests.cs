@@ -3,6 +3,7 @@ using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Models;
 using FluentAssertions;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 
@@ -165,7 +166,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
     }
 
     [Fact]
-    public async Task ThenReferralByIdIsRetrieved()
+    public async Task ThenReferralByIdIsRetrievedByProfessional()
     {
 
         var request = new HttpRequestMessage
@@ -185,6 +186,45 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
         ArgumentNullException.ThrowIfNull(retVal);
         retVal.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task ThenReferralByIdIsRetrievedByVCSAdmin()
+    {
+
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Get,
+            RequestUri = new Uri(Client.BaseAddress + "api/referral/1"),
+        };
+
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_vcstoken)}");
+
+        using var response = await Client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        var retVal = await JsonSerializer.DeserializeAsync<ReferralDto>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        ArgumentNullException.ThrowIfNull(retVal);
+        retVal.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task ThenReferralByIdIsForbidden()
+    {
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Get,
+            RequestUri = new Uri(Client.BaseAddress + "api/referral/1"),
+        };
+
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_forbiddentoken)}");
+
+        using var response = await Client.SendAsync(request);
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.Forbidden);
     }
 
     [Fact]
