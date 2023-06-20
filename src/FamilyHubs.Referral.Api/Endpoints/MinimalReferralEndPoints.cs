@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Security.Claims;
-using static MassTransit.ValidationResultExtensions;
 
 namespace FamilyHubs.Referral.Api.Endpoints;
 
@@ -67,20 +66,18 @@ public class MinimalReferralEndPoints
             GetReferralByIdCommand request = new(id);
             var result = await _mediator.Send(request, cancellationToken);
 
-            if ((role == "VcsProfessional" && result.ReferralServiceDto.ReferralOrganisationDto.Id == organisationId) ||
-                (role == "VcsDualRole" && result.ReferralServiceDto.ReferralOrganisationDto.Id == organisationId))
+            //If this is a VCS User make sure they can only see their own organisation details
+            if ((role == "VcsProfessional" || role == "VcsDualRole") && result.ReferralServiceDto.ReferralOrganisationDto.Id != organisationId)
             {
-                return result;
+                var actionContext = new ActionContext(httpContext, httpContext.GetRouteData(), new ActionDescriptor());
+                var statusCodeResult = new StatusCodeResult(StatusCodes.Status403Forbidden);
+                await statusCodeResult.ExecuteResultAsync(actionContext);
+                return default!;
             }
-    
-            var actionContext = new ActionContext(httpContext, httpContext.GetRouteData(), new ActionDescriptor());
-            var statusCodeResult = new StatusCodeResult(StatusCodes.Status403Forbidden);
-            await statusCodeResult.ExecuteResultAsync(actionContext);
-            return default!;
-           
-        }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referral By Id") { Tags = new[] { "Referrals" } });
 
-        
+            return result;
+
+        }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referral By Id") { Tags = new[] { "Referrals" } });
 
         app.MapGet("api/referral/compositekeys", [Authorize(Policy = "ReferralUser")] async (long? serviceId, long? statusId, long? recipientId, long? referralId, ReferralOrderBy? orderBy, bool? isAssending, bool? includeDeclined, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
         {
