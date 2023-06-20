@@ -5,6 +5,7 @@ using FamilyHubs.Referral.Core.Queries.GetReferrals;
 using FamilyHubs.Referral.Core.Queries.GetReferralStatus;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Enums;
+using FamilyHubs.SharedKernel.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -67,7 +68,7 @@ public class MinimalReferralEndPoints
             var result = await _mediator.Send(request, cancellationToken);
 
             //If this is a VCS User make sure they can only see their own organisation details
-            if ((role == "VcsProfessional" || role == "VcsDualRole") && result.ReferralServiceDto.ReferralOrganisationDto.Id != organisationId)
+            if ((role == RoleTypes.VcsManager || role == RoleTypes.VcsProfessional || role == RoleTypes.VcsDualRole) && result.ReferralServiceDto.ReferralOrganisationDto.Id != organisationId)
             {
                 var actionContext = new ActionContext(httpContext, httpContext.GetRouteData(), new ActionDescriptor());
                 var statusCodeResult = new StatusCodeResult(StatusCodes.Status403Forbidden);

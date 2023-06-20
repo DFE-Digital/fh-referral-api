@@ -1,4 +1,5 @@
 ﻿using FamilyHubs.Referral.Data.Repository;
+using FamilyHubs.SharedKernel.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -34,7 +35,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
                {
                     new Claim("sub", config["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
                     new Claim("jti", jti),
-                    new Claim(ClaimTypes.Role, "VcsDualRole"),
+                    new Claim(ClaimTypes.Role, RoleTypes.LaProfessional),
                     new Claim("OrganisationId", "1")
 
                },
@@ -47,7 +48,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
                {
                     new Claim("sub", config["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
                     new Claim("jti", jti),
-                    new Claim(ClaimTypes.Role, "VcsProfessional"),
+                    new Claim(ClaimTypes.Role, RoleTypes.VcsProfessional),
                     new Claim("OrganisationId", "1")
 
                },
@@ -60,7 +61,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
                {
                     new Claim("sub", config["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
                     new Claim("jti", jti),
-                    new Claim(ClaimTypes.Role, "VcsProfessional"),
+                    new Claim(ClaimTypes.Role, RoleTypes.VcsProfessional),
                     new Claim("OrganisationId", "-1")
 
                },
