@@ -34,7 +34,8 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
                {
                     new Claim("sub", config["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
                     new Claim("jti", jti),
-                    new Claim(ClaimTypes.Role, "VcsProfessional")
+                    new Claim(ClaimTypes.Role, "VcsDualRole"),
+                    new Claim("OrganisationId", "1")
 
                },
             signingCredentials: creds,
@@ -46,6 +47,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
                {
                     new Claim("sub", config["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
                     new Claim("jti", jti),
+                    new Claim(ClaimTypes.Role, "VcsProfessional"),
                     new Claim("OrganisationId", "1")
 
                },
@@ -58,6 +60,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
                {
                     new Claim("sub", config["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
                     new Claim("jti", jti),
+                    new Claim(ClaimTypes.Role, "VcsProfessional"),
                     new Claim("OrganisationId", "-1")
 
                },

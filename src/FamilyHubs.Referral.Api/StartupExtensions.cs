@@ -16,6 +16,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
 using FamilyHubs.SharedKernel.GovLogin.AppStart;
+using MassTransit.Courier;
 
 namespace FamilyHubs.Referral.Api;
 
@@ -42,6 +43,8 @@ public static class StartupExtensions
 
     public static void RegisterApplicationComponents(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddAuthorizationPolicy(configuration);
+
         services.AddBearerAuthentication(configuration);
 
         services.RegisterAppDbContext(configuration);
@@ -51,6 +54,26 @@ public static class StartupExtensions
         services.RegisterAutoMapper();
 
         services.RegisterMediator();
+    }
+
+    private static void AddAuthorizationPolicy(this IServiceCollection services, IConfiguration configuration)
+    {
+        List<string> userRoles = new List<string>()
+        {
+            "VcsProfessional", "VcsDualRole"
+        };
+
+        string settingUserRoles = configuration.GetValue<string>("UserRoles") ?? string.Empty;
+        if (!string.IsNullOrEmpty(settingUserRoles)) 
+        {
+            userRoles = settingUserRoles.Split(',').ToList();
+        }
+
+        services.AddAuthorization(options => {
+            options.AddPolicy("ReferralUser", policy =>
+                policy.RequireAssertion(context =>
+                    userRoles.Any(role => context.User.IsInRole(role))));
+        });
     }
 
     private static void RegisterMinimalEndPoints(this IServiceCollection services)
