@@ -102,6 +102,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
 
     protected bool IsRunningLocally()
     {
+        /*
         if (_configuration == null) 
         {
             return false;
@@ -120,7 +121,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
         {
             return false;
         }
-
+        */
         // Fallback to a default check if User Secrets file or machine name is not specified
         // For example, you can add additional checks or default behavior here
         return false;
