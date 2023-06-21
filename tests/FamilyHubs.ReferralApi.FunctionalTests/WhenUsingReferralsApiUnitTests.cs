@@ -1,4 +1,5 @@
-﻿using FamilyHubs.Referral.Data.Repository;
+﻿using FamilyHubs.Referral.Core.Commands.SetReferralStatus;
+using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Models;
 using FluentAssertions;
@@ -303,7 +304,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Accepted")
         };
 
-        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_vcstoken)}");
 
         using var response = await Client.SendAsync(request);
 
@@ -325,7 +326,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Declined/Unable to help")
         };
 
-        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_vcstoken)}");
 
         using var response = await Client.SendAsync(request);
 
@@ -335,6 +336,22 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
         stringResult.ToString().Should().Be("Declined");
+    }
+
+    [Fact]
+    public async Task ThenForbiddenReferralStatusIsReturned()
+    {
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Post,
+            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Declined/Unable to help")
+        };
+
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+
+        using var response = await Client.SendAsync(request);
+
+        response.StatusCode.Should().NotBe(System.Net.HttpStatusCode.OK);
     }
 
     [Fact]

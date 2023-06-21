@@ -18,5 +18,12 @@ public class SetReferralStatusCommandValidator : AbstractValidator<SetReferralSt
             .MaximumLength(50)
             .NotNull()
             .NotEmpty();
+
+        RuleFor(v => v.Role)
+            .NotNull()
+            .NotEmpty();
+
+        RuleFor(v => v.UserOrganisationId)
+            .GreaterThan(0);
     }
 }

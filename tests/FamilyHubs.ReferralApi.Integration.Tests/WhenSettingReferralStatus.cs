@@ -1,4 +1,5 @@
 ﻿using FamilyHubs.Referral.Core.Commands.SetReferralStatus;
+using FamilyHubs.SharedKernel.Identity;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -12,7 +13,7 @@ public class WhenSettingReferralStatus : DataIntegrationTestBase
     {
         await CreateReferral();
         var testReferral = TestDataProvider.GetReferralDto();
-        SetReferralStatusCommand command = new(testReferral.Id, "Declined", "Unable to help");
+        SetReferralStatusCommand command = new(RoleTypes.VcsProfessional, testReferral.ReferralServiceDto.ReferralOrganisationDto.Id, testReferral.Id, "Declined", "Unable to help");
         SetReferralStatusCommandHandler handler = new(TestDbContext, new Mock<ILogger<SetReferralStatusCommandHandler>>().Object);
 
         //Act

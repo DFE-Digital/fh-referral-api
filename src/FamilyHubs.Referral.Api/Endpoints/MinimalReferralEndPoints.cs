@@ -8,6 +8,7 @@ using FamilyHubs.ReferralService.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Swashbuckle.AspNetCore.Annotations;
@@ -70,10 +71,7 @@ public class MinimalReferralEndPoints
             //If this is a VCS User make sure they can only see their own organisation details
             if ((role == RoleTypes.VcsManager || role == RoleTypes.VcsProfessional || role == RoleTypes.VcsDualRole) && result.ReferralServiceDto.ReferralOrganisationDto.Id != organisationId)
             {
-                var actionContext = new ActionContext(httpContext, httpContext.GetRouteData(), new ActionDescriptor());
-                var statusCodeResult = new StatusCodeResult(StatusCodes.Status403Forbidden);
-                await statusCodeResult.ExecuteResultAsync(actionContext);
-                return default!;
+                return await SetForbidden<ReferralDto>(httpContext);
             }
 
             return result;
@@ -88,18 +86,30 @@ public class MinimalReferralEndPoints
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referral By Composite Keys") { Tags = new[] { "Referrals" } });
 
-        app.MapPost("api/referralStatus/{referralId}/{status}", [Authorize(Policy = "ReferralUser")] async (long referralId, string status, CancellationToken cancellationToken, ISender _mediator, ILogger<MinimalReferralEndPoints> logger) =>
+        app.MapPost("api/referralStatus/{referralId}/{status}", [Authorize(Policy = "ReferralUser")] async (long referralId, string status, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext, ILogger < MinimalReferralEndPoints> logger) =>
         {
-            SetReferralStatusCommand command = new(referralId, status, default!);
+            (string role, long organisationId) = GetUserRoleAndOrgansationFromClaims(httpContext);
+
+            SetReferralStatusCommand command = new(role, organisationId, referralId, status, default!);
             var result = await _mediator.Send(command, cancellationToken);
+            if (result == SetReferralStatusCommandHandler.Forbidden) 
+            {
+                return await SetForbidden<string>(httpContext);
+            }
             return result;
 
         }).WithMetadata(new SwaggerOperationAttribute("Referrals", "Set Referral Status") { Tags = new[] { "Referrals" } });
 
-        app.MapPost("api/referralStatus/{referralId}/{status}/{reasonForDecliningSupport}", [Authorize(Policy = "ReferralUser")] async (long referralId, string status, string reasonForDecliningSupport, CancellationToken cancellationToken, ISender _mediator, ILogger<MinimalReferralEndPoints> logger) =>
+        app.MapPost("api/referralStatus/{referralId}/{status}/{reasonForDecliningSupport}", [Authorize(Policy = "ReferralUser")] async (long referralId, string status, string reasonForDecliningSupport, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext, ILogger <MinimalReferralEndPoints> logger) =>
         {
-            SetReferralStatusCommand command = new(referralId, status, reasonForDecliningSupport);
+            (string role, long organisationId) = GetUserRoleAndOrgansationFromClaims(httpContext);
+
+            SetReferralStatusCommand command = new(role, organisationId, referralId, status, reasonForDecliningSupport);
             var result = await _mediator.Send(command, cancellationToken);
+            if (result == SetReferralStatusCommandHandler.Forbidden)
+            {
+                return await SetForbidden<string>(httpContext);
+            }
             return result;
 
         }).WithMetadata(new SwaggerOperationAttribute("Referrals", "Set Referral Status") { Tags = new[] { "Referrals" } });
@@ -111,6 +121,14 @@ public class MinimalReferralEndPoints
             return result;
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referral Statuses", "Get Referral Statuses") { Tags = new[] { "Referrals" } });
+    }
+
+    private async Task<T> SetForbidden<T>(HttpContext httpContext)
+    {
+        var actionContext = new ActionContext(httpContext, httpContext.GetRouteData(), new ActionDescriptor());
+        var statusCodeResult = new StatusCodeResult(StatusCodes.Status403Forbidden);
+        await statusCodeResult.ExecuteResultAsync(actionContext);
+        return default!;
     }
 
     private (string role, long organisationId) GetUserRoleAndOrgansationFromClaims(HttpContext httpContext)

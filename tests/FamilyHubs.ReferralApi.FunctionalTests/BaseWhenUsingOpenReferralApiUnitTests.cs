@@ -36,7 +36,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
                     new Claim("sub", config["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
                     new Claim("jti", jti),
                     new Claim(ClaimTypes.Role, RoleTypes.LaProfessional),
-                    new Claim(FamilyHubsClaimTypes.OrganisationId, "1")
+                    new Claim(FamilyHubsClaimTypes.OrganisationId, "3")
 
                },
             signingCredentials: creds,
