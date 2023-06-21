@@ -12,13 +12,13 @@ namespace FamilyHubs.Referral.FunctionalTests;
 #pragma warning disable S3881
 public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
 {
-    protected HttpClient Client;
-    private readonly CustomWebApplicationFactory _webAppFactory;
+    protected HttpClient? Client;
+    private readonly CustomWebApplicationFactory? _webAppFactory;
     private bool _disposed;
     protected readonly JwtSecurityToken? _token;
     protected readonly JwtSecurityToken? _vcstoken;
     protected readonly JwtSecurityToken? _forbiddentoken;
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration? _configuration;
     private readonly bool _initSuccessful;
 
     protected BaseWhenUsingOpenReferralApiUnitTests()
@@ -101,16 +101,28 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
 
     public void Dispose()
     {
-        if (!_initSuccessful || _webAppFactory == null) 
+        if (!_initSuccessful) 
         {
             return;
         }
-        using var scope = _webAppFactory.Services.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        context.Database.EnsureDeleted();
 
-        Client.Dispose();
-        _webAppFactory.Dispose();
+        if (_webAppFactory != null)
+        {
+            using var scope = _webAppFactory.Services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            context.Database.EnsureDeleted();
+        }
+        
+        if (Client != null)
+        {
+            Client.Dispose();
+        }
+
+        if (_webAppFactory != null)
+        {
+            _webAppFactory.Dispose();
+        }
+            
         GC.SuppressFinalize(this);
     }
 
