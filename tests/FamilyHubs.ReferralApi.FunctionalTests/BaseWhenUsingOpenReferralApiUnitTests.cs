@@ -19,79 +19,74 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
     protected readonly JwtSecurityToken? _vcstoken;
     protected readonly JwtSecurityToken? _forbiddentoken;
     private readonly IConfiguration _configuration;
+    private readonly bool _initSuccessful;
 
     protected BaseWhenUsingOpenReferralApiUnitTests()
     {
         _disposed = false;
 
-       
-        var configuration = new ConfigurationBuilder()
+        try
+        {
+         var configuration = new ConfigurationBuilder()
         .AddUserSecrets<Program>()
         .Build();
 
         _configuration = configuration;
 
-        bool canCreateTokens = false;
-        if (configuration != null && configuration.GetValue<string>("GovUkOidcConfiguration:BearerTokenSigningKey") != null)
-        {
-            canCreateTokens = true;
-            var jti = Guid.NewGuid().ToString();
-            var key = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(configuration["GovUkOidcConfiguration:BearerTokenSigningKey"]!));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
-            _token = new JwtSecurityToken(
-                claims: new List<Claim>
-                    {
-                new Claim("sub", configuration["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
-                new Claim("jti", jti),
-                new Claim(ClaimTypes.Role, RoleTypes.LaProfessional),
-                new Claim(FamilyHubsClaimTypes.OrganisationId, "3")
+        var jti = Guid.NewGuid().ToString();
+        var key = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(configuration["GovUkOidcConfiguration:BearerTokenSigningKey"]!));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
+        _token = new JwtSecurityToken(
+            claims: new List<Claim>
+                {
+        new Claim("sub", configuration["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
+        new Claim("jti", jti),
+        new Claim(ClaimTypes.Role, RoleTypes.LaProfessional),
+        new Claim(FamilyHubsClaimTypes.OrganisationId, "3")
 
-                    },
-                signingCredentials: creds,
-            expires: DateTime.UtcNow.AddMinutes(5)
-                );
+                },
+            signingCredentials: creds,
+        expires: DateTime.UtcNow.AddMinutes(5)
+            );
 
-            _vcstoken = new JwtSecurityToken(
-                claims: new List<Claim>
-                    {
-                new Claim("sub", configuration["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
-                new Claim("jti", jti),
-                new Claim(ClaimTypes.Role, RoleTypes.VcsProfessional),
-                new Claim(FamilyHubsClaimTypes.OrganisationId, "1")
+        _vcstoken = new JwtSecurityToken(
+            claims: new List<Claim>
+                {
+        new Claim("sub", configuration["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
+        new Claim("jti", jti),
+        new Claim(ClaimTypes.Role, RoleTypes.VcsProfessional),
+        new Claim(FamilyHubsClaimTypes.OrganisationId, "1")
 
-                    },
-                signingCredentials: creds,
-            expires: DateTime.UtcNow.AddMinutes(5)
-                );
+                },
+            signingCredentials: creds,
+        expires: DateTime.UtcNow.AddMinutes(5)
+            );
 
-            _forbiddentoken = new JwtSecurityToken(
-                claims: new List<Claim>
-                    {
-                new Claim("sub", configuration["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
-                new Claim("jti", jti),
-                new Claim(ClaimTypes.Role, RoleTypes.VcsProfessional),
-                new Claim(FamilyHubsClaimTypes.OrganisationId, "-1")
+        _forbiddentoken = new JwtSecurityToken(
+            claims: new List<Claim>
+                {
+        new Claim("sub", configuration["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
+        new Claim("jti", jti),
+        new Claim(ClaimTypes.Role, RoleTypes.VcsProfessional),
+        new Claim(FamilyHubsClaimTypes.OrganisationId, "-1")
 
-                    },
-                signingCredentials: creds,
-            expires: DateTime.UtcNow.AddMinutes(5)
-                );
+                },
+            signingCredentials: creds,
+        expires: DateTime.UtcNow.AddMinutes(5)
+            );
 
+            _webAppFactory = new CustomWebApplicationFactory();
+            _webAppFactory.SetupTestDatabaseAndSeedData();
+
+            Client = _webAppFactory.CreateDefaultClient();
+            Client.BaseAddress = new Uri("https://localhost:7192/");
+
+            _initSuccessful = true;
         }
-
-       
-
-        _webAppFactory = new CustomWebApplicationFactory();
-        _webAppFactory.SetupTestDatabaseAndSeedData();
-
-        Client = _webAppFactory.CreateDefaultClient();
-        Client.BaseAddress = new Uri("https://localhost:7192/");
-
-        if (!canCreateTokens)
-            _configuration = default!;
-
-
-
+        catch
+        {
+            _initSuccessful = false;
+        }
     }
 
     protected virtual void Dispose(bool disposing)
@@ -106,7 +101,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
 
     public void Dispose()
     {
-        if (_webAppFactory == null) 
+        if (!_initSuccessful || _webAppFactory == null) 
         {
             return;
         }
@@ -122,7 +117,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
     protected bool IsRunningLocally()
     {
         
-        if (_configuration == null) 
+        if (!_initSuccessful || _configuration == null) 
         {
             return false;
         }
