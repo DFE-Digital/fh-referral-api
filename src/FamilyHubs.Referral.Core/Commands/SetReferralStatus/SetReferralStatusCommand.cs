@@ -2,6 +2,7 @@
 using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
+using FamilyHubs.SharedKernel.Identity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -10,13 +11,17 @@ namespace FamilyHubs.Referral.Core.Commands.SetReferralStatus;
 
 public class SetReferralStatusCommand: IRequest<string>, ISetReferralStatusCommand
 {
-    public SetReferralStatusCommand(long referralId, string status, string reasonForDecliningSupport)
+    public SetReferralStatusCommand(string role, long userOrganisationId, long referralId, string status, string reasonForDecliningSupport)
     {
         Status = status;
         ReferralId = referralId;
         ReasonForDecliningSupport = reasonForDecliningSupport;
+        Role = role;
+        UserOrganisationId = userOrganisationId;
     }
+    public string Role { get; }
 
+    public long UserOrganisationId { get; }
     public long ReferralId { get; }
 
     public string Status { get; }
@@ -29,6 +34,7 @@ public class SetReferralStatusCommandHandler : IRequestHandler<SetReferralStatus
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger<SetReferralStatusCommandHandler> _logger;
+    public static string Forbidden { get; } = "Forbidden";
     public SetReferralStatusCommandHandler(ApplicationDbContext context, ILogger<SetReferralStatusCommandHandler> logger)
     {
         _logger = logger;
@@ -51,19 +57,21 @@ public class SetReferralStatusCommandHandler : IRequestHandler<SetReferralStatus
                 throw new NotFoundException(nameof(Referral), request.ReferralId.ToString());
             }
 
-            var updatedStatus = _context.ReferralStatuses.SingleOrDefault(x => x.Name == request.Status);
-
-            if (updatedStatus == null)
+            //Only modify Status if DfEAdmin or belong to VCS Organisation,
+            //assumption is VCS Professional will have correct organisation id other users will not
+            if (entity.ReferralService.ReferralOrganisation.Id == request.UserOrganisationId || RoleTypes.DfeAdmin == request.Role) 
             {
-                throw new NotFoundException(nameof(ReferralStatus), request.Status);
+                var updatedStatus = _context.ReferralStatuses.SingleOrDefault(x => x.Name == request.Status) ?? throw new NotFoundException(nameof(ReferralStatus), request.Status);
+
+                entity.ReasonForDecliningSupport = request.ReasonForDecliningSupport;
+                entity.StatusId = updatedStatus.Id;
+                entity.Status = updatedStatus;
+                await _context.SaveChangesAsync(cancellationToken);
+
+                return entity.Status.Name;
             }
 
-            entity.ReasonForDecliningSupport = request.ReasonForDecliningSupport;
-            entity.StatusId = updatedStatus.Id;
-            entity.Status = updatedStatus;
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return entity.Status.Name;
+            return Forbidden;
            
         }
         catch (Exception ex)

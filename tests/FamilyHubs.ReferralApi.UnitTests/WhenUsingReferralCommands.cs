@@ -9,6 +9,7 @@ using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Enums;
+using FamilyHubs.SharedKernel.Identity;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -516,8 +517,11 @@ namespace FamilyHubs.Referral.UnitTests
             };
         }
 
-        [Fact]
-        public async Task ThenUpdateStatusOfReferral()
+        [Theory]
+        [InlineData(RoleTypes.DfeAdmin)]
+        [InlineData(RoleTypes.VcsProfessional)]
+        [InlineData(RoleTypes.VcsDualRole)]
+        public async Task ThenUpdateStatusOfReferral(string role)
         {
             //Arange
             var myProfile = new AutoMappingProfiles();
@@ -531,7 +535,7 @@ namespace FamilyHubs.Referral.UnitTests
             CreateReferralCommand createCommand = new(testReferral);
             CreateReferralCommandHandler createHandler = new(mockApplicationDbContext, mapper, logger.Object);
             var setupresult = await createHandler.Handle(createCommand, new System.Threading.CancellationToken());
-            SetReferralStatusCommand command = new(testReferral.Id, "Declined", "Unable to help");
+            SetReferralStatusCommand command = new(role, testReferral.ReferralServiceDto.ReferralOrganisationDto.Id, testReferral.Id, "Declined", "Unable to help");
             SetReferralStatusCommandHandler handler = new(mockApplicationDbContext, new Mock<ILogger<SetReferralStatusCommandHandler>>().Object);
 
             //Act
@@ -542,6 +546,34 @@ namespace FamilyHubs.Referral.UnitTests
             setupresult.Should().Be(testReferral.Id);
             result.Should().NotBeNull();
             result.Should().Be("Declined");
+
+        }
+
+        public async Task ThenUpdateStatusOfReferralReturnsForbidden()
+        {
+            //Arange
+            var myProfile = new AutoMappingProfiles();
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            IMapper mapper = new Mapper(configuration);
+            var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
+            var mockApplicationDbContext = GetApplicationDbContext();
+            mockApplicationDbContext.ReferralStatuses.AddRange(ReferralSeedData.SeedStatuses());
+            mockApplicationDbContext.SaveChanges();
+            var testReferral = GetReferralDto();
+            CreateReferralCommand createCommand = new(testReferral);
+            CreateReferralCommandHandler createHandler = new(mockApplicationDbContext, mapper, logger.Object);
+            var setupresult = await createHandler.Handle(createCommand, new System.Threading.CancellationToken());
+            SetReferralStatusCommand command = new(RoleTypes.LaProfessional, testReferral.ReferralServiceDto.ReferralOrganisationDto.Id, testReferral.Id, "Declined", "Unable to help");
+            SetReferralStatusCommandHandler handler = new(mockApplicationDbContext, new Mock<ILogger<SetReferralStatusCommandHandler>>().Object);
+
+            //Act
+            var result = await handler.Handle(command, new System.Threading.CancellationToken());
+
+            //Assert
+            setupresult.Should().BeGreaterThan(0);
+            setupresult.Should().Be(testReferral.Id);
+            result.Should().NotBeNull();
+            result.Should().Be(SetReferralStatusCommandHandler.Forbidden);
 
         }
     }
