@@ -1,4 +1,5 @@
-﻿using FamilyHubs.Referral.Data.Repository;
+﻿using FamilyHubs.Referral.Api;
+using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,23 +18,25 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
     protected readonly JwtSecurityToken _token;
     protected readonly JwtSecurityToken _vcstoken;
     protected readonly JwtSecurityToken _forbiddentoken;
+    private readonly IConfiguration _configuration;
 
     protected BaseWhenUsingOpenReferralApiUnitTests()
     {
         _disposed = false;
 
-        var config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.test.json")
-                 .AddEnvironmentVariables()
-                 .Build();
+        var configuration = new ConfigurationBuilder()
+            .AddUserSecrets<Program>()
+            .Build();
+
+        _configuration = configuration;
 
         var jti = Guid.NewGuid().ToString();
-        var key = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(config["GovUkOidcConfiguration:BearerTokenSigningKey"]!));
+        var key = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(configuration["GovUkOidcConfiguration:BearerTokenSigningKey"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
         _token = new JwtSecurityToken(
             claims: new List<Claim>
                {
-                    new Claim("sub", config["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
+                    new Claim("sub", configuration["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
                     new Claim("jti", jti),
                     new Claim(ClaimTypes.Role, RoleTypes.LaProfessional),
                     new Claim(FamilyHubsClaimTypes.OrganisationId, "3")
@@ -46,7 +49,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
         _vcstoken = new JwtSecurityToken(
             claims: new List<Claim>
                {
-                    new Claim("sub", config["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
+                    new Claim("sub", configuration["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
                     new Claim("jti", jti),
                     new Claim(ClaimTypes.Role, RoleTypes.VcsProfessional),
                     new Claim(FamilyHubsClaimTypes.OrganisationId, "1")
@@ -59,7 +62,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
         _forbiddentoken = new JwtSecurityToken(
             claims: new List<Claim>
                {
-                    new Claim("sub", config["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
+                    new Claim("sub", configuration["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
                     new Claim("jti", jti),
                     new Claim(ClaimTypes.Role, RoleTypes.VcsProfessional),
                     new Claim(FamilyHubsClaimTypes.OrganisationId, "-1")
@@ -95,6 +98,25 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
         Client.Dispose();
         _webAppFactory.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    protected bool IsRunningLocally()
+    {
+        if (_configuration == null) 
+        {
+            return false;
+        }
+
+        string localMachineName = _configuration["LocalSettings:MachineName"] ?? string.Empty;
+
+        if (!string.IsNullOrEmpty(localMachineName))
+        {
+            return Environment.MachineName.Equals(localMachineName, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // Fallback to a default check if User Secrets file or machine name is not specified
+        // For example, you can add additional checks or default behavior here
+        return false;
     }
 }
 
