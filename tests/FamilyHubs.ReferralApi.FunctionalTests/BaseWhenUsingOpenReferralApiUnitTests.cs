@@ -30,6 +30,11 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
 
         _configuration = configuration;
 
+        if (configuration == null)
+        {
+            return;
+        }
+
         var jti = Guid.NewGuid().ToString();
         var key = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(configuration["GovUkOidcConfiguration:BearerTokenSigningKey"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
@@ -91,6 +96,10 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
 
     public void Dispose()
     {
+        if (_webAppFactory == null) 
+        {
+            return;
+        }
         using var scope = _webAppFactory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         context.Database.EnsureDeleted();
@@ -102,7 +111,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
 
     protected bool IsRunningLocally()
     {
-        /*
+        
         if (_configuration == null) 
         {
             return false;
@@ -121,7 +130,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
         {
             return false;
         }
-        */
+        
         // Fallback to a default check if User Secrets file or machine name is not specified
         // For example, you can add additional checks or default behavior here
         return false;
