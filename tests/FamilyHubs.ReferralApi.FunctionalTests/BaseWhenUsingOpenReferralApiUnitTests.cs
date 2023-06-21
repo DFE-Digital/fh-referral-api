@@ -107,11 +107,18 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
             return false;
         }
 
-        string localMachineName = _configuration["LocalSettings:MachineName"] ?? string.Empty;
-
-        if (!string.IsNullOrEmpty(localMachineName))
+        try
         {
-            return Environment.MachineName.Equals(localMachineName, StringComparison.OrdinalIgnoreCase);
+            string localMachineName = _configuration["LocalSettings:MachineName"] ?? string.Empty;
+
+            if (!string.IsNullOrEmpty(localMachineName))
+            {
+                return Environment.MachineName.Equals(localMachineName, StringComparison.OrdinalIgnoreCase);
+            }
+        }
+        catch
+        {
+            return false;
         }
 
         // Fallback to a default check if User Secrets file or machine name is not specified
