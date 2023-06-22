@@ -16,25 +16,25 @@ public static class ReferralSeedData
             {
                 Name = "New",
                 SortOrder = 0,
-                SecondrySortOrder = 0,
+                SecondrySortOrder = 1,
             },
             new ReferralStatus()
             {
                 Name = "Opened",
                 SortOrder = 1,
-                SecondrySortOrder = 0,
+                SecondrySortOrder = 1,
             },
             new ReferralStatus()
             {
                 Name = "Accepted",
                 SortOrder = 2,
-                SecondrySortOrder = 1,
+                SecondrySortOrder = 2,
             },
             new ReferralStatus()
             {
                 Name = "Declined",
                 SortOrder = 3,
-                SecondrySortOrder = 2,
+                SecondrySortOrder = 0,
             },
         };
     }
