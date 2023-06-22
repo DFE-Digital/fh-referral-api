@@ -62,7 +62,7 @@ public class GetReferralsByReferrerByReferrerIdCommandHandler : GetReferralsHand
             throw new NotFoundException(nameof(Referral), request.Id.ToString());
         }
 
-        entities = OrderBy(entities, request.OrderBy, request.IsAssending);
+        entities = OrderBy(entities, request.OrderBy, request.IsAssending, true);
 
         return await GetPaginatedList(request == null, entities, request?.PageNumber ?? 1, request?.PageSize ?? 10);
     }

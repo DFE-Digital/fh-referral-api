@@ -313,7 +313,7 @@ namespace FamilyHubs.Referral.UnitTests
         [InlineData(ReferralOrderBy.DateSent, false, 2)]
         [InlineData(ReferralOrderBy.DateUpdated, true, 1)]
         [InlineData(ReferralOrderBy.DateUpdated, false, 2)]
-        [InlineData(ReferralOrderBy.Status, true, 1)]
+        [InlineData(ReferralOrderBy.Status, true, 2)]
         [InlineData(ReferralOrderBy.Status, false, 2)]
         [InlineData(ReferralOrderBy.RecipientName, true, 1)]
         [InlineData(ReferralOrderBy.RecipientName, false, 2)]
