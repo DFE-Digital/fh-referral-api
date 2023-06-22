@@ -54,16 +54,39 @@ public class ApplicationDbContextInitialiser
 
     public async Task TrySeedAsync()
     {
+        IReadOnlyCollection<ReferralStatus> statuses = ReferralSeedData.SeedStatuses();
         if (!_context.ReferralStatuses.Any())
         {
-            IReadOnlyCollection<ReferralStatus> statuses = ReferralSeedData.SeedStatuses();
-
             _context.ReferralStatuses.AddRange(statuses);
 
             await _context.SaveChangesAsync();
         }
+        else
+        {
+            foreach (var seedStatus in statuses)
+            {
+                var dbStatus = _context.ReferralStatuses.FirstOrDefault(x => x.Name == seedStatus.Name);
+                if (!seedStatus.Equals(dbStatus))
+                { 
+                    if (dbStatus == null)
+                    {
+                        dbStatus = seedStatus;
+                    }
+                    else
+                    {
+                        dbStatus.Name = seedStatus.Name;
+                        dbStatus.SortOrder = seedStatus.SortOrder;
+                        dbStatus.SecondrySortOrder = seedStatus.SecondrySortOrder;
+                    }
+                    
+                    _context.ReferralStatuses.Update(dbStatus); 
+                }
+            }
 
-        //if (_context.Database.IsSqlite() && !_context.Referrals.Any())
+            await _context.SaveChangesAsync();
+        }
+
+        if (_context.Database.IsSqlite() && !_context.Referrals.Any())
         {
             IReadOnlyCollection<Entities.Referral> referrals = ReferralSeedData.SeedReferral();
 
