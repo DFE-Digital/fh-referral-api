@@ -34,7 +34,7 @@ public abstract class GetReferralsHandlerBase
         return result;
     }
 
-    protected IQueryable<Data.Entities.Referral> OrderBy(IQueryable<Data.Entities.Referral> currentList, ReferralOrderBy? orderBy, bool? isAssending) 
+    protected IQueryable<Data.Entities.Referral> OrderBy(IQueryable<Data.Entities.Referral> currentList, ReferralOrderBy? orderBy, bool? isAssending, bool isByReferrer = false) 
     {
         if (orderBy == null || isAssending == null)
             return currentList;
@@ -57,9 +57,19 @@ public abstract class GetReferralsHandlerBase
                 return currentList.OrderByDescending(x => x.LastModified);
 
             case ReferralOrderBy.Status:
-                if (isAssending.Value)
-                    return currentList.OrderBy(x => x.Status.SortOrder).ThenByDescending(x => x.Created);
-                return currentList.OrderByDescending(x => x.Status.SortOrder).ThenByDescending(x => x.Created);
+                if (isByReferrer)
+                {
+                    if (isAssending.Value)
+                        return currentList.OrderBy(x => x.Status.SecondrySortOrder).ThenByDescending(x => x.LastModified);
+                    return currentList.OrderByDescending(x => x.Status.SecondrySortOrder).ThenByDescending(x => x.LastModified);
+                }
+                else
+                {
+                    if (isAssending.Value)
+                        return currentList.OrderBy(x => x.Status.SortOrder).ThenByDescending(x => x.Created);
+                    return currentList.OrderByDescending(x => x.Status.SortOrder).ThenByDescending(x => x.Created);
+                }
+                
 
             case ReferralOrderBy.RecipientName:
                 if (isAssending.Value)

@@ -15,22 +15,26 @@ public static class ReferralSeedData
             new ReferralStatus()
             {
                 Name = "New",
-                SortOrder = 0
+                SortOrder = 0,
+                SecondrySortOrder = 0,
             },
             new ReferralStatus()
             {
                 Name = "Opened",
-                SortOrder = 1
+                SortOrder = 1,
+                SecondrySortOrder = 0,
             },
             new ReferralStatus()
             {
                 Name = "Accepted",
-                SortOrder = 2
+                SortOrder = 2,
+                SecondrySortOrder = 1,
             },
             new ReferralStatus()
             {
                 Name = "Declined",
-                SortOrder = 3
+                SortOrder = 3,
+                SecondrySortOrder = 2,
             },
         };
     }
@@ -69,6 +73,7 @@ public static class ReferralSeedData
                     Id = 1,
                     Name = "New",
                     SortOrder = 1,
+                    SecondrySortOrder = 0,
                 },
                 ReferralService = new Data.Entities.ReferralService
                 {
@@ -115,6 +120,7 @@ public static class ReferralSeedData
                     Id = 1,
                     Name = "Opened",
                     SortOrder = 1,
+                    SecondrySortOrder = 1,
                 },
                 ReferralService = new Data.Entities.ReferralService
                 {
