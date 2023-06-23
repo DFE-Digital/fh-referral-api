@@ -6,7 +6,6 @@ using FamilyHubs.Referral.Api.Middleware;
 using FamilyHubs.Referral.Core;
 using FamilyHubs.Referral.Data.Interceptors;
 using FamilyHubs.Referral.Data.Repository;
-using MassTransit;
 using MediatR;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Data.SqlClient;
@@ -16,7 +15,6 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
 using FamilyHubs.SharedKernel.GovLogin.AppStart;
-using MassTransit.Courier;
 using FamilyHubs.SharedKernel.Identity;
 
 namespace FamilyHubs.Referral.Api;

@@ -8,7 +8,6 @@ using FamilyHubs.ReferralService.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Swashbuckle.AspNetCore.Annotations;
@@ -20,7 +19,7 @@ public class MinimalReferralEndPoints
 {
     public void RegisterReferralEndPoints(WebApplication app)
     {
-        app.MapPost("api/referrals", [Authorize(Policy = "ReferralUser")] async ([FromBody] ReferralDto request, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapPost("api/referrals", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole)] async ([FromBody] ReferralDto request, CancellationToken cancellationToken, ISender _mediator) =>
         {
             CreateReferralCommand command = new(request);
             var result = await _mediator.Send(command, cancellationToken);
@@ -45,7 +44,7 @@ public class MinimalReferralEndPoints
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Referrer") { Tags = new[] { "Referrals" } });
 
-        app.MapGet("api/referralsByReferrer/{referrerId}", [Authorize(Policy = "ReferralUser")] async (long referrerId, ReferralOrderBy? orderBy, bool? isAssending, bool? includeDeclined, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapGet("api/referralsByReferrer/{referrerId}", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole)] async (long referrerId, ReferralOrderBy? orderBy, bool? isAssending, bool? includeDeclined, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
         {
             GetReferralsByReferrerByReferrerIdCommand request = new(referrerId, orderBy, isAssending, includeDeclined, pageNumber, pageSize);
             var result = await _mediator.Send(request, cancellationToken);
@@ -53,7 +52,7 @@ public class MinimalReferralEndPoints
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Referrer Id") { Tags = new[] { "Referrals" } });
 
-        app.MapGet("api/organisationreferrals/{organisationId}", [Authorize(Policy = "ReferralUser")] async (long organisationId, ReferralOrderBy? orderBy, bool? isAssending, bool? includeDeclined, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapGet("api/organisationreferrals/{organisationId}", [Authorize(Roles = RoleGroups.VcsProfessionalOrDualRole)] async (long organisationId, ReferralOrderBy? orderBy, bool? isAssending, bool? includeDeclined, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
         {
             GetReferralsByOrganisationIdCommand request = new(organisationId, orderBy, isAssending, includeDeclined, pageNumber, pageSize);
             var result = await _mediator.Send(request, cancellationToken);
@@ -61,7 +60,8 @@ public class MinimalReferralEndPoints
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Organisation Id") { Tags = new[] { "Referrals" } });
 
-        app.MapGet("api/referral/{id}", [Authorize(Policy = "ReferralUser")] async (long id, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
+        //todo: add new ProfessionalOrDualRole RoleGroup (or LaOrVcsProfessionalOrDualRole)
+        app.MapGet("api/referral/{id}", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole+","+RoleGroups.VcsProfessionalOrDualRole)] async (long id, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
         {
             (string role, long organisationId) = GetUserRoleAndOrgansationFromClaims(httpContext);
            
@@ -86,7 +86,7 @@ public class MinimalReferralEndPoints
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referral By Composite Keys") { Tags = new[] { "Referrals" } });
 
-        app.MapPost("api/referralStatus/{referralId}/{status}", [Authorize(Policy = "ReferralUser")] async (long referralId, string status, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext, ILogger < MinimalReferralEndPoints> logger) =>
+        app.MapPost("api/referralStatus/{referralId}/{status}", [Authorize(Roles = RoleGroups.VcsProfessionalOrDualRole)] async (long referralId, string status, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext, ILogger < MinimalReferralEndPoints> logger) =>
         {
             (string role, long organisationId) = GetUserRoleAndOrgansationFromClaims(httpContext);
 
@@ -100,7 +100,7 @@ public class MinimalReferralEndPoints
 
         }).WithMetadata(new SwaggerOperationAttribute("Referrals", "Set Referral Status") { Tags = new[] { "Referrals" } });
 
-        app.MapPost("api/referralStatus/{referralId}/{status}/{reasonForDecliningSupport}", [Authorize(Policy = "ReferralUser")] async (long referralId, string status, string reasonForDecliningSupport, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext, ILogger <MinimalReferralEndPoints> logger) =>
+        app.MapPost("api/referralStatus/{referralId}/{status}/{reasonForDecliningSupport}", [Authorize(Roles = RoleGroups.VcsProfessionalOrDualRole)] async (long referralId, string status, string reasonForDecliningSupport, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext, ILogger <MinimalReferralEndPoints> logger) =>
         {
             (string role, long organisationId) = GetUserRoleAndOrgansationFromClaims(httpContext);
 
