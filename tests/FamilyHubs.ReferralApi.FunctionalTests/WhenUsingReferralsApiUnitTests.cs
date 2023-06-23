@@ -127,6 +127,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 Id = 3,
                 Name = "New Service",
                 Description = "Service Description",
+                Url = "www.service.com",
                 ReferralOrganisationDto = new ReferralOrganisationDto
                 { 
                     Id = 3,
@@ -319,6 +320,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 Id = 1,
                 Name = "Service",
                 Description = "Service Description",
+                Url = "www.service.com",
                 ReferralOrganisationDto = new ReferralOrganisationDto
                 {
                     Id = 1,
