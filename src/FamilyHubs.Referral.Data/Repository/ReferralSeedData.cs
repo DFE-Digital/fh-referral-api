@@ -80,6 +80,7 @@ public static class ReferralSeedData
                     Id = 1,
                     Name = "Test Service",
                     Description = "Test Service Description",
+                    Url = "www.TestService.com",
                     ReferralOrganisation = new ReferralOrganisation
                     {
                         Id = 1,

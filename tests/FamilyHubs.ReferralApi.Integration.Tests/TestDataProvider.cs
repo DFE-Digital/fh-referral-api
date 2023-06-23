@@ -47,6 +47,7 @@ public static class TestDataProvider
                 Id = 2,
                 Name = "Service",
                 Description = "Service Description",
+                Url = "www.service.com",
                 ReferralOrganisationDto = new ReferralOrganisationDto
                 {
                     Id = 2,
