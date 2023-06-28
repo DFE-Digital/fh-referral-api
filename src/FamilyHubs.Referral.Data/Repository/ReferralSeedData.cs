@@ -45,6 +45,7 @@ public static class ReferralSeedData
         {
             new Data.Entities.Referral
             {
+                ReferrerTelephone = "0121 555 7777",
                 ReasonForSupport = "Reason For Support",
                 EngageWithFamily = "Engage With Family",
                 Recipient = new Recipient
@@ -93,6 +94,7 @@ public static class ReferralSeedData
 
             new Data.Entities.Referral
             {
+                ReferrerTelephone = "0121 555 7777",
                 ReasonForSupport = "Reason For Support 2",
                 EngageWithFamily = "Engage With Family 2",
                 Recipient = new Recipient
