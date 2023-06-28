@@ -26,6 +26,7 @@ public class WhenUsingUpdateReferral : DataIntegrationTestBase
         result.Should().Be(referral.Id);
         var actualService = TestDbContext.Referrals.SingleOrDefault(s => s.Id == referral.Id);
         actualService.Should().NotBeNull();
+        actualService!.ReferrerTelephone.Should().Be(referral.ReferrerTelephone);
         actualService!.ReasonForSupport.Should().Be(referral.ReasonForSupport);
         actualService!.EngageWithFamily.Should().Be(referral.EngageWithFamily);
 

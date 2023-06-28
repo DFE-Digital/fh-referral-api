@@ -5,6 +5,7 @@ namespace FamilyHubs.Referral.Data.Entities;
 
 public class Referral : EntityBase<long>
 {
+    public string? ReferrerTelephone { get; set; }
     public required string ReasonForSupport { get; set; }
     public required string EngageWithFamily { get; set; }
     public string? ReasonForDecliningSupport { get; set; }
