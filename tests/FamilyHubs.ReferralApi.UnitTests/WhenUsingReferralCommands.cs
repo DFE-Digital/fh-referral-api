@@ -57,8 +57,8 @@ namespace FamilyHubs.Referral.UnitTests
             mockApplicationDbContext.Referrals.Add(ReferralSeedData.SeedReferral().ElementAt(0));
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
-            testReferral.ReferrerDto = mapper.Map<ReferrerDto>(ReferralSeedData.SeedReferral().ElementAt(0).Referrer);
-            testReferral.ReferrerDto.Id = mockApplicationDbContext.Referrers.First().Id;
+            testReferral.ReferrerDto = mapper.Map<ReferrerDto>(ReferralSeedData.SeedReferral().ElementAt(0).ReferralUserAccount);
+            testReferral.ReferrerDto.Id = mockApplicationDbContext.ReferralUserAccounts.First().Id;
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
 

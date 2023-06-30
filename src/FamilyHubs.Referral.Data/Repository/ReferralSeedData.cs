@@ -60,7 +60,7 @@ public static class ReferralSeedData
                     County = "Country",
                     PostCode = "B30 2TV"
                 },
-                Referrer = new Referrer
+                ReferralUserAccount = new ReferralUserAccount
                 {
                     Id = 1,
                     EmailAddress = "Joe.Professional@email.com",
@@ -82,7 +82,7 @@ public static class ReferralSeedData
                     Name = "Test Service",
                     Description = "Test Service Description",
                     Url = "www.TestService.com",
-                    ReferralOrganisation = new ReferralOrganisation
+                    Organisation = new Organisation
                     {
                         Id = 1,
                         ReferralServiceId = 1,
@@ -109,7 +109,7 @@ public static class ReferralSeedData
                     County = "Country",
                     PostCode = "B31 2TV"
                 },
-                Referrer = new Referrer
+                ReferralUserAccount = new ReferralUserAccount
                 {
                     Id = 1,
                     EmailAddress = "Joe.Professional@email.com",
@@ -130,7 +130,7 @@ public static class ReferralSeedData
                     Id = 1,
                     Name = "Test Service",
                     Description = "Test Service Description",
-                    ReferralOrganisation = new ReferralOrganisation
+                    Organisation = new Organisation
                     {
                         Id = 1,
                         ReferralServiceId = 1,

@@ -59,7 +59,7 @@ public class BaseCreateDbUnitTest
                 Id = 1,
                 Name = "Test Service",
                 Description = "Test Service Description",
-                ReferralOrganisation = new ReferralOrganisation
+                Organisation = new Organisation
                 {
                     Id = 1,
                     ReferralServiceId = 1,
@@ -77,10 +77,10 @@ public class BaseCreateDbUnitTest
 
         foreach (Data.Entities.Referral referral in referrals)
         {
-            var referrer = context.Referrers.SingleOrDefault(x => x.Id == referral.Referrer.Id);
+            var referrer = context.ReferralUserAccounts.SingleOrDefault(x => x.Id == referral.ReferralUserAccount.Id);
             if (referrer != null)
             {
-                referral.Referrer = referrer;
+                referral.ReferralUserAccount = referrer;
             }
 
             var status = context.ReferralStatuses.SingleOrDefault(x => x.Name == referral.Status.Name);

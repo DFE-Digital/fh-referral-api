@@ -27,7 +27,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             return;
         }
             
-        var referrer = ReferralSeedData.SeedReferral().ElementAt(0).Referrer.EmailAddress;
+        var referrer = ReferralSeedData.SeedReferral().ElementAt(0).ReferralUserAccount.EmailAddress;
 
         var request = new HttpRequestMessage
         {

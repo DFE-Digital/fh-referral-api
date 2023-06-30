@@ -43,8 +43,8 @@ public abstract class GetReferralsHandlerBase
         {
             case ReferralOrderBy.Team:
                 if (isAssending.Value)
-                    return currentList.OrderBy(x => x.Referrer.Team);
-                return currentList.OrderByDescending(x => x.Referrer.Team);
+                    return currentList.OrderBy(x => x.ReferralUserAccount.Team);
+                return currentList.OrderByDescending(x => x.ReferralUserAccount.Team);
 
             case ReferralOrderBy.DateSent:
                 if (isAssending.Value)

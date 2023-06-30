@@ -46,10 +46,10 @@ public class SetReferralStatusCommandHandler : IRequestHandler<SetReferralStatus
         {
             var entity = await _context.Referrals
             .Include(x => x.Status)
-            .Include(x => x.Referrer)
+            .Include(x => x.ReferralUserAccount)
             .Include(x => x.Recipient)
             .Include(x => x.ReferralService)
-            .ThenInclude(x => x.ReferralOrganisation)
+            .ThenInclude(x => x.Organisation)
             .FirstOrDefaultAsync(p => p.Id == request.ReferralId, cancellationToken: cancellationToken);
 
             if (entity == null)
@@ -59,7 +59,7 @@ public class SetReferralStatusCommandHandler : IRequestHandler<SetReferralStatus
 
             //Only modify Status if DfEAdmin or belong to VCS Organisation,
             //assumption is VCS Professional will have correct organisation id other users will not
-            if (entity.ReferralService.ReferralOrganisation.Id == request.UserOrganisationId || RoleTypes.DfeAdmin == request.Role) 
+            if (entity.ReferralService.Organisation.Id == request.UserOrganisationId || RoleTypes.DfeAdmin == request.Role) 
             {
                 var updatedStatus = _context.ReferralStatuses.SingleOrDefault(x => x.Name == request.Status) ?? throw new NotFoundException(nameof(ReferralStatus), request.Status);
 

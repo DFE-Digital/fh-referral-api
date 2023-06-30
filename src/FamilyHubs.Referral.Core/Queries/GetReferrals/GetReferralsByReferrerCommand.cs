@@ -41,21 +41,21 @@ public class GetReferralsByReferrerCommandHandler : GetReferralsHandlerBase, IRe
     {
         var entities = _context.Referrals
             .Include(x => x.Status)
-            .Include(x => x.Referrer)
+            .Include(x => x.ReferralUserAccount)
             .Include(x => x.Recipient)
             .Include(x => x.ReferralService)
-            .ThenInclude(x => x.ReferralOrganisation)
+            .ThenInclude(x => x.Organisation)
 
             .AsSplitQuery()
             .AsNoTracking();
 
         if (request.IncludeDeclined != null && request.IncludeDeclined == true)
         {
-            entities = entities.Where(x => x.Referrer.EmailAddress == request.EmailAddress);
+            entities = entities.Where(x => x.ReferralUserAccount.EmailAddress == request.EmailAddress);
         }
         else
         {
-            entities = entities.Where(x => x.Referrer.EmailAddress == request.EmailAddress && x.Status.Name != "Declined");
+            entities = entities.Where(x => x.ReferralUserAccount.EmailAddress == request.EmailAddress && x.Status.Name != "Declined");
         }
 
         if (entities == null)
