@@ -196,8 +196,6 @@ namespace FamilyHubs.Referral.UnitTests
             var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
             await CreateReferrals(mockApplicationDbContext, false);
-            //await CreateReferrals(mockApplicationDbContext, false);
-            //mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
             testReferral.ReferralServiceDto = mapper.Map<ReferralServiceDto>(ReferralSeedData.SeedReferral().ElementAt(0).ReferralService);
 
