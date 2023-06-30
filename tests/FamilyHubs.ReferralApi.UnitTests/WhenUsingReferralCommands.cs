@@ -57,7 +57,7 @@ namespace FamilyHubs.Referral.UnitTests
             mockApplicationDbContext.Referrals.Add(ReferralSeedData.SeedReferral().ElementAt(0));
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
-            testReferral.ReferrerDto = mapper.Map<ReferrerDto>(ReferralSeedData.SeedReferral().ElementAt(0).ReferralUserAccount);
+            testReferral.ReferrerDto = mapper.Map<ReferralUserAccountDto>(ReferralSeedData.SeedReferral().ElementAt(0).ReferralUserAccount);
             testReferral.ReferrerDto.Id = mockApplicationDbContext.ReferralUserAccounts.First().Id;
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
@@ -211,8 +211,8 @@ namespace FamilyHubs.Referral.UnitTests
             testReferral.ReferrerDto.PhoneNumber = "1234567899";
             testReferral.ReferralServiceDto.Name = "Service A";
             testReferral.ReferralServiceDto.Description = "Service Description A";
-            testReferral.ReferralServiceDto.ReferralOrganisationDto.Name = "Organisation A";
-            testReferral.ReferralServiceDto.ReferralOrganisationDto.Description = "Organisation Description A";
+            testReferral.ReferralServiceDto.OrganisationDto.Name = "Organisation A";
+            testReferral.ReferralServiceDto.OrganisationDto.Description = "Organisation Description A";
 
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
@@ -486,7 +486,7 @@ namespace FamilyHubs.Referral.UnitTests
                     County = "County",
                     PostCode = "B30 2TV"
                 },
-                ReferrerDto = new ReferrerDto
+                ReferrerDto = new ReferralUserAccountDto
                 {
                     Id = 2,
                     EmailAddress = "Bob.Referrer@email.com",
@@ -507,7 +507,7 @@ namespace FamilyHubs.Referral.UnitTests
                     Name = "Service",
                     Description = "Service Description",
                     Url = "www.service.com",
-                    ReferralOrganisationDto = new ReferralOrganisationDto
+                    OrganisationDto = new OrganisationDto
                     {
                         Id = 2,
                         Name = "Organisation",
@@ -536,7 +536,7 @@ namespace FamilyHubs.Referral.UnitTests
             CreateReferralCommand createCommand = new(testReferral);
             CreateReferralCommandHandler createHandler = new(mockApplicationDbContext, mapper, logger.Object);
             var setupresult = await createHandler.Handle(createCommand, new System.Threading.CancellationToken());
-            SetReferralStatusCommand command = new(role, testReferral.ReferralServiceDto.ReferralOrganisationDto.Id, testReferral.Id, "Declined", "Unable to help");
+            SetReferralStatusCommand command = new(role, testReferral.ReferralServiceDto.OrganisationDto.Id, testReferral.Id, "Declined", "Unable to help");
             SetReferralStatusCommandHandler handler = new(mockApplicationDbContext, new Mock<ILogger<SetReferralStatusCommandHandler>>().Object);
 
             //Act

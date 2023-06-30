@@ -27,7 +27,7 @@ public static class TestDataProvider
                 County = "County",
                 PostCode = "B30 2TV"
             },
-            ReferrerDto = new ReferrerDto
+            ReferrerDto = new ReferralUserAccountDto
             {
                 Id = 2,
                 EmailAddress = "Bob.Referrer@email.com",
@@ -48,7 +48,7 @@ public static class TestDataProvider
                 Name = "Service",
                 Description = "Service Description",
                 Url = "www.service.com",
-                ReferralOrganisationDto = new ReferralOrganisationDto
+                OrganisationDto = new OrganisationDto
                 {
                     Id = 2,
                     Name = "Organisation",

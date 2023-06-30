@@ -87,7 +87,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         request.ReferralDto.RecipientDto.Id = entity.Recipient.Id;
         request.ReferralDto.ReferrerDto.Id = entity.ReferralUserAccount.Id;
         request.ReferralDto.ReferralServiceDto.Id = entity.ReferralService.Id;
-        request.ReferralDto.ReferralServiceDto.ReferralOrganisationDto.Id = entity.ReferralService.Organisation.Id;
+        request.ReferralDto.ReferralServiceDto.OrganisationDto.Id = entity.ReferralService.Organisation.Id;
 
 
         //Update Referrer / Recipient / Service / Organisation with latest details

@@ -107,7 +107,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 County = "County",
                 PostCode = "B31 2TV"
             },
-            ReferrerDto = new ReferrerDto
+            ReferrerDto = new ReferralUserAccountDto
             { 
                 Id = 2,
                 EmailAddress = "Bob.Referrer@email.com",
@@ -128,7 +128,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 Name = "New Service",
                 Description = "Service Description",
                 Url = "www.service.com",
-                ReferralOrganisationDto = new ReferralOrganisationDto
+                OrganisationDto = new OrganisationDto
                 { 
                     Id = 3,
                     Name = "New Organisation",
@@ -300,7 +300,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 County = "County",
                 PostCode = "B30 2TV"
             },
-            ReferrerDto = new ReferrerDto
+            ReferrerDto = new  ReferralUserAccountDto
             {
                 Id = 2,
                 EmailAddress = "Bob.Referrer@email.com",
@@ -321,7 +321,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 Name = "Service",
                 Description = "Service Description",
                 Url = "www.service.com",
-                ReferralOrganisationDto = new ReferralOrganisationDto
+                OrganisationDto = new OrganisationDto
                 {
                     Id = 1,
                     Name = "Organisation",

@@ -13,7 +13,7 @@ public class WhenSettingReferralStatus : DataIntegrationTestBase
     {
         await CreateReferral();
         var testReferral = TestDataProvider.GetReferralDto();
-        SetReferralStatusCommand command = new(RoleTypes.VcsProfessional, testReferral.ReferralServiceDto.ReferralOrganisationDto.Id, testReferral.Id, "Declined", "Unable to help");
+        SetReferralStatusCommand command = new(RoleTypes.VcsProfessional, testReferral.ReferralServiceDto.OrganisationDto.Id, testReferral.Id, "Declined", "Unable to help");
         SetReferralStatusCommandHandler handler = new(TestDbContext, new Mock<ILogger<SetReferralStatusCommandHandler>>().Object);
 
         //Act

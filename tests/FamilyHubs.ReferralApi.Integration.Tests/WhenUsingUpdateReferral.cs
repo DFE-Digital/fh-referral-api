@@ -115,8 +115,8 @@ public class WhenUsingUpdateReferral : DataIntegrationTestBase
         var referral = TestDataProvider.GetReferralDto();
         referral.ReferralServiceDto.Name = "Unit Test Name";
         referral.ReferralServiceDto.Description = "Unit Test Description";
-        referral.ReferralServiceDto.ReferralOrganisationDto.Name = "Unit Test Org Name";
-        referral.ReferralServiceDto.ReferralOrganisationDto.Description = "Unit Test Org Description";
+        referral.ReferralServiceDto.OrganisationDto.Name = "Unit Test Org Name";
+        referral.ReferralServiceDto.OrganisationDto.Description = "Unit Test Org Description";
         var expected = referral.ReferralServiceDto;
 
         UpdateReferralCommand command = new(referral.Id, referral);
@@ -132,8 +132,8 @@ public class WhenUsingUpdateReferral : DataIntegrationTestBase
         actualService.Should().NotBeNull();
         actualService!.ReferralService.Name.Should().Be(expected.Name);
         actualService!.ReferralService.Description.Should().Be(expected.Description);
-        actualService!.ReferralService.Organisation.Name.Should().Be(expected.ReferralOrganisationDto.Name);
-        actualService!.ReferralService.Organisation.Description.Should().Be(expected.ReferralOrganisationDto.Description);
+        actualService!.ReferralService.Organisation.Name.Should().Be(expected.OrganisationDto.Name);
+        actualService!.ReferralService.Organisation.Description.Should().Be(expected.OrganisationDto.Description);
     }
 
 
