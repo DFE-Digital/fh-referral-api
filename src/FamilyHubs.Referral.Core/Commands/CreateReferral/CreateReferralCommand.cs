@@ -6,6 +6,7 @@ using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace FamilyHubs.Referral.Core.Commands.CreateReferral;
 
@@ -71,21 +72,23 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         Data.Entities.Referral entity = _mapper.Map<Data.Entities.Referral>(request.ReferralDto);
         ArgumentNullException.ThrowIfNull(entity);
 
+
         entity.Recipient.Id = 0;
 
         entity = AttachExistingStatus(entity);
         entity = AttachExistingReferrer(entity);
         entity = AttachExistingService(entity);
+        entity = AttachExistingOrganisation(entity);
+        
+        await _context.SaveChangesAsync(cancellationToken);
 
         _context.Referrals.Add(entity);
-
-        await _context.SaveChangesAsync(cancellationToken);
 
         //Make sure all Dto Id's are correctly updated
         request.ReferralDto.Id = entity.Id;
         request.ReferralDto.Status.Id = entity.Status.Id;
         request.ReferralDto.RecipientDto.Id = entity.Recipient.Id;
-        request.ReferralDto.ReferrerDto.Id = entity.Referrer.Id;
+        request.ReferralDto.ReferrerDto.Id = entity.ReferralUserAccount.Id;
         request.ReferralDto.ReferralServiceDto.Id = entity.ReferralService.Id;
         request.ReferralDto.ReferralServiceDto.ReferralOrganisationDto.Id = entity.ReferralService.ReferralOrganisation.Id;
 
@@ -110,10 +113,10 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     private Data.Entities.Referral AttachExistingReferrer(Data.Entities.Referral entity)
     {
-        Referrer? referrer = _context.Referrers.SingleOrDefault(x => x.EmailAddress == entity.Referrer.EmailAddress);
+        ReferralUserAccount? referrer = _context.Referrers.SingleOrDefault(x => x.EmailAddress == entity.ReferralUserAccount.EmailAddress);
         if (referrer != null) 
         {
-            entity.Referrer = referrer;
+            entity.ReferralUserAccount = referrer;
         }
         return entity;
     }
@@ -123,6 +126,25 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         if (referralService != null)
         {
             entity.ReferralService = referralService;
+        }
+        return entity;
+    }
+
+    private Data.Entities.Referral AttachExistingOrganisation(Data.Entities.Referral entity)
+    {
+        ReferralOrganisation? referralOrganisation = _context.ReferralOrganisations.SingleOrDefault(x => x.Id == entity.ReferralService.ReferralOrganisation.Id);
+        if (referralOrganisation == null)
+        {
+            _context.ReferralOrganisations.Add(entity.ReferralService.ReferralOrganisation);
+            _context.SaveChanges();
+            referralOrganisation = _context.ReferralOrganisations.SingleOrDefault(x => x.Id == entity.ReferralService.ReferralOrganisation.Id);
+        }
+        
+        if (referralOrganisation != null)
+        {
+            entity.ReferralService.ReferralOrganisation = referralOrganisation;
+            entity.ReferralUserAccount.ReferralOrganisationId = referralOrganisation.Id;
+            entity.ReferralUserAccount.ReferralOrganisation = referralOrganisation;
         }
         return entity;
     }

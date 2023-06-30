@@ -41,7 +41,7 @@ public class BaseCreateDbUnitTest
         return builder.Options;
     }
 
-    protected static async Task CreateReferrals(ApplicationDbContext context)
+    protected static async Task CreateReferrals(ApplicationDbContext context, bool allReferrals)
     {
         if (!context.ReferralStatuses.Any())
         {
@@ -73,14 +73,14 @@ public class BaseCreateDbUnitTest
         }
 
 
-        IReadOnlyCollection<Data.Entities.Referral> referrals = ReferralSeedData.SeedReferral(true);
+        IReadOnlyCollection<Data.Entities.Referral> referrals = ReferralSeedData.SeedReferral(allReferrals);
 
         foreach (Data.Entities.Referral referral in referrals)
         {
-            var referrer = context.Referrers.SingleOrDefault(x => x.Id == referral.Referrer.Id);
+            var referrer = context.Referrers.SingleOrDefault(x => x.Id == referral.ReferralUserAccount.Id);
             if (referrer != null)
             {
-                referral.Referrer = referrer;
+                referral.ReferralUserAccount = referrer;
             }
 
             var status = context.ReferralStatuses.SingleOrDefault(x => x.Name == referral.Status.Name);
@@ -93,6 +93,14 @@ public class BaseCreateDbUnitTest
             if (service != null)
             {
                 referral.ReferralService = service;
+            }
+
+            var referralOrganisation = context.ReferralOrganisations.SingleOrDefault(x => x.Id == referral.ReferralService.ReferralOrganisation.Id);
+            if (referralOrganisation != null)
+            {
+                referralOrganisation.ReferralServiceId = 1;
+                referral.ReferralUserAccount.ReferralOrganisation = referralOrganisation;
+                referral.ReferralService.ReferralOrganisation = referralOrganisation;
             }
 
             context.Referrals.Add(referral);

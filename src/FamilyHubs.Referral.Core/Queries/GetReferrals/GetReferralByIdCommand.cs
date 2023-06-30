@@ -33,7 +33,8 @@ public class GetReferralByIdCommandHandler : IRequestHandler<GetReferralByIdComm
     {
         var entity = await _context.Referrals
             .Include(x => x.Status)
-            .Include(x => x.Referrer)
+            .Include(x => x.ReferralUserAccount)
+            .ThenInclude(x => x.ReferralOrganisation)
             .Include(x => x.Recipient)
             .Include(x => x.ReferralService)
             .ThenInclude(x => x.ReferralOrganisation)

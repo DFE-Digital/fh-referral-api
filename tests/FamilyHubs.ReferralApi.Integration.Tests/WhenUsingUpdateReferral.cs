@@ -105,7 +105,7 @@ public class WhenUsingUpdateReferral : DataIntegrationTestBase
         result.Should().Be(referral.Id);
         var actualService = TestDbContext.Referrals.SingleOrDefault(s => s.Id == referral.Id);
         actualService.Should().NotBeNull();
-        actualService!.Referrer.Should().BeEquivalentTo(expected);
+        actualService!.ReferralUserAccount.Should().BeEquivalentTo(expected);
     }
 
     [Fact]

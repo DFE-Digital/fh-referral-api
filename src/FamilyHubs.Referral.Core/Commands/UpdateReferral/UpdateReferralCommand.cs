@@ -67,7 +67,7 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
     {
         var entity = _context.Referrals
             .Include(x => x.Status)
-            .Include(x => x.Referrer)
+            .Include(x => x.ReferralUserAccount)
             .Include(x => x.Recipient)
             .Include(x => x.ReferralService)
             .ThenInclude(x => x.ReferralOrganisation)
@@ -100,19 +100,21 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
 
     private async Task UpdateReferrer(Data.Entities.Referral entity, UpdateReferralCommand request, CancellationToken cancellationToken)
     {
-        if (entity.Referrer.Id != request.ReferralDto.ReferrerDto.Id)
+        if (entity.ReferralUserAccount.Id != request.ReferralDto.ReferrerDto.Id)
         {
             var updatedReferrer = _context.Referrers.SingleOrDefault(x => x.Id == request.ReferralDto.ReferrerDto.Id);
 
             if (updatedReferrer == null)
             {
-                _context.Referrers.Add(_mapper.Map<Referrer>(request.ReferralDto.ReferrerDto));
-                entity.ReferrerId = request.ReferralDto.ReferrerDto.Id;
+                var userAccount = _mapper.Map<ReferralUserAccount>(request.ReferralDto.ReferrerDto);
+                userAccount.ReferralOrganisationId = entity.ReferralService.ReferralOrganisation.Id;
+                _context.Referrers.Add(userAccount);
+                entity.ReferralUserAccountId = request.ReferralDto.ReferrerDto.Id;
                 await _context.SaveChangesAsync(cancellationToken);
                 return;
             }
 
-            entity.Referrer = updatedReferrer;
+            entity.ReferralUserAccount = updatedReferrer;
             await _context.SaveChangesAsync(cancellationToken);
         }
     }

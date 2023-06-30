@@ -67,20 +67,30 @@ public abstract class DataIntegrationTestBase : IDisposable, IAsyncDisposable
 
         TestDbContext.SaveChangesAsync().GetAwaiter().GetResult();
 
-        IReadOnlyCollection<Data.Entities.Referral> referrals = ReferralSeedData.SeedReferral();
+        ApplicationDbContextInitialiser.TrySeedAsync(TestDbContext).GetAwaiter().GetResult(); 
 
-        foreach (Data.Entities.Referral referral in referrals)
-        {
-            var status = TestDbContext.ReferralStatuses.SingleOrDefault(x => x.Id == referral.Status.Id);
-            if (status != null)
-            {
-                referral.Status = status;
-            }
-        }
+        //IReadOnlyCollection<Data.Entities.Referral> referrals = ReferralSeedData.SeedReferral();
 
-        TestDbContext.Referrals.AddRange(referrals);
+        //foreach (Data.Entities.Referral referral in referrals)
+        //{
+        //    var status = TestDbContext.ReferralStatuses.SingleOrDefault(x => x.Id == referral.Status.Id);
+        //    if (status != null)
+        //    {
+        //        referral.Status = status;
+        //    }
 
-        TestDbContext.SaveChangesAsync().GetAwaiter().GetResult(); 
+        //    var referralOrganisation = TestDbContext.ReferralOrganisations.SingleOrDefault(x => x.Id == referral.ReferralService.ReferralOrganisation.Id);
+        //    if (referralOrganisation != null)
+        //    {
+        //        referralOrganisation.ReferralServiceId = 1;
+        //        referral.ReferralUserAccount.ReferralOrganisation = referralOrganisation;
+        //        referral.ReferralService.ReferralOrganisation = referralOrganisation;
+        //    }
+        //}
+
+        //TestDbContext.Referrals.AddRange(referrals);
+
+        //TestDbContext.SaveChangesAsync().GetAwaiter().GetResult(); 
     }
 
     protected async Task<ReferralDto> CreateReferral(ReferralDto? newReferral = null)
@@ -92,6 +102,22 @@ public abstract class DataIntegrationTestBase : IDisposable, IAsyncDisposable
         if (status != null)
         {
             referral.Status = status;
+        }
+
+        var referralOrganisation = TestDbContext.ReferralOrganisations.SingleOrDefault(x => x.Id == referral.ReferralService.ReferralOrganisation.Id);
+        if(referralOrganisation == null) 
+        {
+            TestDbContext.ReferralOrganisations.Add(referral.ReferralService.ReferralOrganisation);
+            await TestDbContext.SaveChangesAsync();
+            referralOrganisation = TestDbContext.ReferralOrganisations.SingleOrDefault(x => x.Id == referral.ReferralService.ReferralOrganisation.Id);
+        }
+        
+        
+        if (referralOrganisation != null)
+        {
+            referralOrganisation.ReferralServiceId = 1;
+            referral.ReferralUserAccount.ReferralOrganisation = referralOrganisation;
+            referral.ReferralService.ReferralOrganisation = referralOrganisation;
         }
 
         TestDbContext.Referrals.Add(referral);

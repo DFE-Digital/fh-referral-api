@@ -43,7 +43,7 @@ public class ApplicationDbContextInitialiser
     {
         try
         {
-            await TrySeedAsync();
+            await TrySeedAsync(_context);
         }
         catch (Exception ex)
         {
@@ -52,20 +52,20 @@ public class ApplicationDbContextInitialiser
         }
     }
 
-    public async Task TrySeedAsync()
+    public static async Task TrySeedAsync(ApplicationDbContext context)
     {
         IReadOnlyCollection<ReferralStatus> statuses = ReferralSeedData.SeedStatuses();
-        if (!_context.ReferralStatuses.Any())
+        if (!context.ReferralStatuses.Any())
         {
-            _context.ReferralStatuses.AddRange(statuses);
+            context.ReferralStatuses.AddRange(statuses);
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
         else
         {
             foreach (var seedStatus in statuses)
             {
-                var dbStatus = _context.ReferralStatuses.FirstOrDefault(x => x.Name == seedStatus.Name);
+                var dbStatus = context.ReferralStatuses.FirstOrDefault(x => x.Name == seedStatus.Name);
                 if (!seedStatus.Equals(dbStatus))
                 { 
                     if (dbStatus == null)
@@ -79,29 +79,45 @@ public class ApplicationDbContextInitialiser
                         dbStatus.SecondrySortOrder = seedStatus.SecondrySortOrder;
                     }
                     
-                    _context.ReferralStatuses.Update(dbStatus); 
+                    context.ReferralStatuses.Update(dbStatus); 
                 }
             }
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
 
-        if (_context.Database.IsSqlite() && !_context.Referrals.Any())
+        if (!context.ReferralOrganisations.Any())
+        {
+            context.ReferralOrganisations.AddRange(ReferralSeedData.SeedReferralOrganisations());
+
+            await context.SaveChangesAsync();
+        }
+
+        if (context.Database.IsSqlite() && !context.Referrals.Any())
         {
             IReadOnlyCollection<Entities.Referral> referrals = ReferralSeedData.SeedReferral();
 
             foreach (Entities.Referral referral in referrals)
             {
-                var status = _context.ReferralStatuses.SingleOrDefault(x => x.Name == referral.Status.Name);
+                var status = context.ReferralStatuses.SingleOrDefault(x => x.Name == referral.Status.Name);
                 if (status != null)
                 {
                     referral.Status = status;
                 }
+
+                var referralOrganisation = context.ReferralOrganisations.SingleOrDefault(x => x.Id == referral.ReferralService.ReferralOrganisation.Id);
+                if (referralOrganisation != null) 
+                {
+                    referralOrganisation.ReferralServiceId = 1;
+                    referral.ReferralUserAccount.ReferralOrganisation = referralOrganisation;
+                    referral.ReferralService.ReferralOrganisation = referralOrganisation;
+                }
             }
 
-            _context.Referrals.AddRange(referrals);
+            
+            context.Referrals.AddRange(referrals);
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
     }
 }

@@ -25,7 +25,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
         modelBuilder.Entity<Entities.ReferralService>().Property(c => c.Id).ValueGeneratedNever();
         modelBuilder.Entity<Entities.ReferralOrganisation>().Property(c => c.Id).ValueGeneratedNever();
-        modelBuilder.Entity<Entities.Referrer>().Property(c => c.Id).ValueGeneratedNever();
+        modelBuilder.Entity<Entities.ReferralUserAccount>().Property(c => c.Id).ValueGeneratedNever();
 
         base.OnModelCreating(modelBuilder);
     }
@@ -43,5 +43,5 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<ReferralOrganisation> ReferralOrganisations => Set<ReferralOrganisation>();
     public DbSet<Entities.ReferralService> ReferralServices => Set<Entities.ReferralService>();
     public DbSet<ReferralStatus> ReferralStatuses => Set<ReferralStatus>();
-    public DbSet<Referrer> Referrers => Set<Referrer>();
+    public DbSet<ReferralUserAccount> Referrers => Set<ReferralUserAccount>();
 }
