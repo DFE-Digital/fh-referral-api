@@ -10,5 +10,5 @@ public class UserAccount : EntityBase<long>
     public string? PhoneNumber { get; set; }
     public string? Role { get; set; }
     public string? Team { get; set; }
-    public virtual IList<OrganisationUserAccount>? OrganisationUserAccount { get; set;}
+    public virtual IList<OrganisationUserAccount>? OrganisationUserAccounts { get; set;}
 }
