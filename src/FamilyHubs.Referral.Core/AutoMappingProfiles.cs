@@ -19,12 +19,12 @@ public class AutoMappingProfiles : Profile
             .ForMember(dest => dest.Created, opt => opt.MapFrom(src => src.Created))
             .ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => src.LastModified));
         CreateMap<ReferralStatusDto, ReferralStatus>().ReverseMap();
-        CreateMap<ReferrerDto, Referrer>().ReverseMap();
+        CreateMap<ReferralUserAccountDto, Referrer>().ReverseMap();
         CreateMap<RecipientDto, Recipient>().ReverseMap();
         CreateMap<ReferralServiceDto, Data.Entities.ReferralService>()
-            .ForMember(dest => dest.ReferralOrganisation, opt => opt.MapFrom(src => src.ReferralOrganisationDto))
+            .ForMember(dest => dest.ReferralOrganisation, opt => opt.MapFrom(src => src.OrganisationDto))
             .ReverseMap();
-        CreateMap<ReferralOrganisationDto, ReferralOrganisation>().ReverseMap();
+        CreateMap<OrganisationDto, ReferralOrganisation>().ReverseMap();
         CreateMap<ReferralOrganisation, ReferralOrganisation>();
     }
 }
