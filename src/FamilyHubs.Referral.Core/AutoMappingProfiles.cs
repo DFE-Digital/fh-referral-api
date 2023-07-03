@@ -25,10 +25,20 @@ public class AutoMappingProfiles : Profile
             .ForMember(dest => dest.Organisation, opt => opt.MapFrom(src => src.OrganisationDto))
             .ReverseMap();
 
-        CreateMap<UserAccountDto, UserAccount>().ReverseMap();
-        CreateMap<OrganisationUserAccountDto, OrganisationUserAccount>().ReverseMap();
+        // Organisation mappings
+        CreateMap<OrganisationDto, Organisation>()
+            .ReverseMap();
 
-        CreateMap<OrganisationDto, Organisation>().ReverseMap();
-        CreateMap<Organisation, Organisation>();
+        // UserAccount mappings
+        CreateMap<UserAccountDto, UserAccount>()
+            .ReverseMap();
+
+        // OrganisationUserAccount mappings
+        CreateMap<OrganisationUserAccountDto, OrganisationUserAccount>()
+            .ForMember(dest => dest.Organisation, opt => opt.MapFrom(src => src.Organisation))
+            .ForMember(dest => dest.UserAccount, opt => opt.MapFrom(src => src.UserAccount))
+            .ReverseMap()
+            .ForMember(dest => dest.Organisation, opt => opt.MapFrom(src => src.Organisation))
+            .ForMember(dest => dest.UserAccount, opt => opt.MapFrom(src => src.UserAccount));
     }
 }

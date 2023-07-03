@@ -18,6 +18,7 @@ public class GetReferralsByOrganisationIdCommand : IRequest<PaginatedList<Referr
         IsAssending = isAssending;
         PageNumber = pageNumber != null ? pageNumber.Value : 1;
         PageSize = pageSize != null ? pageSize.Value : 10;
+        IncludeDeclined = includeDeclined;
     }
 
     public long OrganisationId { get; set; }

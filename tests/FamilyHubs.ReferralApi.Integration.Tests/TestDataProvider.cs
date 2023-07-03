@@ -58,4 +58,32 @@ public static class TestDataProvider
 
         };
     }
+
+    public static UserAccountDto GetUserAccount()
+    {
+        UserAccountDto userAccountDto = new UserAccountDto
+        {
+            EmailAddress = "FirstUser@email.com",
+            Name = "First User",
+            PhoneNumber = "0161 111 1111",
+            Role = "Test Role",
+            Team = "Test Team"
+        };
+
+        userAccountDto.OrganisationUserAccountDtos = new List<OrganisationUserAccountDto>
+        {
+            new OrganisationUserAccountDto
+            {
+                UserAccount = userAccountDto,
+                Organisation = new OrganisationDto
+                {
+                    Id = 2,
+                    Name = "Organisation",
+                    Description = "Organisation Description",
+                }
+            }
+        };
+
+        return userAccountDto;
+    }
 }

@@ -14,7 +14,7 @@ public class ReferralServiceConfiguration : IEntityTypeConfiguration<Entities.Re
         builder.HasOne(s => s.Organisation)
            .WithOne()
            .HasForeignKey<Organisation>(lc => lc.ReferralServiceId)
-           .IsRequired();
+           .IsRequired(false);
 
         builder.Property(t => t.Name)
             .IsRequired()

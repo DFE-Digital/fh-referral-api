@@ -7,11 +7,11 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FamilyHubs.Referral.Core.Commands.CreateUserAccount;
+namespace FamilyHubs.Referral.Core.Commands.UpdateUserAccount;
 
-public class CreateUserAccountCommand : IRequest<bool>, ICreateUserAccountCommand
+public class UpdateUserAccountsCommand : IRequest<bool>, IUpdateUserAccountCommand
 {
-    public CreateUserAccountCommand(List<UserAccountDto> userAccounts)
+    public UpdateUserAccountsCommand(List<UserAccountDto> userAccounts)
     {
         UserAccounts = userAccounts;
     }
@@ -19,19 +19,19 @@ public class CreateUserAccountCommand : IRequest<bool>, ICreateUserAccountComman
     public List<UserAccountDto> UserAccounts { get; }
 }
 
-public class CreateUserAccountCommandHandler : IRequestHandler<CreateUserAccountCommand, bool>
+public class UpdateUserAccountsCommandHandler : IRequestHandler<UpdateUserAccountsCommand, bool>
 {
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
-    private readonly ILogger<CreateUserAccountCommandHandler> _logger;
-    public CreateUserAccountCommandHandler(ApplicationDbContext context, IMapper mapper, ILogger<CreateUserAccountCommandHandler> logger)
+    private readonly ILogger<UpdateUserAccountsCommandHandler> _logger;
+    public UpdateUserAccountsCommandHandler(ApplicationDbContext context, IMapper mapper, ILogger<UpdateUserAccountsCommandHandler> logger)
     {
         _logger = logger;
         _context = context;
         _mapper = mapper;
     }
 
-    public async Task<bool> Handle(CreateUserAccountCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(UpdateUserAccountsCommand request, CancellationToken cancellationToken)
     {
         bool result;
         if (_context.Database.IsSqlServer())
@@ -39,7 +39,7 @@ public class CreateUserAccountCommandHandler : IRequestHandler<CreateUserAccount
             await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
             try
             {
-                result = await CreateAndUpdateUserAccounts(request, cancellationToken);
+                result = await UpdateAndUpdateUserAccounts(request, cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
             }
             catch (Exception ex)
@@ -53,7 +53,7 @@ public class CreateUserAccountCommandHandler : IRequestHandler<CreateUserAccount
         {
             try
             {
-                result = await CreateAndUpdateUserAccounts(request, cancellationToken);
+                result = await UpdateAndUpdateUserAccounts(request, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -66,9 +66,9 @@ public class CreateUserAccountCommandHandler : IRequestHandler<CreateUserAccount
         return result;
     }
 
-    private async Task<bool> CreateAndUpdateUserAccounts(CreateUserAccountCommand request, CancellationToken cancellationToken)
+    private async Task<bool> UpdateAndUpdateUserAccounts(UpdateUserAccountsCommand request, CancellationToken cancellationToken)
     {
-        
+
 
         foreach (var account in request.UserAccounts)
         {
@@ -79,7 +79,7 @@ public class CreateUserAccountCommandHandler : IRequestHandler<CreateUserAccount
 
             entity = await AttatchExistingOrgansiation(entity, cancellationToken);
 
-            _context.UserAccounts.Add(entity);
+            _context.UserAccounts.Update(entity);
 
             await _context.SaveChangesAsync(cancellationToken);
 
@@ -88,17 +88,17 @@ public class CreateUserAccountCommandHandler : IRequestHandler<CreateUserAccount
                 return false;
             }
         }
-        
+
         return true;
     }
-    
+
     private async Task<UserAccount> AttatchExistingOrgansiation(UserAccount entity, CancellationToken cancellationToken)
     {
-        if (entity.OrganisationUserAccounts == null) 
+        if (entity.OrganisationUserAccounts == null)
         {
             return entity;
         }
-        foreach(OrganisationUserAccount organisationUserAccount in entity.OrganisationUserAccounts)
+        foreach (OrganisationUserAccount organisationUserAccount in entity.OrganisationUserAccounts)
         {
             Organisation? organisation = _context.Organisations.FirstOrDefault(x => x.Id == organisationUserAccount.Organisation.Id);
 
@@ -106,7 +106,7 @@ public class CreateUserAccountCommandHandler : IRequestHandler<CreateUserAccount
             {
                 _context.Organisations.Add(organisationUserAccount.Organisation);
                 await _context.SaveChangesAsync(cancellationToken);
-                
+
             }
 
             organisationUserAccount.Organisation = _context.Organisations.First(x => x.Id == organisationUserAccount.Organisation.Id);

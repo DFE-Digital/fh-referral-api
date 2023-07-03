@@ -4,10 +4,13 @@ using System.Text;
 
 namespace FamilyHubs.Referral.Api.Endpoints;
 
+
+[ApiExplorerSettings(IgnoreApi = true)]
 [Route("api/[controller]")]
 [ApiController]
 public class MessageController : ControllerBase
 {
+    
     private readonly IQueueClient _queueClient;
 
     public MessageController()
@@ -17,7 +20,8 @@ public class MessageController : ControllerBase
 
         _queueClient = new QueueClient(serviceBusConnectionString, queueName);
     }
-
+    
+    
     [HttpPost]
     public async Task<IActionResult> ReceiveMessageAsync([FromBody] string messageBody)
     {
@@ -48,7 +52,7 @@ public class MessageController : ControllerBase
 
         await Task.CompletedTask;
     }
-
+    
     private async Task ProcessMessageAsync(Message message, CancellationToken token)
     {
         // Process the received message here
@@ -67,4 +71,5 @@ public class MessageController : ControllerBase
 
         return Task.CompletedTask;
     }
+    
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Enums;
@@ -31,6 +32,23 @@ public abstract class GetReferralsHandlerBase
 
         pagelist = _mapper.Map<List<ReferralDto>>(referralList);
         var result = new PaginatedList<ReferralDto>(pagelist.ToList(), totalRecords, 1, 10);
+        return result;
+    }
+
+    protected async Task<PaginatedList<UserAccountDto>> GetPaginatedList(bool requestIsNull, IQueryable<UserAccount> userAccounts, int pageNumber, int pageSize)
+    {
+        int totalRecords = userAccounts.Count();
+        List<UserAccountDto> pagelist;
+        if (!requestIsNull)
+        {
+            pagelist = await userAccounts.Skip((pageNumber - 1) * pageSize).Take(pageSize)
+                .ProjectTo<UserAccountDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+            return new PaginatedList<UserAccountDto>(pagelist, totalRecords, pageNumber, pageSize);
+        }
+
+        pagelist = _mapper.Map<List<UserAccountDto>>(userAccounts);
+        var result = new PaginatedList<UserAccountDto>(pagelist.ToList(), totalRecords, 1, 10);
         return result;
     }
 
