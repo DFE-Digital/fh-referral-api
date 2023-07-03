@@ -1,17 +1,11 @@
-﻿using Azure.Core;
-using FamilyHubs.Referral.Core.Commands.CreateReferral;
-using FamilyHubs.Referral.Core.Commands.CreateUserAccount;
+﻿using FamilyHubs.Referral.Core.Commands.CreateUserAccount;
 using FamilyHubs.Referral.Core.Commands.UpdateUserAccount;
 using FamilyHubs.Referral.Core.Queries.GetUserAccounts;
 using FamilyHubs.ReferralService.Shared.Dto;
-using FamilyHubs.ReferralService.Shared.Enums;
-using FamilyHubs.SharedKernel.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Data;
-using System.Threading;
 namespace FamilyHubs.Referral.Api.Endpoints;
 
 public class MinimalUserAccountEndPoints
