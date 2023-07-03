@@ -35,12 +35,14 @@ public class GetUsersByOrganisationIdCommandHandler : GetReferralsHandlerBase, I
 
     public async Task<PaginatedList<UserAccountDto>> Handle(GetUsersByOrganisationIdCommand request, CancellationToken cancellationToken)
     {
+#pragma warning disable CS8620
         var entities = _context.UserAccounts
             .Include(x => x.OrganisationUserAccounts)
-            //.ThenInclude(x => x.Organisation)
+            .ThenInclude(x => x.Organisation)
             .Where(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == request.OrganisationId))
             .AsNoTracking();
-            
+#pragma warning restore CS8620
+
         if (entities == null)
         {
             throw new NotFoundException(nameof(Referral), request.OrganisationId.ToString());

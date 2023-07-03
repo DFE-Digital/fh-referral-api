@@ -44,6 +44,16 @@ public abstract class GetReferralsHandlerBase
             pagelist = await userAccounts.Skip((pageNumber - 1) * pageSize).Take(pageSize)
                 .ProjectTo<UserAccountDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
+
+            foreach(UserAccountDto userAccount in pagelist)
+            {
+                UserAccount? dbUserAccount = userAccounts.FirstOrDefault(x => x.Id == userAccount.Id);
+                if (dbUserAccount != null)
+                {
+                    userAccount.OrganisationUserAccountDtos = _mapper.Map<List<OrganisationUserAccountDto>>(dbUserAccount.OrganisationUserAccounts);
+                }
+            }
+
             return new PaginatedList<UserAccountDto>(pagelist, totalRecords, pageNumber, pageSize);
         }
 

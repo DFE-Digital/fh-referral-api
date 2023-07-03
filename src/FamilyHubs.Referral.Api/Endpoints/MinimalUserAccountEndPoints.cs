@@ -28,7 +28,7 @@ public class MinimalUserAccountEndPoints
 
         }).WithMetadata(new SwaggerOperationAttribute("User Accounts", "Update User Accounts") { Tags = new[] { "User Accounts" } });
 
-        app.MapPut("api/useraccountsByOrganisationId/{organisationId}", [Authorize(Policy = "ReferralUser")] async (long organisationId, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapGet("api/useraccountsByOrganisationId/{organisationId}", [Authorize(Policy = "ReferralUser")] async (long organisationId, int? pageNumber, int? pageSize, CancellationToken cancellationToken, ISender _mediator) =>
         {
             GetUsersByOrganisationIdCommand command = new(organisationId, pageNumber, pageSize);
             var result = await _mediator.Send(command, cancellationToken);
