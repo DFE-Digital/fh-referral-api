@@ -53,4 +53,26 @@ public abstract class BaseUserAccountHandler
 
         return entity;
     }
+
+    protected async Task<UserAccount> AttatchExistingService(UserAccount entity, CancellationToken cancellationToken)
+    {
+        if (entity.ServiceUserAccounts == null)
+        {
+            return entity;
+        }
+        foreach (UserAccountService serviceUserAccount in entity.ServiceUserAccounts)
+        {
+            Organisation? organisation = _context.Organisations.SingleOrDefault(x => x.Id == serviceUserAccount.ReferralService.Id);
+
+            if (organisation == null)
+            {
+                _context.ReferralServices.Add(serviceUserAccount.ReferralService);
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+
+            serviceUserAccount.ReferralService = _context.ReferralServices.Single(x => x.Id == serviceUserAccount.ReferralService.Id);
+        }
+
+        return entity;
+    }
 }

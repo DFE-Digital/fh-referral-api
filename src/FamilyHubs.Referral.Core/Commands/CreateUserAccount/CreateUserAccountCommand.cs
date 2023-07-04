@@ -72,6 +72,7 @@ public class CreateUserAccountCommandHandler : BaseUserAccountHandler, IRequestH
         entity.OrganisationUserAccounts = _mapper.Map<List<UserAccountOrganisation>>(request.UserAccount.OrganisationUserAccountDtos);
 
         entity = await AttatchExistingUserAccountRoles(entity, cancellationToken);
+        entity = await AttatchExistingService(entity, cancellationToken);
         entity = await AttatchExistingOrgansiation(entity, cancellationToken);
 
         _context.UserAccounts.Add(entity);
