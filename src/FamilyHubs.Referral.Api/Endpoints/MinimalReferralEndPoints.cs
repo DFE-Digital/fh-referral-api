@@ -69,7 +69,7 @@ public class MinimalReferralEndPoints
             var result = await _mediator.Send(request, cancellationToken);
 
             //If this is a VCS User make sure they can only see their own organisation details
-            if ((role == RoleTypes.VcsManager || role == RoleTypes.VcsProfessional || role == RoleTypes.VcsDualRole) && result.ReferralServiceDto.ReferralOrganisationDto.Id != organisationId)
+            if ((role == RoleTypes.VcsManager || role == RoleTypes.VcsProfessional || role == RoleTypes.VcsDualRole) && result.ReferralServiceDto.OrganisationDto.Id != organisationId)
             {
                 return await SetForbidden<ReferralDto>(httpContext);
             }

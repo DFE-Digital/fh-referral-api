@@ -18,6 +18,7 @@ public class GetReferralsByOrganisationIdCommand : IRequest<PaginatedList<Referr
         IsAssending = isAssending;
         PageNumber = pageNumber != null ? pageNumber.Value : 1;
         PageSize = pageSize != null ? pageSize.Value : 10;
+        IncludeDeclined = includeDeclined;
     }
 
     public long OrganisationId { get; set; }
@@ -40,20 +41,20 @@ public class GetReferralsByOrganisationIdCommandHandler : GetReferralsHandlerBas
     {
         var entities = _context.Referrals
             .Include(x => x.Status)
-            .Include(x => x.Referrer)
+            .Include(x => x.ReferralUserAccount)
             .Include(x => x.Recipient)
             .Include(x => x.ReferralService)
-            .ThenInclude(x => x.ReferralOrganisation)
+            .ThenInclude(x => x.Organisation)
             .AsNoTracking()
-            .Where(x => x.ReferralService.ReferralOrganisation.Id == request.OrganisationId);
+            .Where(x => x.ReferralService.Organisation.Id == request.OrganisationId);
 
         if (request.IncludeDeclined != null && request.IncludeDeclined == true)
         {
-            entities = entities.Where(x => x.ReferralService.ReferralOrganisation.Id == request.OrganisationId);
+            entities = entities.Where(x => x.ReferralService.Organisation.Id == request.OrganisationId);
         }
         else
         {
-            entities = entities.Where(x => x.ReferralService.ReferralOrganisation.Id == request.OrganisationId && x.Status.Name != "Declined");
+            entities = entities.Where(x => x.ReferralService.Organisation.Id == request.OrganisationId && x.Status.Name != "Declined");
         }
 
         if (entities == null)

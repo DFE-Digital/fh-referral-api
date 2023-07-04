@@ -26,10 +26,10 @@ namespace FamilyHubs.Referral.Integration.Tests
             result.Should().NotBe(0);
             var actualService = TestDbContext.Referrals
                 .Include(x => x.Status)
-            .Include(x => x.Referrer)
+            .Include(x => x.ReferralUserAccount)
             .Include(x => x.Recipient)
             .Include(x => x.ReferralService)
-            .ThenInclude(x => x.ReferralOrganisation)
+            .ThenInclude(x => x.Organisation)
             .AsNoTracking()
             .SingleOrDefault(s => s.Id == result);
             actualService.Should().NotBeNull();

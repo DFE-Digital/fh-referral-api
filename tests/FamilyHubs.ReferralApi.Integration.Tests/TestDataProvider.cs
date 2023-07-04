@@ -27,7 +27,7 @@ public static class TestDataProvider
                 County = "County",
                 PostCode = "B30 2TV"
             },
-            ReferrerDto = new ReferrerDto
+            ReferrerDto = new ReferralUserAccountDto
             {
                 Id = 2,
                 EmailAddress = "Bob.Referrer@email.com",
@@ -48,7 +48,7 @@ public static class TestDataProvider
                 Name = "Service",
                 Description = "Service Description",
                 Url = "www.service.com",
-                ReferralOrganisationDto = new ReferralOrganisationDto
+                OrganisationDto = new OrganisationDto
                 {
                     Id = 2,
                     Name = "Organisation",
@@ -57,5 +57,33 @@ public static class TestDataProvider
             }
 
         };
+    }
+
+    public static UserAccountDto GetUserAccount()
+    {
+        UserAccountDto userAccountDto = new UserAccountDto
+        {
+            EmailAddress = "FirstUser@email.com",
+            Name = "First User",
+            PhoneNumber = "0161 111 1111",
+            Role = "Test Role",
+            Team = "Test Team"
+        };
+
+        userAccountDto.OrganisationUserAccountDtos = new List<OrganisationUserAccountDto>
+        {
+            new OrganisationUserAccountDto
+            {
+                UserAccount = userAccountDto,
+                Organisation = new OrganisationDto
+                {
+                    Id = 2,
+                    Name = "Organisation",
+                    Description = "Organisation Description",
+                }
+            }
+        };
+
+        return userAccountDto;
     }
 }

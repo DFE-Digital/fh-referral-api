@@ -79,6 +79,7 @@ public static class StartupExtensions
     {
         services.AddTransient<MinimalGeneralEndPoints>();
         services.AddTransient<MinimalReferralEndPoints>();
+        services.AddTransient<MinimalUserAccountEndPoints>();
     }
 
     private static void RegisterAutoMapper(this IServiceCollection services)
@@ -189,6 +190,9 @@ public static class StartupExtensions
 
         var referralApi = scope.ServiceProvider.GetService<MinimalReferralEndPoints>();
         referralApi?.RegisterReferralEndPoints(app);
+
+        var userAccountsApi = scope.ServiceProvider.GetService<MinimalUserAccountEndPoints>();
+        userAccountsApi?.RegisterUserAccountEndPoints(app);
 
         try
         {

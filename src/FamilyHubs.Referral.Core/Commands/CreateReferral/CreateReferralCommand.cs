@@ -85,9 +85,9 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         request.ReferralDto.Id = entity.Id;
         request.ReferralDto.Status.Id = entity.Status.Id;
         request.ReferralDto.RecipientDto.Id = entity.Recipient.Id;
-        request.ReferralDto.ReferrerDto.Id = entity.Referrer.Id;
+        request.ReferralDto.ReferrerDto.Id = entity.ReferralUserAccount.Id;
         request.ReferralDto.ReferralServiceDto.Id = entity.ReferralService.Id;
-        request.ReferralDto.ReferralServiceDto.ReferralOrganisationDto.Id = entity.ReferralService.ReferralOrganisation.Id;
+        request.ReferralDto.ReferralServiceDto.OrganisationDto.Id = entity.ReferralService.Organisation.Id;
 
 
         //Update Referrer / Recipient / Service / Organisation with latest details
@@ -110,10 +110,10 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     private Data.Entities.Referral AttachExistingReferrer(Data.Entities.Referral entity)
     {
-        Referrer? referrer = _context.Referrers.SingleOrDefault(x => x.EmailAddress == entity.Referrer.EmailAddress);
+        ReferralUserAccount? referrer = _context.ReferralUserAccounts.SingleOrDefault(x => x.EmailAddress == entity.ReferralUserAccount.EmailAddress);
         if (referrer != null) 
         {
-            entity.Referrer = referrer;
+            entity.ReferralUserAccount = referrer;
         }
         return entity;
     }

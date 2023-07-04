@@ -22,6 +22,81 @@ namespace FamilyHubs.Referral.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Organisation", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("Created")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<long?>("ReferralServiceId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReferralServiceId")
+                        .IsUnique()
+                        .HasFilter("[ReferralServiceId] IS NOT NULL");
+
+                    b.ToTable("Organisations");
+                });
+
+            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.OrganisationUserAccount", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("OrganisationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("UserAccountId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrganisationId");
+
+                    b.HasIndex("UserAccountId");
+
+                    b.ToTable("OrganisationUserAccounts");
+                });
+
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Recipient", b =>
                 {
                     b.Property<long>("Id")
@@ -141,45 +216,6 @@ namespace FamilyHubs.Referral.Data.Migrations
                     b.ToTable("Referrals");
                 });
 
-            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralOrganisation", b =>
-                {
-                    b.Property<long>("Id")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("Created")
-                        .IsRequired()
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<long>("ReferralServiceId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReferralServiceId")
-                        .IsUnique();
-
-                    b.ToTable("ReferralOrganisations");
-                });
-
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralService", b =>
                 {
                     b.Property<long>("Id")
@@ -255,7 +291,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                     b.ToTable("ReferralStatuses");
                 });
 
-            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Referrer", b =>
+            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralUserAccount", b =>
                 {
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
@@ -294,7 +330,74 @@ namespace FamilyHubs.Referral.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Referrers");
+                    b.ToTable("ReferralUserAccounts");
+                });
+
+            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.UserAccount", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmailAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Team")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserAccounts");
+                });
+
+            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Organisation", b =>
+                {
+                    b.HasOne("FamilyHubs.Referral.Data.Entities.ReferralService", null)
+                        .WithOne("Organisation")
+                        .HasForeignKey("FamilyHubs.Referral.Data.Entities.Organisation", "ReferralServiceId");
+                });
+
+            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.OrganisationUserAccount", b =>
+                {
+                    b.HasOne("FamilyHubs.Referral.Data.Entities.Organisation", "Organisation")
+                        .WithMany()
+                        .HasForeignKey("OrganisationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FamilyHubs.Referral.Data.Entities.UserAccount", "UserAccount")
+                        .WithMany("OrganisationUserAccounts")
+                        .HasForeignKey("UserAccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Organisation");
+
+                    b.Navigation("UserAccount");
                 });
 
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Referral", b =>
@@ -311,7 +414,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FamilyHubs.Referral.Data.Entities.Referrer", "Referrer")
+                    b.HasOne("FamilyHubs.Referral.Data.Entities.ReferralUserAccount", "ReferralUserAccount")
                         .WithMany()
                         .HasForeignKey("ReferrerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -327,24 +430,20 @@ namespace FamilyHubs.Referral.Data.Migrations
 
                     b.Navigation("ReferralService");
 
-                    b.Navigation("Referrer");
+                    b.Navigation("ReferralUserAccount");
 
                     b.Navigation("Status");
                 });
 
-            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralOrganisation", b =>
+            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralService", b =>
                 {
-                    b.HasOne("FamilyHubs.Referral.Data.Entities.ReferralService", null)
-                        .WithOne("ReferralOrganisation")
-                        .HasForeignKey("FamilyHubs.Referral.Data.Entities.ReferralOrganisation", "ReferralServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.Navigation("Organisation")
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralService", b =>
+            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.UserAccount", b =>
                 {
-                    b.Navigation("ReferralOrganisation")
-                        .IsRequired();
+                    b.Navigation("OrganisationUserAccounts");
                 });
 #pragma warning restore 612, 618
         }

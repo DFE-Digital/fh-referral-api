@@ -1,5 +1,6 @@
 ﻿using FamilyHubs.Referral.Api;
 using FamilyHubs.Referral.Data.Repository;
+using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -87,6 +88,34 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
         {
             _initSuccessful = false;
         }
+    }
+
+    public static UserAccountDto GetUserAccount()
+    {
+        UserAccountDto userAccountDto = new UserAccountDto
+        {
+            EmailAddress = "FirstUser@email.com",
+            Name = "First User",
+            PhoneNumber = "0161 111 1111",
+            Role = "Test Role",
+            Team = "Test Team"
+        };
+
+        userAccountDto.OrganisationUserAccountDtos = new List<OrganisationUserAccountDto>
+        {
+            new OrganisationUserAccountDto
+            {
+                UserAccount = default!,
+                Organisation = new OrganisationDto
+                {
+                    Id = 2,
+                    Name = "Organisation",
+                    Description = "Organisation Description",
+                }
+            }
+        };
+
+        return userAccountDto;
     }
 
     protected virtual void Dispose(bool disposing)

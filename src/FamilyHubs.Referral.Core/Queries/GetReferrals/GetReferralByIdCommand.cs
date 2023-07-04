@@ -33,10 +33,10 @@ public class GetReferralByIdCommandHandler : IRequestHandler<GetReferralByIdComm
     {
         var entity = await _context.Referrals
             .Include(x => x.Status)
-            .Include(x => x.Referrer)
+            .Include(x => x.ReferralUserAccount)
             .Include(x => x.Recipient)
             .Include(x => x.ReferralService)
-            .ThenInclude(x => x.ReferralOrganisation)
+            .ThenInclude(x => x.Organisation)
             .AsNoTracking()
             .ProjectTo<ReferralDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken: cancellationToken);

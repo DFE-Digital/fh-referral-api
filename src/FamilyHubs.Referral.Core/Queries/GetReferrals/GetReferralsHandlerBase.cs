@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Enums;
@@ -34,6 +35,33 @@ public abstract class GetReferralsHandlerBase
         return result;
     }
 
+    protected async Task<PaginatedList<UserAccountDto>> GetPaginatedList(bool requestIsNull, IQueryable<UserAccount> userAccounts, int pageNumber, int pageSize)
+    {
+        int totalRecords = userAccounts.Count();
+        List<UserAccountDto> pagelist;
+        if (!requestIsNull)
+        {
+            pagelist = await userAccounts.Skip((pageNumber - 1) * pageSize).Take(pageSize)
+                .ProjectTo<UserAccountDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            foreach(UserAccountDto userAccount in pagelist)
+            {
+                UserAccount? dbUserAccount = userAccounts.FirstOrDefault(x => x.Id == userAccount.Id);
+                if (dbUserAccount != null)
+                {
+                    userAccount.OrganisationUserAccountDtos = _mapper.Map<List<OrganisationUserAccountDto>>(dbUserAccount.OrganisationUserAccounts);
+                }
+            }
+
+            return new PaginatedList<UserAccountDto>(pagelist, totalRecords, pageNumber, pageSize);
+        }
+
+        pagelist = _mapper.Map<List<UserAccountDto>>(userAccounts);
+        var result = new PaginatedList<UserAccountDto>(pagelist.ToList(), totalRecords, 1, 10);
+        return result;
+    }
+
     protected IQueryable<Data.Entities.Referral> OrderBy(IQueryable<Data.Entities.Referral> currentList, ReferralOrderBy? orderBy, bool? isAssending, bool isByReferrer = false) 
     {
         if (orderBy == null || isAssending == null)
@@ -43,8 +71,8 @@ public abstract class GetReferralsHandlerBase
         {
             case ReferralOrderBy.Team:
                 if (isAssending.Value)
-                    return currentList.OrderBy(x => x.Referrer.Team);
-                return currentList.OrderByDescending(x => x.Referrer.Team);
+                    return currentList.OrderBy(x => x.ReferralUserAccount.Team);
+                return currentList.OrderByDescending(x => x.ReferralUserAccount.Team);
 
             case ReferralOrderBy.DateSent:
                 if (isAssending.Value)
