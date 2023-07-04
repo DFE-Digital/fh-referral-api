@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FamilyHubs.Referral.Core.Commands.CreateUserAccount;
 
-public class CreateUserAccountCommand : IRequest<bool>, ICreateUserAccountCommand
+public class CreateUserAccountCommand : IRequest<long>, ICreateUserAccountCommand
 {
     public CreateUserAccountCommand(UserAccountDto userAccount)
     {
@@ -19,7 +19,7 @@ public class CreateUserAccountCommand : IRequest<bool>, ICreateUserAccountComman
     public UserAccountDto UserAccount { get; }
 }
 
-public class CreateUserAccountCommandHandler : BaseUserAccountHandler, IRequestHandler<CreateUserAccountCommand, bool>
+public class CreateUserAccountCommandHandler : BaseUserAccountHandler, IRequestHandler<CreateUserAccountCommand, long>
 {
     private readonly IMapper _mapper;
     private readonly ILogger<CreateUserAccountCommandHandler> _logger;
@@ -30,9 +30,9 @@ public class CreateUserAccountCommandHandler : BaseUserAccountHandler, IRequestH
         _mapper = mapper;
     }
 
-    public async Task<bool> Handle(CreateUserAccountCommand request, CancellationToken cancellationToken)
+    public async Task<long> Handle(CreateUserAccountCommand request, CancellationToken cancellationToken)
     {
-        bool result;
+        long result = 0;
         if (_context.Database.IsSqlServer())
         {
             await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
@@ -64,7 +64,7 @@ public class CreateUserAccountCommandHandler : BaseUserAccountHandler, IRequestH
         return result;
     }
 
-    private async Task<bool> CreateAndUpdateUserAccount(CreateUserAccountCommand request, CancellationToken cancellationToken)
+    private async Task<long> CreateAndUpdateUserAccount(CreateUserAccountCommand request, CancellationToken cancellationToken)
     {
         UserAccount entity = _mapper.Map<UserAccount>(request.UserAccount);
         ArgumentNullException.ThrowIfNull(entity);
@@ -78,13 +78,7 @@ public class CreateUserAccountCommandHandler : BaseUserAccountHandler, IRequestH
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        if (entity == null || entity.Id < 1)
-        {
-            return false;
-        }
-        
-
-        return true;
+        return entity.Id;
     }
 }
 

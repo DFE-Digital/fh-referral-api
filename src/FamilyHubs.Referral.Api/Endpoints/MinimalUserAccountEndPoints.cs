@@ -12,6 +12,22 @@ public class MinimalUserAccountEndPoints
 {
     public void RegisterUserAccountEndPoints(WebApplication app)
     {
+        app.MapPost("api/useraccount", [Authorize(Policy = "ReferralUser")] async ([FromBody] UserAccountDto userAccount, CancellationToken cancellationToken, ISender _mediator) =>
+        {
+            CreateUserAccountCommand command = new(userAccount);
+            var result = await _mediator.Send(command, cancellationToken);
+            return result;
+
+        }).WithMetadata(new SwaggerOperationAttribute("User Accounts", "Create Single User Account") { Tags = new[] { "User Accounts" } });
+
+        app.MapPut("api/useraccount/{Id}", [Authorize(Policy = "ReferralUser")] async (long id, [FromBody] UserAccountDto userAccount, CancellationToken cancellationToken, ISender _mediator) =>
+        {
+            UpdateUserAccountCommand command = new(id, userAccount);
+            var result = await _mediator.Send(command, cancellationToken);
+            return result;
+
+        }).WithMetadata(new SwaggerOperationAttribute("User Accounts", "Update User Accounts") { Tags = new[] { "User Accounts" } });
+
         app.MapPost("api/useraccounts", [Authorize(Policy = "ReferralUser")] async ([FromBody] List<UserAccountDto> userAccounts, CancellationToken cancellationToken, ISender _mediator) =>
         {
             CreateUserAccountsCommand command = new(userAccounts);

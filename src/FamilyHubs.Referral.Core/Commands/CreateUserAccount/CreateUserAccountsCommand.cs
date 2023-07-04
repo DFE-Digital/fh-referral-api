@@ -93,40 +93,6 @@ public class CreateUserAccountsCommandHandler : BaseUserAccountHandler, IRequest
         return true;
     }
 
-    private UserAccount AttatchExistingUserAccountRoles(UserAccount entity)
-    {
-        //Role? role = _context.Roles.FirstOrDefault(x => x.Id == entity.RoleId);
-        //if (role != null)
-        //{
-        //    entity.Role = role;
-        //    entity.RoleId = role.Id;
-        //}
-
-        return entity;
-    }
-
-    private async Task<UserAccount> AttatchExistingOrgansiation(UserAccount entity, CancellationToken cancellationToken)
-    {
-        if (entity.OrganisationUserAccounts == null) 
-        {
-            return entity;
-        }
-        foreach(UserAccountOrganisation organisationUserAccount in entity.OrganisationUserAccounts)
-        {
-            Organisation? organisation = _context.Organisations.FirstOrDefault(x => x.Id == organisationUserAccount.Organisation.Id);
-
-            if (organisation == null)
-            {
-                _context.Organisations.Add(organisationUserAccount.Organisation);
-                await _context.SaveChangesAsync(cancellationToken);
-                
-            }
-
-            organisationUserAccount.Organisation = _context.Organisations.First(x => x.Id == organisationUserAccount.Organisation.Id);
-        }
-
-        return entity;
-    }
 }
 
 

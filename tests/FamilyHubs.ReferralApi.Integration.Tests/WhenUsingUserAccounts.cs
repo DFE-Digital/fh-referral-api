@@ -28,7 +28,7 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
         var result = await handler.Handle(command, new CancellationToken());
 
         //Assert
-        result.Should().BeTrue();
+        result.Should().BeGreaterThan(0);
         var actualUserAccount = TestDbContext.UserAccounts
             .Include(x => x.OrganisationUserAccounts)
             .FirstAsync(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == userAccountDto.OrganisationUserAccountDtos[0].Organisation.Id));
