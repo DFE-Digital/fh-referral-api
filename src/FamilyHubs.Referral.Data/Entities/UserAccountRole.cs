@@ -2,13 +2,13 @@
 
 namespace FamilyHubs.Referral.Data.Entities;
 
-public class OrganisationUserAccount : EntityBase<long>
+public class UserAccountRole : EntityBase<long>
 {
-    public long OrganisationId { get; set; }
-    [ForeignKey("OrganisationId")]
-    public virtual required Organisation Organisation { get; set; }
-
     public long UserAccountId { get; set; }
     [ForeignKey("UserAccountId")]
     public virtual required UserAccount UserAccount { get; set; }
+
+    public long RoleId { get; set; }
+    [ForeignKey("RoleId")]
+    public virtual required Role Role { get; set; }
 }

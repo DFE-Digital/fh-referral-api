@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FamilyHubs.Referral.Core.Commands.UpdateUserAccount;
 
-public class UpdateUserAccountsCommand : IRequest<bool>, IUpdateUserAccountCommand
+public class UpdateUserAccountsCommand : IRequest<bool>, IUpdateUserAccountsCommand
 {
     public UpdateUserAccountsCommand(List<UserAccountDto> userAccounts)
     {
@@ -19,15 +19,14 @@ public class UpdateUserAccountsCommand : IRequest<bool>, IUpdateUserAccountComma
     public List<UserAccountDto> UserAccounts { get; }
 }
 
-public class UpdateUserAccountsCommandHandler : IRequestHandler<UpdateUserAccountsCommand, bool>
+public class UpdateUserAccountsCommandHandler : BaseUserAccountHandler, IRequestHandler<UpdateUserAccountsCommand, bool>
 {
-    private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
     private readonly ILogger<UpdateUserAccountsCommandHandler> _logger;
     public UpdateUserAccountsCommandHandler(ApplicationDbContext context, IMapper mapper, ILogger<UpdateUserAccountsCommandHandler> logger)
+        : base(context)
     {
         _logger = logger;
-        _context = context;
         _mapper = mapper;
     }
 
@@ -68,15 +67,14 @@ public class UpdateUserAccountsCommandHandler : IRequestHandler<UpdateUserAccoun
 
     private async Task<bool> UpdateAndUpdateUserAccounts(UpdateUserAccountsCommand request, CancellationToken cancellationToken)
     {
-
-
         foreach (var account in request.UserAccounts)
         {
             UserAccount entity = _mapper.Map<UserAccount>(account);
             ArgumentNullException.ThrowIfNull(entity);
 
-            entity.OrganisationUserAccounts = _mapper.Map<List<OrganisationUserAccount>>(account.OrganisationUserAccountDtos);
+            entity.OrganisationUserAccounts = _mapper.Map<List<UserAccountOrganisation>>(account.OrganisationUserAccountDtos);
 
+            entity = await AttatchExistingUserAccountRoles(entity, cancellationToken);
             entity = await AttatchExistingOrgansiation(entity, cancellationToken);
 
             _context.UserAccounts.Update(entity);
@@ -90,29 +88,6 @@ public class UpdateUserAccountsCommandHandler : IRequestHandler<UpdateUserAccoun
         }
 
         return true;
-    }
-
-    private async Task<UserAccount> AttatchExistingOrgansiation(UserAccount entity, CancellationToken cancellationToken)
-    {
-        if (entity.OrganisationUserAccounts == null)
-        {
-            return entity;
-        }
-        foreach (OrganisationUserAccount organisationUserAccount in entity.OrganisationUserAccounts)
-        {
-            Organisation? organisation = _context.Organisations.FirstOrDefault(x => x.Id == organisationUserAccount.Organisation.Id);
-
-            if (organisation == null)
-            {
-                _context.Organisations.Add(organisationUserAccount.Organisation);
-                await _context.SaveChangesAsync(cancellationToken);
-
-            }
-
-            organisationUserAccount.Organisation = _context.Organisations.First(x => x.Id == organisationUserAccount.Organisation.Id);
-        }
-
-        return entity;
     }
 }
 

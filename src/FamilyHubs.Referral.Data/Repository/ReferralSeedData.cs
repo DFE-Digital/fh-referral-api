@@ -66,7 +66,6 @@ public static class ReferralSeedData
                     EmailAddress = "Joe.Professional@email.com",
                     Name = "Joe Professional",
                     PhoneNumber = "011 222 3333",
-                    Role = "Social Worker",
                     Team = "Social Work team North"
                 },
                 Status = new ReferralStatus
@@ -115,7 +114,6 @@ public static class ReferralSeedData
                     EmailAddress = "Joe.Professional@email.com",
                     Name = "Joe Professional",
                     PhoneNumber = "011 222 3333",
-                    Role = "Social Worker",
                     Team = "Social Work team North"
                 },
                 Status = new ReferralStatus

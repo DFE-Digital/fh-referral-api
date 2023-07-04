@@ -13,17 +13,46 @@ namespace FamilyHubs.Referral.Integration.Tests;
 public class WhenUsingUserAccounts : DataIntegrationTestBase
 {
     [Fact]
-    public async Task ThenCreateUserAccount()
+    public async Task ThenCreateASingleUserAccount()
+    {
+#pragma warning disable CS8602
+        //Assign 
+        UserAccountDto userAccountDto = TestDataProvider.GetUserAccount();
+        Data.Entities.UserAccount userAccount = Mapper.Map<UserAccount>(userAccountDto);
+        userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccountDtos);
+
+        CreateUserAccountCommand command = new CreateUserAccountCommand(userAccountDto);
+        CreateUserAccountCommandHandler handler = new CreateUserAccountCommandHandler(TestDbContext, Mapper, new Mock<ILogger<CreateUserAccountCommandHandler>>().Object);
+
+        //Act
+        var result = await handler.Handle(command, new CancellationToken());
+
+        //Assert
+        result.Should().BeTrue();
+        var actualUserAccount = TestDbContext.UserAccounts
+            .Include(x => x.OrganisationUserAccounts)
+            .FirstAsync(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == userAccountDto.OrganisationUserAccountDtos[0].Organisation.Id));
+
+        actualUserAccount.Result.EmailAddress.Should().Be(userAccount.EmailAddress);
+        actualUserAccount.Result.PhoneNumber.Should().Be(userAccount.PhoneNumber);
+        actualUserAccount?.Result?.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccountDtos[0].Organisation.Id);
+
+
+#pragma warning restore CS8602
+    }
+
+    [Fact]
+    public async Task ThenCreateUserAccounts()
     {
 #pragma warning disable CS8602
         //Assign 
         UserAccountDto userAccountDto = TestDataProvider.GetUserAccount();
         List<UserAccountDto> listUserAccounts = new List<UserAccountDto> { userAccountDto };
         Data.Entities.UserAccount userAccount = Mapper.Map<UserAccount>(userAccountDto);
-        userAccount.OrganisationUserAccounts = Mapper.Map<List<OrganisationUserAccount>>(userAccountDto.OrganisationUserAccountDtos);
+        userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccountDtos);
 
-        CreateUserAccountCommand command = new CreateUserAccountCommand(listUserAccounts);
-        CreateUserAccountCommandHandler handler = new CreateUserAccountCommandHandler(TestDbContext, Mapper, new Mock<ILogger<CreateUserAccountCommandHandler>>().Object);
+        CreateUserAccountsCommand command = new CreateUserAccountsCommand(listUserAccounts);
+        CreateUserAccountsCommandHandler handler = new CreateUserAccountsCommandHandler(TestDbContext, Mapper, new Mock<ILogger<CreateUserAccountsCommandHandler>>().Object);
 
         //Act
         var result = await handler.Handle(command, new CancellationToken());
@@ -43,7 +72,46 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
     }
 
     [Fact]
-    public async Task ThenUpdateUserAccount()
+    public async Task ThenUpdateASingleUserAccount()
+    {
+#pragma warning disable CS8602
+        //Assign 
+
+        UserAccountDto userAccountDto = TestDataProvider.GetUserAccount();
+        userAccountDto.EmailAddress = "UpdatedUser@email.com";
+        userAccountDto.PhoneNumber = "0161 111 1112";
+
+        Data.Entities.UserAccount userAccount = Mapper.Map<UserAccount>(userAccountDto);
+        userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccountDtos);
+        TestDbContext.Organisations.Add(userAccount.OrganisationUserAccounts[0].Organisation);
+        await TestDbContext.SaveChangesAsync();
+        userAccount.OrganisationUserAccounts[0].Organisation = TestDbContext.Organisations.First(x => x.Id == userAccount.OrganisationUserAccounts[0].Organisation.Id);
+        TestDbContext.UserAccounts.Add(userAccount);
+        await TestDbContext.SaveChangesAsync();
+        userAccountDto.Id = userAccount.Id;
+
+        UpdateUserAccountCommand command = new UpdateUserAccountCommand(userAccount.Id,userAccountDto);
+        UpdateUserAccountCommandHandler handler = new UpdateUserAccountCommandHandler(TestDbContext, Mapper, new Mock<ILogger<UpdateUserAccountCommandHandler>>().Object);
+
+        //Act
+        var result = await handler.Handle(command, new CancellationToken());
+
+        //Assert
+        result.Should().BeTrue();
+        var actualUserAccount = TestDbContext.UserAccounts
+            .Include(x => x.OrganisationUserAccounts)
+            .FirstAsync(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == userAccountDto.OrganisationUserAccountDtos[0].Organisation.Id));
+
+        actualUserAccount.Result.EmailAddress.Should().Be(userAccount.EmailAddress);
+        actualUserAccount.Result.PhoneNumber.Should().Be(userAccount.PhoneNumber);
+        actualUserAccount?.Result?.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccountDtos[0].Organisation.Id);
+
+
+#pragma warning restore CS8602
+    }
+
+    [Fact]
+    public async Task ThenUpdateUserAccounts()
     {
 #pragma warning disable CS8602
         //Assign 
@@ -53,7 +121,7 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
 
         List<UserAccountDto> listUserAccounts = new List<UserAccountDto> { userAccountDto };
         Data.Entities.UserAccount userAccount = Mapper.Map<UserAccount>(userAccountDto);
-        userAccount.OrganisationUserAccounts = Mapper.Map<List<OrganisationUserAccount>>(userAccountDto.OrganisationUserAccountDtos);
+        userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccountDtos);
         TestDbContext.Organisations.Add(userAccount.OrganisationUserAccounts[0].Organisation);
         await TestDbContext.SaveChangesAsync();
         userAccount.OrganisationUserAccounts[0].Organisation = TestDbContext.Organisations.First(x => x.Id == userAccount.OrganisationUserAccounts[0].Organisation.Id);
@@ -87,7 +155,7 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
         //Assign 
         UserAccountDto userAccountDto = TestDataProvider.GetUserAccount();
         Data.Entities.UserAccount userAccount = Mapper.Map<UserAccount>(userAccountDto);
-        userAccount.OrganisationUserAccounts = Mapper.Map<List<OrganisationUserAccount>>(userAccountDto.OrganisationUserAccountDtos);
+        userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccountDtos);
         TestDbContext.Organisations.Add(userAccount.OrganisationUserAccounts[0].Organisation);
         await TestDbContext.SaveChangesAsync();
         userAccount.OrganisationUserAccounts[0].Organisation = TestDbContext.Organisations.First(x => x.Id == userAccount.OrganisationUserAccounts[0].Organisation.Id);

@@ -105,7 +105,7 @@ public class WhenUsingUpdateReferral : DataIntegrationTestBase
         result.Should().Be(referral.Id);
         var actualService = TestDbContext.Referrals.SingleOrDefault(s => s.Id == referral.Id);
         actualService.Should().NotBeNull();
-        actualService!.ReferralUserAccount.Should().BeEquivalentTo(expected);
+        actualService!.ReferralUserAccount.Should().BeEquivalentTo(expected, config => config.Excluding(s => s.Role), "because Dto does not match entity");
     }
 
     [Fact]

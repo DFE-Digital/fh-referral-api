@@ -36,14 +36,15 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         optionsBuilder.AddInterceptors(_auditableEntitySaveChangesInterceptor);
     }
 
-    
-
-    public DbSet<Data.Entities.Referral> Referrals => Set<Data.Entities.Referral>();
-    public DbSet<Recipient> Recipients => Set<Recipient>();
     public DbSet<Organisation> Organisations => Set<Organisation>();
+    public DbSet<Recipient> Recipients => Set<Recipient>();
+    public DbSet<Data.Entities.Referral> Referrals => Set<Data.Entities.Referral>(); 
     public DbSet<Entities.ReferralService> ReferralServices => Set<Entities.ReferralService>();
     public DbSet<ReferralStatus> ReferralStatuses => Set<ReferralStatus>();
     public DbSet<ReferralUserAccount> ReferralUserAccounts => Set<ReferralUserAccount>();
+    public DbSet<Role> Roles => Set<Role>();
     public DbSet<UserAccount> UserAccounts => Set<UserAccount>();
-    public DbSet<OrganisationUserAccount> OrganisationUserAccounts => Set<OrganisationUserAccount>();
+    public DbSet<UserAccountOrganisation> UserAccountOrganisations => Set<UserAccountOrganisation>();
+    public DbSet<UserAccountRole> UserAccountRoles => Set<UserAccountRole>();
+    public DbSet<UserAccountService> UserAccountServices => Set<UserAccountService>();
 }

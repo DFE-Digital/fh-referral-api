@@ -2,7 +2,7 @@
 
 namespace FamilyHubs.Referral.Core.Interfaces.Commands;
 
-public interface IUpdateUserAccountCommand
+public interface ICreateUserAccountsCommand
 {
-    UserAccountDto UserAccount { get; }
+    List<UserAccountDto> UserAccounts { get; }
 }

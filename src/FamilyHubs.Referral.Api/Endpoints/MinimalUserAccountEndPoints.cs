@@ -14,7 +14,7 @@ public class MinimalUserAccountEndPoints
     {
         app.MapPost("api/useraccounts", [Authorize(Policy = "ReferralUser")] async ([FromBody] List<UserAccountDto> userAccounts, CancellationToken cancellationToken, ISender _mediator) =>
         {
-            CreateUserAccountCommand command = new(userAccounts);
+            CreateUserAccountsCommand command = new(userAccounts);
             var result = await _mediator.Send(command, cancellationToken);
             return result;
 

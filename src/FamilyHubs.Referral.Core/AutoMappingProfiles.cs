@@ -34,11 +34,14 @@ public class AutoMappingProfiles : Profile
             .ReverseMap();
 
         // OrganisationUserAccount mappings
-        CreateMap<OrganisationUserAccountDto, OrganisationUserAccount>()
+        CreateMap<OrganisationUserAccountDto, UserAccountOrganisation>()
             .ForMember(dest => dest.Organisation, opt => opt.MapFrom(src => src.Organisation))
             .ForMember(dest => dest.UserAccount, opt => opt.MapFrom(src => src.UserAccount))
             .ReverseMap()
             .ForMember(dest => dest.Organisation, opt => opt.MapFrom(src => src.Organisation))
             .ForMember(dest => dest.UserAccount, opt => opt.MapFrom(src => src.UserAccount));
+
+        CreateMap<Role,Role>().ReverseMap();
+        CreateMap<UserAccountRole, UserAccountRole>().ReverseMap();
     }
 }

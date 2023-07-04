@@ -12,7 +12,10 @@ public interface IApplicationDbContext
     DbSet<Entities.ReferralService> ReferralServices { get; }
     DbSet<ReferralUserAccount> ReferralUserAccounts { get; }
     DbSet<UserAccount> UserAccounts { get; }
-    DbSet<OrganisationUserAccount> OrganisationUserAccounts { get; }
+    DbSet<UserAccountOrganisation> UserAccountOrganisations { get; }
+    DbSet<Role> Roles { get; }
+    DbSet<UserAccountRole> UserAccountRoles { get; }
+    DbSet<UserAccountService> UserAccountServices { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

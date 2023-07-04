@@ -230,7 +230,7 @@ namespace FamilyHubs.Referral.UnitTests
 
             //Check and Assert
             var getresult = await gethandler.Handle(getcommand, new System.Threading.CancellationToken());
-            getresult.Should().BeEquivalentTo(testReferral, options => options.Excluding(x => x.Created).Excluding(x => x.LastModified));
+            getresult.Should().BeEquivalentTo(testReferral, options => options.Excluding(x => x.Created).Excluding(x => x.LastModified).Excluding(x => x.ReferrerDto.Role));
             
 
         }
@@ -409,7 +409,7 @@ namespace FamilyHubs.Referral.UnitTests
             result.Should().NotBeNull();
             result.Id.Should().Be(id);
             result.Created.Should().NotBeNull();
-            result.Should().BeEquivalentTo(testReferral, options => options.Excluding(x => x.Created).Excluding(x => x.LastModified));
+            result.Should().BeEquivalentTo(testReferral, options => options.Excluding(x => x.Created).Excluding(x => x.LastModified).Excluding(x => x.ReferrerDto.Role));
         }
 
         [Fact]

@@ -33,7 +33,6 @@ public static class TestDataProvider
                 EmailAddress = "Bob.Referrer@email.com",
                 Name = "Bob Referrer",
                 PhoneNumber = "011 222 5555",
-                Role = "Social Worker",
                 Team = "Social Work team North"
             },
             Status = new ReferralStatusDto
