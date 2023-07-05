@@ -48,9 +48,22 @@ public abstract class GetReferralsHandlerBase
             foreach(UserAccountDto userAccount in pagelist)
             {
                 UserAccount? dbUserAccount = userAccounts.FirstOrDefault(x => x.Id == userAccount.Id);
-                if (dbUserAccount != null)
+                if (dbUserAccount != null && dbUserAccount.OrganisationUserAccounts != null)
                 {
-                    userAccount.OrganisationUserAccounts = _mapper.Map<List<UserAccountOrganisationDto>>(dbUserAccount.OrganisationUserAccounts);
+                    userAccount.OrganisationUserAccounts = new List<UserAccountOrganisationDto>();
+                    foreach (var organisationUserAccount in dbUserAccount.OrganisationUserAccounts)
+                    {
+                        var organisation = _mapper.Map<OrganisationDto>(organisationUserAccount.Organisation);
+                        organisationUserAccount.UserAccount.OrganisationUserAccounts = null;
+                        var user = _mapper.Map<UserAccountDto>(organisationUserAccount.UserAccount);
+                 
+                        userAccount.OrganisationUserAccounts.Add(new UserAccountOrganisationDto()
+                        {
+                            UserAccount = user,
+                            Organisation = organisation
+                        });
+                    }
+                    
                 }
             }
 

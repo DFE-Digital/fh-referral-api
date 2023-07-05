@@ -78,8 +78,7 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
         //Assign 
 
         UserAccountDto userAccountDto = TestDataProvider.GetUserAccount();
-        userAccountDto.EmailAddress = "UpdatedUser@email.com";
-        userAccountDto.PhoneNumber = "0161 111 1112";
+        
 
         Data.Entities.UserAccount userAccount = Mapper.Map<UserAccount>(userAccountDto);
         userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccounts);
@@ -89,6 +88,8 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
         TestDbContext.UserAccounts.Add(userAccount);
         await TestDbContext.SaveChangesAsync();
         userAccountDto.Id = userAccount.Id;
+        userAccountDto.EmailAddress = "UpdatedUser@email.com";
+        userAccountDto.PhoneNumber = "0161 111 1112";
 
         UpdateUserAccountCommand command = new UpdateUserAccountCommand(userAccount.Id,userAccountDto);
         UpdateUserAccountCommandHandler handler = new UpdateUserAccountCommandHandler(TestDbContext, Mapper, new Mock<ILogger<UpdateUserAccountCommandHandler>>().Object);
@@ -116,8 +117,6 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
 #pragma warning disable CS8602
         //Assign 
         UserAccountDto userAccountDto = TestDataProvider.GetUserAccount();
-       
-
         List<UserAccountDto> listUserAccounts = new List<UserAccountDto> { userAccountDto };
         Data.Entities.UserAccount userAccount = Mapper.Map<UserAccount>(userAccountDto);
         userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccounts);

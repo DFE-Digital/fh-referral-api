@@ -78,7 +78,14 @@ public static class TestDataProvider
         {
             new UserAccountOrganisationDto
             {
-                UserAccount = userAccountDto,
+                UserAccount = new UserAccountDto
+                {
+                    Id = 2,
+                    EmailAddress = "FirstUser@email.com",
+                    Name = "First User",
+                    PhoneNumber = "0161 111 1111",
+                    Team = "Test Team"
+                },
                 Organisation = new OrganisationDto
                 {
                     Id = 2,

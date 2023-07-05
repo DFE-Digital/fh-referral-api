@@ -31,7 +31,9 @@ public class AutoMappingProfiles : Profile
 
         // UserAccount mappings
         CreateMap<UserAccountDto, UserAccount>()
-            .ReverseMap();
+            .ForMember(dest => dest.OrganisationUserAccounts, opt => opt.MapFrom(src => src.OrganisationUserAccounts))
+            .ReverseMap()
+            .ForMember(dest => dest.OrganisationUserAccounts, opt => opt.MapFrom(src => src.OrganisationUserAccounts));
 
         CreateMap<RoleDto, Role>()
             .ReverseMap();
@@ -50,6 +52,7 @@ public class AutoMappingProfiles : Profile
             .ForMember(dest => dest.UserAccount, opt => opt.MapFrom(src => src.UserAccount));
 
         CreateMap<Role,Role>().ReverseMap();
+        
         
     }
 }
