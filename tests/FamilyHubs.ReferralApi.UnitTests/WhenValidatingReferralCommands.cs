@@ -32,7 +32,7 @@ public class WhenValidatingReferralCommands
         testReferral.Id = 0;
         var validator = new CreateReferralCommandValidator();
         var testModel = new CreateReferralCommand(testReferral);
-        testReferral.ReferrerDto.Id = 0;
+        testReferral.ReferralUserAccountDto.Id = 0;
 
         //Act
         var result = validator.Validate(testModel);
@@ -63,7 +63,7 @@ public class WhenValidatingReferralCommands
         var testReferral = WhenUsingReferralCommands.GetReferralDto();
         var validator = new UpdateReferralCommandValidator();
         var testModel = new UpdateReferralCommand(testReferral.Id, testReferral);
-        testReferral.ReferrerDto.Id = 0;
+        testReferral.ReferralUserAccountDto.Id = 0;
 
         //Act
         var result = validator.Validate(testModel);

@@ -19,7 +19,7 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
         //Assign 
         UserAccountDto userAccountDto = TestDataProvider.GetUserAccount();
         Data.Entities.UserAccount userAccount = Mapper.Map<UserAccount>(userAccountDto);
-        userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccountDtos);
+        userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccounts);
 
         CreateUserAccountCommand command = new CreateUserAccountCommand(userAccountDto);
         CreateUserAccountCommandHandler handler = new CreateUserAccountCommandHandler(TestDbContext, Mapper, new Mock<ILogger<CreateUserAccountCommandHandler>>().Object);
@@ -31,11 +31,11 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
         result.Should().BeGreaterThan(0);
         var actualUserAccount = TestDbContext.UserAccounts
             .Include(x => x.OrganisationUserAccounts)
-            .FirstAsync(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == userAccountDto.OrganisationUserAccountDtos[0].Organisation.Id));
+            .FirstAsync(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == userAccountDto.OrganisationUserAccounts[0].Organisation.Id));
 
         actualUserAccount.Result.EmailAddress.Should().Be(userAccount.EmailAddress);
         actualUserAccount.Result.PhoneNumber.Should().Be(userAccount.PhoneNumber);
-        actualUserAccount?.Result?.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccountDtos[0].Organisation.Id);
+        actualUserAccount?.Result?.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccounts[0].Organisation.Id);
 
 
 #pragma warning restore CS8602
@@ -49,7 +49,7 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
         UserAccountDto userAccountDto = TestDataProvider.GetUserAccount();
         List<UserAccountDto> listUserAccounts = new List<UserAccountDto> { userAccountDto };
         Data.Entities.UserAccount userAccount = Mapper.Map<UserAccount>(userAccountDto);
-        userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccountDtos);
+        userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccounts);
 
         CreateUserAccountsCommand command = new CreateUserAccountsCommand(listUserAccounts);
         CreateUserAccountsCommandHandler handler = new CreateUserAccountsCommandHandler(TestDbContext, Mapper, new Mock<ILogger<CreateUserAccountsCommandHandler>>().Object);
@@ -61,11 +61,11 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
         result.Should().BeTrue();
         var actualUserAccount = TestDbContext.UserAccounts
             .Include(x => x.OrganisationUserAccounts)
-            .FirstAsync(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == userAccountDto.OrganisationUserAccountDtos[0].Organisation.Id));
+            .FirstAsync(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == userAccountDto.OrganisationUserAccounts[0].Organisation.Id));
 
         actualUserAccount.Result.EmailAddress.Should().Be(userAccount.EmailAddress);
         actualUserAccount.Result.PhoneNumber.Should().Be(userAccount.PhoneNumber);
-        actualUserAccount?.Result?.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccountDtos[0].Organisation.Id);
+        actualUserAccount?.Result?.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccounts[0].Organisation.Id);
         
 
 #pragma warning restore CS8602
@@ -82,7 +82,7 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
         userAccountDto.PhoneNumber = "0161 111 1112";
 
         Data.Entities.UserAccount userAccount = Mapper.Map<UserAccount>(userAccountDto);
-        userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccountDtos);
+        userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccounts);
         TestDbContext.Organisations.Add(userAccount.OrganisationUserAccounts[0].Organisation);
         await TestDbContext.SaveChangesAsync();
         userAccount.OrganisationUserAccounts[0].Organisation = TestDbContext.Organisations.First(x => x.Id == userAccount.OrganisationUserAccounts[0].Organisation.Id);
@@ -100,11 +100,11 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
         result.Should().BeTrue();
         var actualUserAccount = TestDbContext.UserAccounts
             .Include(x => x.OrganisationUserAccounts)
-            .FirstAsync(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == userAccountDto.OrganisationUserAccountDtos[0].Organisation.Id));
+            .FirstAsync(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == userAccountDto.OrganisationUserAccounts[0].Organisation.Id));
 
         actualUserAccount.Result.EmailAddress.Should().Be(userAccount.EmailAddress);
         actualUserAccount.Result.PhoneNumber.Should().Be(userAccount.PhoneNumber);
-        actualUserAccount?.Result?.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccountDtos[0].Organisation.Id);
+        actualUserAccount?.Result?.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccounts[0].Organisation.Id);
 
 
 #pragma warning restore CS8602
@@ -120,7 +120,7 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
 
         List<UserAccountDto> listUserAccounts = new List<UserAccountDto> { userAccountDto };
         Data.Entities.UserAccount userAccount = Mapper.Map<UserAccount>(userAccountDto);
-        userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccountDtos);
+        userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccounts);
         TestDbContext.Organisations.Add(userAccount.OrganisationUserAccounts[0].Organisation);
         await TestDbContext.SaveChangesAsync();
         userAccount.OrganisationUserAccounts[0].Organisation = TestDbContext.Organisations.First(x => x.Id == userAccount.OrganisationUserAccounts[0].Organisation.Id);
@@ -140,11 +140,11 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
         result.Should().BeTrue();
         var actualUserAccount = TestDbContext.UserAccounts
             .Include(x => x.OrganisationUserAccounts)
-            .FirstAsync(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == userAccountDto.OrganisationUserAccountDtos[0].Organisation.Id));
+            .FirstAsync(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == userAccountDto.OrganisationUserAccounts[0].Organisation.Id));
 
         actualUserAccount.Result.EmailAddress.Should().Be(userAccount.EmailAddress);
         actualUserAccount.Result.PhoneNumber.Should().Be(userAccount.PhoneNumber);
-        actualUserAccount?.Result?.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccountDtos[0].Organisation.Id);
+        actualUserAccount?.Result?.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccounts[0].Organisation.Id);
 
 
 #pragma warning restore CS8602
@@ -157,7 +157,7 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
         //Assign 
         UserAccountDto userAccountDto = TestDataProvider.GetUserAccount();
         Data.Entities.UserAccount userAccount = Mapper.Map<UserAccount>(userAccountDto);
-        userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccountDtos);
+        userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccounts);
         TestDbContext.Organisations.Add(userAccount.OrganisationUserAccounts[0].Organisation);
         await TestDbContext.SaveChangesAsync();
         userAccount.OrganisationUserAccounts[0].Organisation = TestDbContext.Organisations.First(x => x.Id == userAccount.OrganisationUserAccounts[0].Organisation.Id);
@@ -174,11 +174,11 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
         result.Items.Count.Should().BeGreaterThan(0);
         var actualUserAccount = TestDbContext.UserAccounts
             .Include(x => x.OrganisationUserAccounts)
-            .FirstAsync(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == userAccountDto.OrganisationUserAccountDtos[0].Organisation.Id));
+            .FirstAsync(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == userAccountDto.OrganisationUserAccounts[0].Organisation.Id));
 
         actualUserAccount.Result.EmailAddress.Should().Be(userAccount.EmailAddress);
         actualUserAccount.Result.PhoneNumber.Should().Be(userAccount.PhoneNumber);
-        actualUserAccount?.Result?.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccountDtos[0].Organisation.Id);
+        actualUserAccount?.Result?.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccounts[0].Organisation.Id);
 
 
 #pragma warning restore CS8602

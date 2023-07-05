@@ -9,7 +9,7 @@ public class Referral : EntityBase<long>
     public required string ReasonForSupport { get; set; }
     public required string EngageWithFamily { get; set; }
     public string? ReasonForDecliningSupport { get; set; } 
-    public long StatusId { get; set; }
+    public byte StatusId { get; set; }
     [ForeignKey("StatusId")]
     public virtual required ReferralStatus Status { get; set; }
     public long RecipientId { get; set; }

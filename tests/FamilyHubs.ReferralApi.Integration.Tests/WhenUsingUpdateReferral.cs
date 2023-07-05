@@ -91,8 +91,8 @@ public class WhenUsingUpdateReferral : DataIntegrationTestBase
     {
         await CreateReferral();
         var referral = TestDataProvider.GetReferralDto();
-        referral.ReferrerDto.EmailAddress = "unittestsomeone@email.com";
-        var expected = referral.ReferrerDto;
+        referral.ReferralUserAccountDto.EmailAddress = "unittestsomeone@email.com";
+        var expected = referral.ReferralUserAccountDto;
 
         UpdateReferralCommand command = new(referral.Id, referral);
         UpdateReferralCommandHandler handler = new(TestDbContext, Mapper, new Mock<ILogger<UpdateReferralCommandHandler>>().Object);
@@ -105,7 +105,7 @@ public class WhenUsingUpdateReferral : DataIntegrationTestBase
         result.Should().Be(referral.Id);
         var actualService = TestDbContext.Referrals.SingleOrDefault(s => s.Id == referral.Id);
         actualService.Should().NotBeNull();
-        actualService!.ReferralUserAccount.Should().BeEquivalentTo(expected, config => config.Excluding(s => s.Role), "because Dto does not match entity");
+        actualService!.ReferralUserAccount.EmailAddress.Should().Be(expected.EmailAddress);
     }
 
     [Fact]

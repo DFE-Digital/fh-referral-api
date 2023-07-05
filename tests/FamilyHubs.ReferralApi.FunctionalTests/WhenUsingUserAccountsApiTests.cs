@@ -223,9 +223,9 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
         result.Should().BeTrue();
 
         long organisationId = 0;
-        if (userAccount != null && userAccount.OrganisationUserAccountDtos != null && userAccount.OrganisationUserAccountDtos.Any())
+        if (userAccount != null && userAccount.OrganisationUserAccounts != null && userAccount.OrganisationUserAccounts.Any())
         {
-            organisationId = userAccount.OrganisationUserAccountDtos[0].Organisation.Id;
+            organisationId = userAccount.OrganisationUserAccounts[0].Organisation.Id;
         }
 
         request = new HttpRequestMessage
@@ -247,7 +247,7 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
         retVal.Items[0].PhoneNumber.Should().Be(userAccount.PhoneNumber);
         retVal.Items[0].EmailAddress.Should().Be(userAccount.EmailAddress);
 #pragma warning disable CS8602        
-        retVal.Items[0].OrganisationUserAccountDtos[0].Organisation.Should().BeEquivalentTo(userAccount.OrganisationUserAccountDtos[0].Organisation);
+        retVal.Items[0].OrganisationUserAccounts[0].Organisation.Should().BeEquivalentTo(userAccount.OrganisationUserAccounts[0].Organisation);
 #pragma warning restore CS8602
     }
 }

@@ -27,19 +27,23 @@ public static class TestDataProvider
                 County = "County",
                 PostCode = "B30 2TV"
             },
-            ReferrerDto = new ReferralUserAccountDto
+            ReferralUserAccountDto = new UserAccountDto
             {
                 Id = 2,
                 EmailAddress = "Bob.Referrer@email.com",
                 Name = "Bob Referrer",
                 PhoneNumber = "011 222 5555",
-                Team = "Social Work team North"
+                Team = "Social Work team North",
+                UserAccountRoles = new List<UserAccountRoleDto>(),
+                ServiceUserAccounts = new List<UserAccountServiceDto>(),
+                OrganisationUserAccounts = new List<UserAccountOrganisationDto>(),
             },
             Status = new ReferralStatusDto
             {
                 Id = 1,
                 Name = "New",
-                SortOrder = 0
+                SortOrder = 0,
+                SecondrySortOrder = 1
             },
             ReferralServiceDto = new ReferralServiceDto
             {
@@ -50,6 +54,7 @@ public static class TestDataProvider
                 OrganisationDto = new OrganisationDto
                 {
                     Id = 2,
+                    ReferralServiceId = 2,
                     Name = "Organisation",
                     Description = "Organisation Description",
                 }
@@ -66,13 +71,12 @@ public static class TestDataProvider
             EmailAddress = "FirstUser@email.com",
             Name = "First User",
             PhoneNumber = "0161 111 1111",
-            Role = "Test Role",
             Team = "Test Team"
         };
 
-        userAccountDto.OrganisationUserAccountDtos = new List<OrganisationUserAccountDto>
+        userAccountDto.OrganisationUserAccounts = new List<UserAccountOrganisationDto>
         {
-            new OrganisationUserAccountDto
+            new UserAccountOrganisationDto
             {
                 UserAccount = userAccountDto,
                 Organisation = new OrganisationDto

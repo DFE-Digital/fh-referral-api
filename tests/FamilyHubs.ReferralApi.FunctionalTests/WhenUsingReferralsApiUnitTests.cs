@@ -107,13 +107,16 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 County = "County",
                 PostCode = "B31 2TV"
             },
-            ReferrerDto = new ReferralUserAccountDto
+            ReferralUserAccountDto = new UserAccountDto
             { 
                 Id = 2,
                 EmailAddress = "Bob.Referrer@email.com",
                 Name = "Bob Referrer",
                 PhoneNumber = "011 222 5555",
-                Team = "Social Work team North"
+                Team = "Social Work team North",
+                UserAccountRoles = new List<UserAccountRoleDto>(),
+                ServiceUserAccounts = new List<UserAccountServiceDto>(),
+                OrganisationUserAccounts = null,
             },
             Status = new ReferralStatusDto
             {
@@ -299,13 +302,16 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 County = "County",
                 PostCode = "B30 2TV"
             },
-            ReferrerDto = new  ReferralUserAccountDto
+            ReferralUserAccountDto = new UserAccountDto
             {
                 Id = 2,
                 EmailAddress = "Bob.Referrer@email.com",
                 Name = "Bob Referrer",
                 PhoneNumber = "011 222 5555",
-                Team = "Social Work team North"
+                Team = "Social Work team North",
+                UserAccountRoles = new List<UserAccountRoleDto>(),
+                ServiceUserAccounts = new List<UserAccountServiceDto>(),
+                OrganisationUserAccounts = null,
             },
             Status = new ReferralStatusDto
             {

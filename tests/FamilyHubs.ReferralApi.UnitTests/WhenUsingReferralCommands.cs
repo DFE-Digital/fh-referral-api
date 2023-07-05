@@ -57,8 +57,8 @@ namespace FamilyHubs.Referral.UnitTests
             mockApplicationDbContext.Referrals.Add(ReferralSeedData.SeedReferral().ElementAt(0));
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
-            testReferral.ReferrerDto = mapper.Map<ReferralUserAccountDto>(ReferralSeedData.SeedReferral().ElementAt(0).ReferralUserAccount);
-            testReferral.ReferrerDto.Id = mockApplicationDbContext.UserAccounts.First().Id;
+            testReferral.ReferralUserAccountDto = mapper.Map<UserAccountDto>(ReferralSeedData.SeedReferral().ElementAt(0).ReferralUserAccount);
+            testReferral.ReferralUserAccountDto.Id = mockApplicationDbContext.UserAccounts.First().Id;
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
 
@@ -208,7 +208,7 @@ namespace FamilyHubs.Referral.UnitTests
             testReferral.RecipientDto.AddressLine2 = "Address Line 2A";
             testReferral.RecipientDto.TownOrCity = "Town or CityA";
             testReferral.RecipientDto.County = "CountyA";
-            testReferral.ReferrerDto.PhoneNumber = "1234567899";
+            testReferral.ReferralUserAccountDto.PhoneNumber = "1234567899";
             testReferral.ReferralServiceDto.Name = "Service A";
             testReferral.ReferralServiceDto.Description = "Service Description A";
             testReferral.ReferralServiceDto.OrganisationDto.Name = "Organisation A";
@@ -230,7 +230,7 @@ namespace FamilyHubs.Referral.UnitTests
 
             //Check and Assert
             var getresult = await gethandler.Handle(getcommand, new System.Threading.CancellationToken());
-            getresult.Should().BeEquivalentTo(testReferral, options => options.Excluding(x => x.Created).Excluding(x => x.LastModified).Excluding(x => x.ReferrerDto.Role));
+            getresult.Should().BeEquivalentTo(testReferral, options => options.Excluding(x => x.Created).Excluding(x => x.LastModified));
             
 
         }
@@ -409,7 +409,7 @@ namespace FamilyHubs.Referral.UnitTests
             result.Should().NotBeNull();
             result.Id.Should().Be(id);
             result.Created.Should().NotBeNull();
-            result.Should().BeEquivalentTo(testReferral, options => options.Excluding(x => x.Created).Excluding(x => x.LastModified).Excluding(x => x.ReferrerDto.Role));
+            result.Should().BeEquivalentTo(testReferral, options => options.Excluding(x => x.Created).Excluding(x => x.LastModified));
         }
 
         [Fact]
@@ -486,14 +486,16 @@ namespace FamilyHubs.Referral.UnitTests
                     County = "County",
                     PostCode = "B30 2TV"
                 },
-                ReferrerDto = new ReferralUserAccountDto
+                ReferralUserAccountDto = new UserAccountDto
                 {
                     Id = 2,
                     EmailAddress = "Bob.Referrer@email.com",
                     Name = "Bob Referrer",
                     PhoneNumber = "1234567890",
-                    Role = "Role",
-                    Team = "Team"
+                    Team = "Team",
+                    UserAccountRoles = new List<UserAccountRoleDto>(),
+                    ServiceUserAccounts = new List<UserAccountServiceDto>(),
+                    OrganisationUserAccounts = new List<UserAccountOrganisationDto>(),
                 },
                 Status = new ReferralStatusDto
                 {
@@ -510,6 +512,7 @@ namespace FamilyHubs.Referral.UnitTests
                     OrganisationDto = new OrganisationDto
                     {
                         Id = 2,
+                        ReferralServiceId = 2,
                         Name = "Organisation",
                         Description = "Organisation Description",
                     }

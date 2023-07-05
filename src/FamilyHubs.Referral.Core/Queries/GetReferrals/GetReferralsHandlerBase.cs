@@ -50,7 +50,7 @@ public abstract class GetReferralsHandlerBase
                 UserAccount? dbUserAccount = userAccounts.FirstOrDefault(x => x.Id == userAccount.Id);
                 if (dbUserAccount != null)
                 {
-                    userAccount.OrganisationUserAccountDtos = _mapper.Map<List<OrganisationUserAccountDto>>(dbUserAccount.OrganisationUserAccounts);
+                    userAccount.OrganisationUserAccounts = _mapper.Map<List<UserAccountOrganisationDto>>(dbUserAccount.OrganisationUserAccounts);
                 }
             }
 

@@ -100,14 +100,14 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
 
     private async Task UpdateUserAccount(Data.Entities.Referral entity, UpdateReferralCommand request, CancellationToken cancellationToken)
     {
-        if (entity.ReferralUserAccount.Id != request.ReferralDto.ReferrerDto.Id)
+        if (entity.ReferralUserAccount.Id != request.ReferralDto.ReferralUserAccountDto.Id)
         {
-            var updatedReferrer = _context.UserAccounts.SingleOrDefault(x => x.Id == request.ReferralDto.ReferrerDto.Id);
+            var updatedReferrer = _context.UserAccounts.SingleOrDefault(x => x.Id == request.ReferralDto.ReferralUserAccountDto.Id);
 
             if (updatedReferrer == null)
             {
-                _context.UserAccounts.Add(_mapper.Map<UserAccount>(request.ReferralDto.ReferrerDto));
-                entity.UserAccountId = request.ReferralDto.ReferrerDto.Id;
+                _context.UserAccounts.Add(_mapper.Map<UserAccount>(request.ReferralDto.ReferralUserAccountDto));
+                entity.UserAccountId = request.ReferralDto.ReferralUserAccountDto.Id;
                 await _context.SaveChangesAsync(cancellationToken);
                 return;
             }
