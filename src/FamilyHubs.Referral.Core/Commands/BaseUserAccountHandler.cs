@@ -19,7 +19,7 @@ public abstract class BaseUserAccountHandler
         }
         for (int i = 0; i < entity.UserAccountRoles.Count; i++)
         {
-            UserAccountRole? dbUserAccountRole = _context.UserAccountRoles.SingleOrDefault(x => x.UserAccountId == entity.UserAccountRoles[i].UserAccountId && x.RoleId == entity.UserAccountRoles[i].RoleId);
+            UserAccountRole? dbUserAccountRole = _context.UserAccountRoles.SingleOrDefault(x => x.UserAccountId == entity.UserAccountRoles[i].UserAccountId && (x.RoleId == entity.UserAccountRoles[i].RoleId || x.Role.Name == entity.UserAccountRoles[i].Role.Name));
             if (dbUserAccountRole == null)
             {
                 _context.UserAccountRoles.Add(entity.UserAccountRoles[i]);

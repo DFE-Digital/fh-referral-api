@@ -86,6 +86,39 @@ public class ApplicationDbContextInitialiser
             await _context.SaveChangesAsync();
         }
 
+        IReadOnlyCollection<Role> roles = ReferralSeedData.SeedRoles();
+        if (!_context.Roles.Any())
+        {
+            _context.Roles.AddRange(roles);
+
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            foreach (var seedRole in roles)
+            {
+                var dbRole = _context.Roles.FirstOrDefault(x => x.Name == seedRole.Name);
+                if (!seedRole.Equals(dbRole))
+                {
+                    if (dbRole == null)
+                    {
+                        dbRole = seedRole;
+                    }
+                    else
+                    {
+                        dbRole.Name = seedRole.Name;
+                        dbRole.Description = seedRole.Description;
+                        
+                    }
+
+                    _context.Roles.Update(dbRole);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
+        
+
         if (_context.Database.IsSqlite() && !_context.Referrals.Any())
         {
             IReadOnlyCollection<Entities.Referral> referrals = ReferralSeedData.SeedReferral();
