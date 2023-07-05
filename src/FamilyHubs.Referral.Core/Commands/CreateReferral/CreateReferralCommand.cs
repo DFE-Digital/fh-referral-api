@@ -74,7 +74,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         entity.Recipient.Id = 0;
 
         entity = AttachExistingStatus(entity);
-        entity = AttachExistingReferrer(entity);
+        entity = AttachExistingUserAccount(entity);
         entity = AttachExistingService(entity);
 
         _context.Referrals.Add(entity);
@@ -108,12 +108,12 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         return entity;
     }
 
-    private Data.Entities.Referral AttachExistingReferrer(Data.Entities.Referral entity)
+    private Data.Entities.Referral AttachExistingUserAccount(Data.Entities.Referral entity)
     {
-        ReferralUserAccount? referrer = _context.ReferralUserAccounts.SingleOrDefault(x => x.EmailAddress == entity.ReferralUserAccount.EmailAddress);
-        if (referrer != null) 
+        UserAccount? professional = _context.UserAccounts.SingleOrDefault(x => x.EmailAddress == entity.ReferralUserAccount.EmailAddress);
+        if (professional != null) 
         {
-            entity.ReferralUserAccount = referrer;
+            entity.ReferralUserAccount = professional;
         }
         return entity;
     }

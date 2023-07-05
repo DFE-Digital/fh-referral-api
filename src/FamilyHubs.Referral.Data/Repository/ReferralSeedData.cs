@@ -109,7 +109,7 @@ public static class ReferralSeedData
                     County = "Country",
                     PostCode = "B30 2TV"
                 },
-                ReferralUserAccount = new ReferralUserAccount
+                ReferralUserAccount = new UserAccount
                 {
                     Id = 1,
                     EmailAddress = "Joe.Professional@email.com",
@@ -157,7 +157,7 @@ public static class ReferralSeedData
                     County = "Country",
                     PostCode = "B31 2TV"
                 },
-                ReferralUserAccount = new ReferralUserAccount
+                ReferralUserAccount = new UserAccount
                 {
                     Id = 1,
                     EmailAddress = "Joe.Professional@email.com",

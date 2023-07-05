@@ -77,7 +77,7 @@ public class BaseCreateDbUnitTest
 
         foreach (Data.Entities.Referral referral in referrals)
         {
-            var referrer = context.ReferralUserAccounts.SingleOrDefault(x => x.Id == referral.ReferralUserAccount.Id);
+            var referrer = context.UserAccounts.SingleOrDefault(x => x.Id == referral.ReferralUserAccount.Id);
             if (referrer != null)
             {
                 referral.ReferralUserAccount = referrer;

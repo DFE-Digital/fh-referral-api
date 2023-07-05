@@ -10,7 +10,6 @@ public interface IApplicationDbContext
     DbSet<Recipient> Recipients { get; }
     DbSet<Organisation> Organisations { get; }
     DbSet<Entities.ReferralService> ReferralServices { get; }
-    DbSet<ReferralUserAccount> ReferralUserAccounts { get; }
     DbSet<UserAccount> UserAccounts { get; }
     DbSet<UserAccountOrganisation> UserAccountOrganisations { get; }
     DbSet<Role> Roles { get; }
