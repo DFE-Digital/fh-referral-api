@@ -55,11 +55,27 @@ namespace FamilyHubs.Referral.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ReferralStatuses",
+                name: "Roles",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<byte>(type: "tinyint", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Roles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Statuses",
+                columns: table => new
+                {
+                    Id = table.Column<byte>(type: "tinyint", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     SortOrder = table.Column<byte>(type: "tinyint", nullable: false),
                     SecondrySortOrder = table.Column<byte>(type: "tinyint", nullable: false),
@@ -70,42 +86,20 @@ namespace FamilyHubs.Referral.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ReferralStatuses", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ReferralUserAccounts",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false),
-                    EmailAddress = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Role = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Team = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ReferralUserAccounts", x => x.Id);
+                    table.PrimaryKey("PK_Statuses", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "UserAccounts",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<long>(type: "bigint", nullable: false),
                     EmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Role = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Team = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -147,9 +141,9 @@ namespace FamilyHubs.Referral.Data.Migrations
                     ReasonForSupport = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EngageWithFamily = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReasonForDecliningSupport = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    StatusId = table.Column<long>(type: "bigint", nullable: false),
+                    StatusId = table.Column<byte>(type: "tinyint", nullable: false),
                     RecipientId = table.Column<long>(type: "bigint", nullable: false),
-                    ReferrerId = table.Column<long>(type: "bigint", nullable: false),
+                    UserAccountId = table.Column<long>(type: "bigint", nullable: false),
                     ReferralServiceId = table.Column<long>(type: "bigint", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
@@ -172,43 +166,103 @@ namespace FamilyHubs.Referral.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Referrals_ReferralStatuses_StatusId",
+                        name: "FK_Referrals_Statuses_StatusId",
                         column: x => x.StatusId,
-                        principalTable: "ReferralStatuses",
+                        principalTable: "Statuses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Referrals_ReferralUserAccounts_ReferrerId",
-                        column: x => x.ReferrerId,
-                        principalTable: "ReferralUserAccounts",
+                        name: "FK_Referrals_UserAccounts_UserAccountId",
+                        column: x => x.UserAccountId,
+                        principalTable: "UserAccounts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrganisationUserAccounts",
+                name: "UserAccountRoles",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    OrganisationId = table.Column<long>(type: "bigint", nullable: false),
                     UserAccountId = table.Column<long>(type: "bigint", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RoleId = table.Column<byte>(type: "tinyint", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrganisationUserAccounts", x => x.Id);
+                    table.PrimaryKey("PK_UserAccountRoles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_OrganisationUserAccounts_Organisations_OrganisationId",
+                        name: "FK_UserAccountRoles_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserAccountRoles_UserAccounts_UserAccountId",
+                        column: x => x.UserAccountId,
+                        principalTable: "UserAccounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserAccountServices",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserAccountId = table.Column<long>(type: "bigint", nullable: false),
+                    ReferralServiceId = table.Column<long>(type: "bigint", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserAccountServices", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserAccountServices_ReferralServices_ReferralServiceId",
+                        column: x => x.ReferralServiceId,
+                        principalTable: "ReferralServices",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserAccountServices_UserAccounts_UserAccountId",
+                        column: x => x.UserAccountId,
+                        principalTable: "UserAccounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserAccountOrganisations",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserAccountId = table.Column<long>(type: "bigint", nullable: false),
+                    OrganisationId = table.Column<long>(type: "bigint", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserAccountOrganisations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserAccountOrganisations_Organisations_OrganisationId",
                         column: x => x.OrganisationId,
                         principalTable: "Organisations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OrganisationUserAccounts_UserAccounts_UserAccountId",
+                        name: "FK_UserAccountOrganisations_UserAccounts_UserAccountId",
                         column: x => x.UserAccountId,
                         principalTable: "UserAccounts",
                         principalColumn: "Id",
@@ -223,16 +277,6 @@ namespace FamilyHubs.Referral.Data.Migrations
                 filter: "[ReferralServiceId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrganisationUserAccounts_OrganisationId",
-                table: "OrganisationUserAccounts",
-                column: "OrganisationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrganisationUserAccounts_UserAccountId",
-                table: "OrganisationUserAccounts",
-                column: "UserAccountId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Referrals_RecipientId",
                 table: "Referrals",
                 column: "RecipientId");
@@ -243,39 +287,75 @@ namespace FamilyHubs.Referral.Data.Migrations
                 column: "ReferralServiceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Referrals_ReferrerId",
-                table: "Referrals",
-                column: "ReferrerId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Referrals_StatusId",
                 table: "Referrals",
                 column: "StatusId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Referrals_UserAccountId",
+                table: "Referrals",
+                column: "UserAccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAccountOrganisations_OrganisationId",
+                table: "UserAccountOrganisations",
+                column: "OrganisationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAccountOrganisations_UserAccountId",
+                table: "UserAccountOrganisations",
+                column: "UserAccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAccountRoles_RoleId",
+                table: "UserAccountRoles",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAccountRoles_UserAccountId",
+                table: "UserAccountRoles",
+                column: "UserAccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAccountServices_ReferralServiceId",
+                table: "UserAccountServices",
+                column: "ReferralServiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAccountServices_UserAccountId",
+                table: "UserAccountServices",
+                column: "UserAccountId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "OrganisationUserAccounts");
-
-            migrationBuilder.DropTable(
                 name: "Referrals");
 
             migrationBuilder.DropTable(
-                name: "Organisations");
+                name: "UserAccountOrganisations");
 
             migrationBuilder.DropTable(
-                name: "UserAccounts");
+                name: "UserAccountRoles");
+
+            migrationBuilder.DropTable(
+                name: "UserAccountServices");
 
             migrationBuilder.DropTable(
                 name: "Recipients");
 
             migrationBuilder.DropTable(
-                name: "ReferralStatuses");
+                name: "Statuses");
 
             migrationBuilder.DropTable(
-                name: "ReferralUserAccounts");
+                name: "Organisations");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
+
+            migrationBuilder.DropTable(
+                name: "UserAccounts");
 
             migrationBuilder.DropTable(
                 name: "ReferralServices");

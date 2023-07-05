@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FamilyHubs.Referral.Data.Config;
 
-public class ReferrerConfiguration : IEntityTypeConfiguration<ReferralUserAccount>
+public class RoleConfiguration : IEntityTypeConfiguration<Role>
 {
-    public void Configure(EntityTypeBuilder<ReferralUserAccount> builder)
+    public void Configure(EntityTypeBuilder<Role> builder)
     {
-        builder.Property(t => t.EmailAddress)
+        builder.Property(t => t.Name)
             .IsRequired()
             .HasMaxLength(256);
 
@@ -19,4 +19,3 @@ public class ReferrerConfiguration : IEntityTypeConfiguration<ReferralUserAccoun
             .IsRequired();
     }
 }
-

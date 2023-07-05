@@ -54,10 +54,10 @@ public class ApplicationDbContextInitialiser
 
     public async Task TrySeedAsync()
     {
-        IReadOnlyCollection<ReferralStatus> statuses = ReferralSeedData.SeedStatuses();
-        if (!_context.ReferralStatuses.Any())
+        IReadOnlyCollection<Status> statuses = ReferralSeedData.SeedStatuses();
+        if (!_context.Statuses.Any())
         {
-            _context.ReferralStatuses.AddRange(statuses);
+            _context.Statuses.AddRange(statuses);
 
             await _context.SaveChangesAsync();
         }
@@ -65,7 +65,7 @@ public class ApplicationDbContextInitialiser
         {
             foreach (var seedStatus in statuses)
             {
-                var dbStatus = _context.ReferralStatuses.FirstOrDefault(x => x.Name == seedStatus.Name);
+                var dbStatus = _context.Statuses.FirstOrDefault(x => x.Name == seedStatus.Name);
                 if (!seedStatus.Equals(dbStatus))
                 { 
                     if (dbStatus == null)
@@ -79,12 +79,45 @@ public class ApplicationDbContextInitialiser
                         dbStatus.SecondrySortOrder = seedStatus.SecondrySortOrder;
                     }
                     
-                    _context.ReferralStatuses.Update(dbStatus); 
+                    _context.Statuses.Update(dbStatus); 
                 }
             }
 
             await _context.SaveChangesAsync();
         }
+
+        IReadOnlyCollection<Role> roles = ReferralSeedData.SeedRoles();
+        if (!_context.Roles.Any())
+        {
+            _context.Roles.AddRange(roles);
+
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            foreach (var seedRole in roles)
+            {
+                var dbRole = _context.Roles.FirstOrDefault(x => x.Name == seedRole.Name);
+                if (!seedRole.Equals(dbRole))
+                {
+                    if (dbRole == null)
+                    {
+                        dbRole = seedRole;
+                    }
+                    else
+                    {
+                        dbRole.Name = seedRole.Name;
+                        dbRole.Description = seedRole.Description;
+                        
+                    }
+
+                    _context.Roles.Update(dbRole);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
+        
 
         if (_context.Database.IsSqlite() && !_context.Referrals.Any())
         {
@@ -92,7 +125,7 @@ public class ApplicationDbContextInitialiser
 
             foreach (Entities.Referral referral in referrals)
             {
-                var status = _context.ReferralStatuses.SingleOrDefault(x => x.Name == referral.Status.Name);
+                var status = _context.Statuses.SingleOrDefault(x => x.Name == referral.Status.Name);
                 if (status != null)
                 {
                     referral.Status = status;

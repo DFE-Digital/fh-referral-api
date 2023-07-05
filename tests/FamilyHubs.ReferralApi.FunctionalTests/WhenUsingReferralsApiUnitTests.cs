@@ -27,7 +27,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             return;
         }
             
-        var referrer = ReferralSeedData.SeedReferral().ElementAt(0).ReferralUserAccount.EmailAddress;
+        var referrer = ReferralSeedData.SeedReferral().ElementAt(0).UserAccount.EmailAddress;
 
         var request = new HttpRequestMessage
         {
@@ -107,14 +107,16 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 County = "County",
                 PostCode = "B31 2TV"
             },
-            ReferrerDto = new ReferralUserAccountDto
+            ReferralUserAccountDto = new UserAccountDto
             { 
                 Id = 2,
                 EmailAddress = "Bob.Referrer@email.com",
                 Name = "Bob Referrer",
                 PhoneNumber = "011 222 5555",
-                Role = "Social Worker",
-                Team = "Social Work team North"
+                Team = "Social Work team North",
+                UserAccountRoles = new List<UserAccountRoleDto>(),
+                ServiceUserAccounts = new List<UserAccountServiceDto>(),
+                OrganisationUserAccounts = null,
             },
             Status = new ReferralStatusDto
             {
@@ -300,14 +302,16 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
                 County = "County",
                 PostCode = "B30 2TV"
             },
-            ReferrerDto = new  ReferralUserAccountDto
+            ReferralUserAccountDto = new UserAccountDto
             {
                 Id = 2,
                 EmailAddress = "Bob.Referrer@email.com",
                 Name = "Bob Referrer",
                 PhoneNumber = "011 222 5555",
-                Role = "Social Worker",
-                Team = "Social Work team North"
+                Team = "Social Work team North",
+                UserAccountRoles = new List<UserAccountRoleDto>(),
+                ServiceUserAccounts = new List<UserAccountServiceDto>(),
+                OrganisationUserAccounts = null,
             },
             Status = new ReferralStatusDto
             {
@@ -360,7 +364,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Accepted")
+            RequestUri = new Uri(Client.BaseAddress + "api/status/1/Accepted")
         };
 
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_vcstoken)}");
@@ -389,7 +393,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Declined/Unable to help")
+            RequestUri = new Uri(Client.BaseAddress + "api/status/1/Declined/Unable to help")
         };
 
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_vcstoken)}");
@@ -417,7 +421,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Declined/Unable to help")
+            RequestUri = new Uri(Client.BaseAddress + "api/status/1/Declined/Unable to help")
         };
 
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
@@ -440,7 +444,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Get,
-            RequestUri = new Uri(Client.BaseAddress + "api/referralstatuses"),
+            RequestUri = new Uri(Client.BaseAddress + "api/statuses"),
         };
 
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");

@@ -4,5 +4,5 @@ namespace FamilyHubs.Referral.Core.Interfaces.Commands;
 
 public interface ICreateUserAccountCommand
 {
-    List<UserAccountDto> UserAccounts { get; }
+    UserAccountDto UserAccount { get; }
 }

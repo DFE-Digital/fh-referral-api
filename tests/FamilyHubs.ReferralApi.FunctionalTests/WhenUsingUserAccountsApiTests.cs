@@ -11,6 +11,38 @@ namespace FamilyHubs.Referral.FunctionalTests;
 public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTests
 {
     [Fact]
+    public async Task ThenSingleUserAccountsIsCreated()
+    {
+        if (!IsRunningLocally() || Client == null)
+        {
+            // Skip the test if not running locally
+            Assert.True(true, "Test skipped because it is not running locally.");
+            return;
+        }
+
+        var command = GetUserAccount();
+
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Post,
+            RequestUri = new Uri(Client.BaseAddress + "api/useraccount"),
+            Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json"),
+        };
+
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+
+        using var response = await Client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        var stringResult = await response.Content.ReadAsStringAsync();
+        long.TryParse(stringResult, out var result);
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        result.Should().BeGreaterThan(0);
+    }
+
+    [Fact]
     public async Task ThenTheUserAccountsAreCreated()
     {
         if (!IsRunningLocally() || Client == null)
@@ -40,6 +72,63 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
         result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ThenSingleUserAccountIsCreatedThenUpdated()
+    {
+        if (!IsRunningLocally() || Client == null)
+        {
+            // Skip the test if not running locally
+            Assert.True(true, "Test skipped because it is not running locally.");
+            return;
+        }
+
+        var userAccount = GetUserAccount();
+
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Post,
+            RequestUri = new Uri(Client.BaseAddress + "api/useraccount"),
+            Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(userAccount), Encoding.UTF8, "application/json"),
+        };
+
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+
+        using var response = await Client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        var stringResult = await response.Content.ReadAsStringAsync();
+        long.TryParse(stringResult, out var result);
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        result.Should().BeGreaterThan(0);
+
+        userAccount.EmailAddress = "MyChangedEmail@email.com";
+        userAccount.PhoneNumber = "0161 222 2222";
+        userAccount.Id = result;
+
+        
+
+        request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Put,
+            RequestUri = new Uri(Client.BaseAddress + $"api/useraccount/{userAccount.Id}"),
+            Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(userAccount), Encoding.UTF8, "application/json"),
+        };
+
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+
+        using var updateresponse = await Client.SendAsync(request);
+
+        updateresponse.EnsureSuccessStatusCode();
+
+        stringResult = await updateresponse.Content.ReadAsStringAsync();
+        bool.TryParse(stringResult, out bool updateresult);
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        updateresult.Should().BeTrue();
     }
 
     [Fact]
@@ -134,9 +223,9 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
         result.Should().BeTrue();
 
         long organisationId = 0;
-        if (userAccount != null && userAccount.OrganisationUserAccountDtos != null && userAccount.OrganisationUserAccountDtos.Any())
+        if (userAccount != null && userAccount.OrganisationUserAccounts != null && userAccount.OrganisationUserAccounts.Any())
         {
-            organisationId = userAccount.OrganisationUserAccountDtos[0].Organisation.Id;
+            organisationId = userAccount.OrganisationUserAccounts[0].Organisation.Id;
         }
 
         request = new HttpRequestMessage
@@ -158,7 +247,7 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
         retVal.Items[0].PhoneNumber.Should().Be(userAccount.PhoneNumber);
         retVal.Items[0].EmailAddress.Should().Be(userAccount.EmailAddress);
 #pragma warning disable CS8602        
-        retVal.Items[0].OrganisationUserAccountDtos[0].Organisation.Should().BeEquivalentTo(userAccount.OrganisationUserAccountDtos[0].Organisation);
+        retVal.Items[0].OrganisationUserAccounts[0].Organisation.Should().BeEquivalentTo(userAccount.OrganisationUserAccounts[0].Organisation);
 #pragma warning restore CS8602
     }
 }

@@ -7,11 +7,11 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FamilyHubs.Referral.Core.Commands.UpdateUserAccount;
+namespace FamilyHubs.Referral.Core.Commands.CreateUserAccount;
 
-public class UpdateUserAccountsCommand : IRequest<bool>, IUpdateUserAccountsCommand
+public class CreateUserAccountsCommand : IRequest<bool>, ICreateUserAccountsCommand
 {
-    public UpdateUserAccountsCommand(List<UserAccountDto> userAccounts)
+    public CreateUserAccountsCommand(List<UserAccountDto> userAccounts)
     {
         UserAccounts = userAccounts;
     }
@@ -19,18 +19,19 @@ public class UpdateUserAccountsCommand : IRequest<bool>, IUpdateUserAccountsComm
     public List<UserAccountDto> UserAccounts { get; }
 }
 
-public class UpdateUserAccountsCommandHandler : BaseUserAccountHandler, IRequestHandler<UpdateUserAccountsCommand, bool>
+public class CreateUserAccountsCommandHandler : BaseUserAccountHandler, IRequestHandler<CreateUserAccountsCommand, bool>
 {
+    
     private readonly IMapper _mapper;
-    private readonly ILogger<UpdateUserAccountsCommandHandler> _logger;
-    public UpdateUserAccountsCommandHandler(ApplicationDbContext context, IMapper mapper, ILogger<UpdateUserAccountsCommandHandler> logger)
+    private readonly ILogger<CreateUserAccountsCommandHandler> _logger;
+    public CreateUserAccountsCommandHandler(ApplicationDbContext context, IMapper mapper, ILogger<CreateUserAccountsCommandHandler> logger)
         : base(context)
     {
         _logger = logger;
         _mapper = mapper;
     }
 
-    public async Task<bool> Handle(UpdateUserAccountsCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(CreateUserAccountsCommand request, CancellationToken cancellationToken)
     {
         bool result;
         if (_context.Database.IsSqlServer())
@@ -38,7 +39,7 @@ public class UpdateUserAccountsCommandHandler : BaseUserAccountHandler, IRequest
             await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
             try
             {
-                result = await UpdateAndUpdateUserAccounts(request, cancellationToken);
+                result = await CreateAndUpdateUserAccounts(request, cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
             }
             catch (Exception ex)
@@ -52,7 +53,7 @@ public class UpdateUserAccountsCommandHandler : BaseUserAccountHandler, IRequest
         {
             try
             {
-                result = await UpdateAndUpdateUserAccounts(request, cancellationToken);
+                result = await CreateAndUpdateUserAccounts(request, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -65,8 +66,10 @@ public class UpdateUserAccountsCommandHandler : BaseUserAccountHandler, IRequest
         return result;
     }
 
-    private async Task<bool> UpdateAndUpdateUserAccounts(UpdateUserAccountsCommand request, CancellationToken cancellationToken)
+    private async Task<bool> CreateAndUpdateUserAccounts(CreateUserAccountsCommand request, CancellationToken cancellationToken)
     {
+        
+
         foreach (var account in request.UserAccounts)
         {
             UserAccount entity = _mapper.Map<UserAccount>(account);
@@ -78,22 +81,19 @@ public class UpdateUserAccountsCommandHandler : BaseUserAccountHandler, IRequest
             entity = await AttatchExistingService(entity, cancellationToken);
             entity = await AttatchExistingOrgansiation(entity, cancellationToken);
 
-            entity.Name = account.Name;
-            entity.EmailAddress = account.EmailAddress;
-            entity.PhoneNumber = account.PhoneNumber;
-            entity.Team = account.Team;
-
+            _context.UserAccounts.Add(entity);
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            if (entity.Id < 1)
+            if (entity == null || entity.Id < 1)
             {
                 return false;
             }
         }
-
+        
         return true;
     }
+
 }
 
 

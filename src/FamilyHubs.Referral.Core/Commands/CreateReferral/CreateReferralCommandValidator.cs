@@ -20,11 +20,11 @@ public class CreateReferralCommandValidator : AbstractValidator<CreateReferralCo
             .NotNull()
             .NotEmpty();
 
-        RuleFor(v => v.ReferralDto.ReferrerDto)
+        RuleFor(v => v.ReferralDto.ReferralUserAccountDto)
             .NotNull()
             .NotEmpty();
 
-        RuleFor(v => v.ReferralDto.ReferrerDto.Id)
+        RuleFor(v => v.ReferralDto.ReferralUserAccountDto.Id)
             .GreaterThan(0);
     }
 }

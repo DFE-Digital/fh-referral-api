@@ -94,16 +94,16 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
     {
         UserAccountDto userAccountDto = new UserAccountDto
         {
+            Id = 2,
             EmailAddress = "FirstUser@email.com",
             Name = "First User",
             PhoneNumber = "0161 111 1111",
-            Role = "Test Role",
             Team = "Test Team"
         };
 
-        userAccountDto.OrganisationUserAccountDtos = new List<OrganisationUserAccountDto>
+        userAccountDto.OrganisationUserAccounts = new List<UserAccountOrganisationDto>
         {
-            new OrganisationUserAccountDto
+            new UserAccountOrganisationDto
             {
                 UserAccount = default!,
                 Organisation = new OrganisationDto

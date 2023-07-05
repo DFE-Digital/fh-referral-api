@@ -55,7 +55,7 @@ public class WhenUsingGetReferral : DataIntegrationTestBase
         //Assert
         result.Should().NotBeNull();
         result.Items[0].Should().BeEquivalentTo(referral,
-            options => options.Excluding(x => x.Created).Excluding(x => x.LastModified));
+            options => options.Excluding(x => x.Created).Excluding(x => x.LastModified).Excluding(x => x.Status.SecondrySortOrder));
         var actualService = TestDbContext.Referrals.SingleOrDefault(s => s.Id == referral.Id);
         actualService.Should().NotBeNull();
 
@@ -79,16 +79,18 @@ public class WhenUsingGetReferral : DataIntegrationTestBase
         await CreateReferral();
         var referral = TestDataProvider.GetReferralDto();
 
-        GetReferralsByReferrerCommand command = new(referral.ReferrerDto.EmailAddress, referralOrderBy, isAssending, null, 1, 10);
+        GetReferralsByReferrerCommand command = new(referral.ReferralUserAccountDto.EmailAddress, referralOrderBy, isAssending, null, 1, 10);
         GetReferralsByReferrerCommandHandler handler = new(TestDbContext, Mapper);
 
         //Act
         var result = await handler.Handle(command, new System.Threading.CancellationToken());
 
+        
+
         //Assert
         result.Should().NotBeNull();
         result.Items[0].Should().BeEquivalentTo(referral,
-            options => options.Excluding(x => x.Created).Excluding(x => x.LastModified) );
+            options => options.Excluding(x => x.Created).Excluding(x => x.LastModified).Excluding(x => x.Status.SecondrySortOrder));
         var actualService = TestDbContext.Referrals.SingleOrDefault(s => s.Id == referral.Id);
         actualService.Should().NotBeNull();
 

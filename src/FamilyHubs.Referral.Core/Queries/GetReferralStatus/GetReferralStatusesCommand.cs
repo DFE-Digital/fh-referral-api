@@ -30,13 +30,13 @@ public class GetReferralStatusesCommandHandler : IRequestHandler<GetReferralStat
     
     public async Task<List<ReferralStatusDto>> Handle(GetReferralStatusesCommand request, CancellationToken cancellationToken)
     {
-        var entities = _context.ReferralStatuses
+        var entities = _context.Statuses
             .ProjectTo<ReferralStatusDto>(_mapper.ConfigurationProvider)
             .AsNoTracking();
 
         if (entities == null)
         {
-            throw new NotFoundException(nameof(ReferralStatus), "ReferralStatusList");
+            throw new NotFoundException(nameof(Status), "ReferralStatusList");
         }
 
 
