@@ -55,24 +55,6 @@ namespace FamilyHubs.Referral.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ReferralStatuses",
-                columns: table => new
-                {
-                    Id = table.Column<byte>(type: "tinyint", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    SortOrder = table.Column<byte>(type: "tinyint", nullable: false),
-                    SecondrySortOrder = table.Column<byte>(type: "tinyint", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ReferralStatuses", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
                 {
@@ -87,6 +69,24 @@ namespace FamilyHubs.Referral.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Roles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Statuses",
+                columns: table => new
+                {
+                    Id = table.Column<byte>(type: "tinyint", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    SortOrder = table.Column<byte>(type: "tinyint", nullable: false),
+                    SecondrySortOrder = table.Column<byte>(type: "tinyint", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Statuses", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -166,9 +166,9 @@ namespace FamilyHubs.Referral.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Referrals_ReferralStatuses_StatusId",
+                        name: "FK_Referrals_Statuses_StatusId",
                         column: x => x.StatusId,
-                        principalTable: "ReferralStatuses",
+                        principalTable: "Statuses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -346,7 +346,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                 name: "Recipients");
 
             migrationBuilder.DropTable(
-                name: "ReferralStatuses");
+                name: "Statuses");
 
             migrationBuilder.DropTable(
                 name: "Organisations");

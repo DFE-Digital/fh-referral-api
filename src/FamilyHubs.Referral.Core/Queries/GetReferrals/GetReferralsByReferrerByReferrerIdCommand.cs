@@ -40,9 +40,9 @@ public class GetReferralsByReferrerByReferrerIdCommandHandler : GetReferralsHand
     {
         var entities = _context.Referrals
             .Include(x => x.Status)
-            .Include(x => x.ReferralUserAccount)
+            .Include(x => x.UserAccount)
             .ThenInclude(x => x.OrganisationUserAccounts)
-            .Include(x => x.ReferralUserAccount)
+            .Include(x => x.UserAccount)
             .ThenInclude(x => x.ServiceUserAccounts)
             .Include(x => x.Recipient)
             .Include(x => x.ReferralService)
@@ -53,11 +53,11 @@ public class GetReferralsByReferrerByReferrerIdCommandHandler : GetReferralsHand
 
         if (request.IncludeDeclined != null && request.IncludeDeclined == true)
         {
-            entities = entities.Where(x => x.ReferralUserAccount.Id == request.Id);
+            entities = entities.Where(x => x.UserAccount.Id == request.Id);
         }
         else
         {
-            entities = entities.Where(x => x.ReferralUserAccount.Id == request.Id && x.Status.Name != "Declined");
+            entities = entities.Where(x => x.UserAccount.Id == request.Id && x.Status.Name != "Declined");
         }
 
         if (entities == null)

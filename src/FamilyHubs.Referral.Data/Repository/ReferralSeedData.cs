@@ -57,32 +57,32 @@ public static class ReferralSeedData
         };
     }
 
-    public static IReadOnlyCollection<ReferralStatus> SeedStatuses()
+    public static IReadOnlyCollection<Status> SeedStatuses()
     {
-        return new HashSet<ReferralStatus>()
+        return new HashSet<Status>()
         {
-            new ReferralStatus()
+            new Status()
             {
                 Id = 1,
                 Name = "New",
                 SortOrder = 0,
                 SecondrySortOrder = 1,
             },
-            new ReferralStatus()
+            new Status()
             {
                 Id = 2,
                 Name = "Opened",
                 SortOrder = 1,
                 SecondrySortOrder = 1,
             },
-            new ReferralStatus()
+            new Status()
             {
                 Id = 3,
                 Name = "Accepted",
                 SortOrder = 2,
                 SecondrySortOrder = 2,
             },
-            new ReferralStatus()
+            new Status()
             {
                 Id = 4,
                 Name = "Declined",
@@ -113,7 +113,7 @@ public static class ReferralSeedData
                     County = "Country",
                     PostCode = "B30 2TV"
                 },
-                ReferralUserAccount = new UserAccount
+                UserAccount = new UserAccount
                 {
                     Id = 1,
                     EmailAddress = "Joe.Professional@email.com",
@@ -121,7 +121,7 @@ public static class ReferralSeedData
                     PhoneNumber = "011 222 3333",
                     Team = "Social Work team North"
                 },
-                Status = new ReferralStatus
+                Status = new Status
                 {
                     Id = 1,
                     Name = "New",
@@ -161,7 +161,7 @@ public static class ReferralSeedData
                     County = "Country",
                     PostCode = "B31 2TV"
                 },
-                ReferralUserAccount = new UserAccount
+                UserAccount = new UserAccount
                 {
                     Id = 1,
                     EmailAddress = "Joe.Professional@email.com",
@@ -169,7 +169,7 @@ public static class ReferralSeedData
                     PhoneNumber = "011 222 3333",
                     Team = "Social Work team North"
                 },
-                Status = new ReferralStatus
+                Status = new Status
                 {
                     Id = 1,
                     Name = "Opened",

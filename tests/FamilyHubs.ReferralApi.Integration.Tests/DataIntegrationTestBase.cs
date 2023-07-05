@@ -63,7 +63,7 @@ public abstract class DataIntegrationTestBase : IDisposable, IAsyncDisposable
         TestDbContext.Database.EnsureDeleted();
         TestDbContext.Database.EnsureCreated();
 
-        TestDbContext.ReferralStatuses.AddRange(ReferralSeedData.SeedStatuses());
+        TestDbContext.Statuses.AddRange(ReferralSeedData.SeedStatuses());
 
         TestDbContext.SaveChangesAsync().GetAwaiter().GetResult();
 
@@ -71,7 +71,7 @@ public abstract class DataIntegrationTestBase : IDisposable, IAsyncDisposable
 
         foreach (Data.Entities.Referral referral in referrals)
         {
-            var status = TestDbContext.ReferralStatuses.SingleOrDefault(x => x.Id == referral.Status.Id);
+            var status = TestDbContext.Statuses.SingleOrDefault(x => x.Id == referral.Status.Id);
             if (status != null)
             {
                 referral.Status = status;
@@ -88,7 +88,7 @@ public abstract class DataIntegrationTestBase : IDisposable, IAsyncDisposable
 
         var referral = Mapper.Map<Data.Entities.Referral>(newReferral ?? TestDataProvider.GetReferralDto());
 
-        var status = TestDbContext.ReferralStatuses.SingleOrDefault(x => x.Id == referral.Status.Id);
+        var status = TestDbContext.Statuses.SingleOrDefault(x => x.Id == referral.Status.Id);
         if (status != null)
         {
             referral.Status = status;

@@ -27,7 +27,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             return;
         }
             
-        var referrer = ReferralSeedData.SeedReferral().ElementAt(0).ReferralUserAccount.EmailAddress;
+        var referrer = ReferralSeedData.SeedReferral().ElementAt(0).UserAccount.EmailAddress;
 
         var request = new HttpRequestMessage
         {
@@ -364,7 +364,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Accepted")
+            RequestUri = new Uri(Client.BaseAddress + "api/status/1/Accepted")
         };
 
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_vcstoken)}");
@@ -393,7 +393,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Declined/Unable to help")
+            RequestUri = new Uri(Client.BaseAddress + "api/status/1/Declined/Unable to help")
         };
 
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_vcstoken)}");
@@ -421,7 +421,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri(Client.BaseAddress + "api/referralStatus/1/Declined/Unable to help")
+            RequestUri = new Uri(Client.BaseAddress + "api/status/1/Declined/Unable to help")
         };
 
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
@@ -444,7 +444,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Get,
-            RequestUri = new Uri(Client.BaseAddress + "api/referralstatuses"),
+            RequestUri = new Uri(Client.BaseAddress + "api/statuses"),
         };
 
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");

@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FamilyHubs.Referral.Data.Config;
 
-public class ReferralStatusConfiguration : IEntityTypeConfiguration<ReferralStatus>
+public class ReferralStatusConfiguration : IEntityTypeConfiguration<Status>
 {
-    public void Configure(EntityTypeBuilder<ReferralStatus> builder)
+    public void Configure(EntityTypeBuilder<Status> builder)
     {
         builder.Property(t => t.Name)
             .IsRequired()

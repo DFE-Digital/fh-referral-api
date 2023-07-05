@@ -217,7 +217,40 @@ namespace FamilyHubs.Referral.Data.Migrations
                     b.ToTable("ReferralServices");
                 });
 
-            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralStatus", b =>
+            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Role", b =>
+                {
+                    b.Property<byte>("Id")
+                        .HasColumnType("tinyint");
+
+                    b.Property<DateTime?>("Created")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Status", b =>
                 {
                     b.Property<byte>("Id")
                         .HasColumnType("tinyint");
@@ -250,40 +283,7 @@ namespace FamilyHubs.Referral.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ReferralStatuses");
-                });
-
-            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Role", b =>
-                {
-                    b.Property<byte>("Id")
-                        .HasColumnType("tinyint");
-
-                    b.Property<DateTime?>("Created")
-                        .IsRequired()
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Roles");
+                    b.ToTable("Statuses");
                 });
 
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.UserAccount", b =>
@@ -461,13 +461,13 @@ namespace FamilyHubs.Referral.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FamilyHubs.Referral.Data.Entities.ReferralStatus", "Status")
+                    b.HasOne("FamilyHubs.Referral.Data.Entities.Status", "Status")
                         .WithMany()
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FamilyHubs.Referral.Data.Entities.UserAccount", "ReferralUserAccount")
+                    b.HasOne("FamilyHubs.Referral.Data.Entities.UserAccount", "UserAccount")
                         .WithMany()
                         .HasForeignKey("UserAccountId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -477,9 +477,9 @@ namespace FamilyHubs.Referral.Data.Migrations
 
                     b.Navigation("ReferralService");
 
-                    b.Navigation("ReferralUserAccount");
-
                     b.Navigation("Status");
+
+                    b.Navigation("UserAccount");
                 });
 
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.UserAccountOrganisation", b =>

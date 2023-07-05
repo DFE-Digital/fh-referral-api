@@ -46,7 +46,7 @@ public class SetReferralStatusCommandHandler : IRequestHandler<SetReferralStatus
         {
             var entity = await _context.Referrals
             .Include(x => x.Status)
-            .Include(x => x.ReferralUserAccount)
+            .Include(x => x.UserAccount)
             .Include(x => x.Recipient)
             .Include(x => x.ReferralService)
             .ThenInclude(x => x.Organisation)
@@ -61,7 +61,7 @@ public class SetReferralStatusCommandHandler : IRequestHandler<SetReferralStatus
             //assumption is VCS Professional will have correct organisation id other users will not
             if (entity.ReferralService.Organisation.Id == request.UserOrganisationId || RoleTypes.DfeAdmin == request.Role) 
             {
-                var updatedStatus = _context.ReferralStatuses.SingleOrDefault(x => x.Name == request.Status) ?? throw new NotFoundException(nameof(ReferralStatus), request.Status);
+                var updatedStatus = _context.Statuses.SingleOrDefault(x => x.Name == request.Status) ?? throw new NotFoundException(nameof(Status), request.Status);
 
                 entity.ReasonForDecliningSupport = request.ReasonForDecliningSupport;
                 entity.StatusId = updatedStatus.Id;

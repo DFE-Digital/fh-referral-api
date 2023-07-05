@@ -85,7 +85,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         request.ReferralDto.Id = entity.Id;
         request.ReferralDto.Status.Id = entity.Status.Id;
         request.ReferralDto.RecipientDto.Id = entity.Recipient.Id;
-        request.ReferralDto.ReferralUserAccountDto.Id = entity.ReferralUserAccount.Id;
+        request.ReferralDto.ReferralUserAccountDto.Id = entity.UserAccount.Id;
         request.ReferralDto.ReferralServiceDto.Id = entity.ReferralService.Id;
         request.ReferralDto.ReferralServiceDto.OrganisationDto.Id = entity.ReferralService.Organisation.Id;
 
@@ -100,7 +100,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     private Data.Entities.Referral AttachExistingStatus(Data.Entities.Referral entity)
     {
-        ReferralStatus? referralStatus = _context.ReferralStatuses.SingleOrDefault(x => x.Name == entity.Status.Name);
+        Status? referralStatus = _context.Statuses.SingleOrDefault(x => x.Name == entity.Status.Name);
         if (referralStatus != null)
         {
             entity.Status = referralStatus;
@@ -110,10 +110,10 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     private Data.Entities.Referral AttachExistingUserAccount(Data.Entities.Referral entity)
     {
-        UserAccount? professional = _context.UserAccounts.SingleOrDefault(x => x.EmailAddress == entity.ReferralUserAccount.EmailAddress);
+        UserAccount? professional = _context.UserAccounts.SingleOrDefault(x => x.EmailAddress == entity.UserAccount.EmailAddress);
         if (professional != null) 
         {
-            entity.ReferralUserAccount = professional;
+            entity.UserAccount = professional;
         }
         return entity;
     }

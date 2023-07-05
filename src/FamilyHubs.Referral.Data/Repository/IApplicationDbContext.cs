@@ -6,7 +6,7 @@ namespace FamilyHubs.Referral.Data.Repository;
 public interface IApplicationDbContext
 {
     DbSet<Data.Entities.Referral> Referrals { get; }
-    DbSet<ReferralStatus> ReferralStatuses { get; }
+    DbSet<Status> Statuses { get; }
     DbSet<Recipient> Recipients { get; }
     DbSet<Organisation> Organisations { get; }
     DbSet<Entities.ReferralService> ReferralServices { get; }

@@ -67,7 +67,7 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
     {
         var entity = _context.Referrals
             .Include(x => x.Status)
-            .Include(x => x.ReferralUserAccount)
+            .Include(x => x.UserAccount)
             .Include(x => x.Recipient)
             .Include(x => x.ReferralService)
             .ThenInclude(x => x.Organisation)
@@ -85,11 +85,11 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
     {
         if (entity.Status.Id != request.ReferralDto.Status.Id)
         {
-            var updatedStatus = _context.ReferralStatuses.SingleOrDefault(x => x.Name == request.ReferralDto.Status.Name);
+            var updatedStatus = _context.Statuses.SingleOrDefault(x => x.Name == request.ReferralDto.Status.Name);
 
             if (updatedStatus == null)
             {
-                throw new NotFoundException(nameof(ReferralStatus), request.ReferralDto.Status.Name);
+                throw new NotFoundException(nameof(Status), request.ReferralDto.Status.Name);
             }
 
             entity.StatusId = updatedStatus.Id;
@@ -100,7 +100,7 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
 
     private async Task UpdateUserAccount(Data.Entities.Referral entity, UpdateReferralCommand request, CancellationToken cancellationToken)
     {
-        if (entity.ReferralUserAccount.Id != request.ReferralDto.ReferralUserAccountDto.Id)
+        if (entity.UserAccount.Id != request.ReferralDto.ReferralUserAccountDto.Id)
         {
             var updatedReferrer = _context.UserAccounts.SingleOrDefault(x => x.Id == request.ReferralDto.ReferralUserAccountDto.Id);
 
@@ -112,7 +112,7 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
                 return;
             }
 
-            entity.ReferralUserAccount = updatedReferrer;
+            entity.UserAccount = updatedReferrer;
             await _context.SaveChangesAsync(cancellationToken);
         }
     }

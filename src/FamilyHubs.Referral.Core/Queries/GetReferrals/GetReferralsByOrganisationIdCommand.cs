@@ -41,9 +41,9 @@ public class GetReferralsByOrganisationIdCommandHandler : GetReferralsHandlerBas
     {
         var entities = _context.Referrals
             .Include(x => x.Status)
-            .Include(x => x.ReferralUserAccount)
+            .Include(x => x.UserAccount)
             .ThenInclude(x => x.OrganisationUserAccounts)
-            .Include(x => x.ReferralUserAccount)
+            .Include(x => x.UserAccount)
             .ThenInclude(x => x.ServiceUserAccounts)
             .Include(x => x.Recipient)
             .Include(x => x.ReferralService)

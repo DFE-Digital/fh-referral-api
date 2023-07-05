@@ -30,7 +30,7 @@ namespace FamilyHubs.Referral.UnitTests
             IMapper mapper = new Mapper(configuration);
             var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
-            mockApplicationDbContext.ReferralStatuses.AddRange(ReferralSeedData.SeedStatuses());
+            mockApplicationDbContext.Statuses.AddRange(ReferralSeedData.SeedStatuses());
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
             testReferral.Status.Id = 0;
@@ -57,7 +57,7 @@ namespace FamilyHubs.Referral.UnitTests
             mockApplicationDbContext.Referrals.Add(ReferralSeedData.SeedReferral().ElementAt(0));
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
-            testReferral.ReferralUserAccountDto = mapper.Map<UserAccountDto>(ReferralSeedData.SeedReferral().ElementAt(0).ReferralUserAccount);
+            testReferral.ReferralUserAccountDto = mapper.Map<UserAccountDto>(ReferralSeedData.SeedReferral().ElementAt(0).UserAccount);
             testReferral.ReferralUserAccountDto.Id = mockApplicationDbContext.UserAccounts.First().Id;
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, logger.Object);
@@ -420,8 +420,8 @@ namespace FamilyHubs.Referral.UnitTests
             var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
             IMapper mapper = new Mapper(configuration);
             var mockApplicationDbContext = GetApplicationDbContext();
-            IReadOnlyCollection<ReferralStatus> statuses = ReferralSeedData.SeedStatuses();
-            mockApplicationDbContext.ReferralStatuses.AddRange(statuses);
+            IReadOnlyCollection<Status> statuses = ReferralSeedData.SeedStatuses();
+            mockApplicationDbContext.Statuses.AddRange(statuses);
             await mockApplicationDbContext.SaveChangesAsync();
             GetReferralStatusesCommand command = new();
             GetReferralStatusesCommandHandler handler = new(mockApplicationDbContext, mapper);
@@ -533,7 +533,7 @@ namespace FamilyHubs.Referral.UnitTests
             IMapper mapper = new Mapper(configuration);
             var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
-            mockApplicationDbContext.ReferralStatuses.AddRange(ReferralSeedData.SeedStatuses());
+            mockApplicationDbContext.Statuses.AddRange(ReferralSeedData.SeedStatuses());
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
             CreateReferralCommand createCommand = new(testReferral);
@@ -562,7 +562,7 @@ namespace FamilyHubs.Referral.UnitTests
             IMapper mapper = new Mapper(configuration);
             var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
-            mockApplicationDbContext.ReferralStatuses.AddRange(ReferralSeedData.SeedStatuses());
+            mockApplicationDbContext.Statuses.AddRange(ReferralSeedData.SeedStatuses());
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
             CreateReferralCommand createCommand = new(testReferral);

@@ -40,7 +40,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Recipient> Recipients => Set<Recipient>();
     public DbSet<Data.Entities.Referral> Referrals => Set<Data.Entities.Referral>(); 
     public DbSet<Entities.ReferralService> ReferralServices => Set<Entities.ReferralService>();
-    public DbSet<ReferralStatus> ReferralStatuses => Set<ReferralStatus>();
+    public DbSet<Status> Statuses => Set<Status>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<UserAccount> UserAccounts => Set<UserAccount>();
     public DbSet<UserAccountOrganisation> UserAccountOrganisations => Set<UserAccountOrganisation>();

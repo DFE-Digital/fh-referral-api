@@ -77,11 +77,11 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             var context = scopedServices.GetRequiredService<ApplicationDbContext>();
 
 
-            IReadOnlyCollection<ReferralStatus> statuses = ReferralSeedData.SeedStatuses();
+            IReadOnlyCollection<Status> statuses = ReferralSeedData.SeedStatuses();
 
-            if (!context.ReferralStatuses.Any())
+            if (!context.Statuses.Any())
             {
-                context.ReferralStatuses.AddRange(statuses);
+                context.Statuses.AddRange(statuses);
                 context.SaveChanges();
             }
 
@@ -91,7 +91,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
                 foreach (Data.Entities.Referral referral in referrals)
                 {
-                    var status = context.ReferralStatuses.SingleOrDefault(x => x.Name == referral.Status.Name);
+                    var status = context.Statuses.SingleOrDefault(x => x.Name == referral.Status.Name);
                     if (status != null)
                     {
                         referral.Status = status;

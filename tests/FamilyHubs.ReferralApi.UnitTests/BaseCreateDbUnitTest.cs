@@ -43,11 +43,11 @@ public class BaseCreateDbUnitTest
 
     protected static async Task CreateReferrals(ApplicationDbContext context)
     {
-        if (!context.ReferralStatuses.Any())
+        if (!context.Statuses.Any())
         {
-            IReadOnlyCollection<ReferralStatus> statuses = ReferralSeedData.SeedStatuses();
+            IReadOnlyCollection<Status> statuses = ReferralSeedData.SeedStatuses();
 
-            context.ReferralStatuses.AddRange(statuses);
+            context.Statuses.AddRange(statuses);
 
             await context.SaveChangesAsync();
         }
@@ -77,13 +77,13 @@ public class BaseCreateDbUnitTest
 
         foreach (Data.Entities.Referral referral in referrals)
         {
-            var referrer = context.UserAccounts.SingleOrDefault(x => x.Id == referral.ReferralUserAccount.Id);
+            var referrer = context.UserAccounts.SingleOrDefault(x => x.Id == referral.UserAccount.Id);
             if (referrer != null)
             {
-                referral.ReferralUserAccount = referrer;
+                referral.UserAccount = referrer;
             }
 
-            var status = context.ReferralStatuses.SingleOrDefault(x => x.Name == referral.Status.Name);
+            var status = context.Statuses.SingleOrDefault(x => x.Name == referral.Status.Name);
             if (status != null)
             {
                 referral.Status = status;
