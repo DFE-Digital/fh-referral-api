@@ -6,11 +6,11 @@ public class UserAccountOrganisation : EntityBase<long>
 {
     public long UserAccountId { get; set; }
     [ForeignKey("UserAccountId")]
-    public virtual required UserAccount UserAccount { get; set; }
+    public virtual UserAccount UserAccount { get; set; } = null!;
 
     public long OrganisationId { get; set; }
     [ForeignKey("OrganisationId")]
-    public virtual required Organisation Organisation { get; set; }
+    public virtual Organisation Organisation { get; set; } = null!;
 
-    
+
 }

@@ -6,11 +6,11 @@ public class UserAccountService : EntityBase<long>
 {
     public long UserAccountId { get; set; }
     [ForeignKey("UserAccountId")]
-    public virtual required UserAccount UserAccount { get; set; }
+    public virtual UserAccount UserAccount { get; set; } = null!;
 
     public long ReferralServiceId { get; set; }
     [ForeignKey("ReferralServiceId")]
-    public virtual required ReferralService ReferralService { get; set; }
+    public virtual ReferralService ReferralService { get; set; } = null!;
 
-    
+
 }

@@ -6,9 +6,9 @@ public class UserAccountRole : EntityBase<long>
 {
     public long UserAccountId { get; set; }
     [ForeignKey("UserAccountId")]
-    public virtual required UserAccount UserAccount { get; set; }
+    public virtual UserAccount UserAccount { get; set; } = null!;
 
     public byte RoleId { get; set; }
     [ForeignKey("RoleId")]
-    public virtual required Role Role { get; set; }
+    public virtual Role Role { get; set; } = null!;
 }

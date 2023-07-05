@@ -8,7 +8,7 @@ public class UserAccount : EntityBase<long>
     public string? Name { get; set; }
     public string? PhoneNumber { get; set; }
     public string? Team { get; set; }
-    public virtual IList<UserAccountRole>? UserAccountRoles { get; set; }
-    public virtual IList<UserAccountService>? ServiceUserAccounts { get; set;}
-    public virtual IList<UserAccountOrganisation>? OrganisationUserAccounts { get; set; }
+    public virtual IList<UserAccountRole>? UserAccountRoles { get; set; } = null;
+    public virtual IList<UserAccountService>? ServiceUserAccounts { get; set; } = null;
+    public virtual IList<UserAccountOrganisation>? OrganisationUserAccounts { get; set; } = null;
 }
