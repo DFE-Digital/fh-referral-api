@@ -94,6 +94,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
     {
         UserAccountDto userAccountDto = new UserAccountDto
         {
+            Id = 2,
             EmailAddress = "FirstUser@email.com",
             Name = "First User",
             PhoneNumber = "0161 111 1111",

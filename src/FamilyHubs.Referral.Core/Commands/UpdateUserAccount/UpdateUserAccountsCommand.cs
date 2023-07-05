@@ -78,11 +78,15 @@ public class UpdateUserAccountsCommandHandler : BaseUserAccountHandler, IRequest
             entity = await AttatchExistingService(entity, cancellationToken);
             entity = await AttatchExistingOrgansiation(entity, cancellationToken);
 
-            _context.UserAccounts.Update(entity);
+            entity.Name = account.Name;
+            entity.EmailAddress = account.EmailAddress;
+            entity.PhoneNumber = account.PhoneNumber;
+            entity.Team = account.Team;
+
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            if (entity == null || entity.Id < 1)
+            if (entity.Id < 1)
             {
                 return false;
             }

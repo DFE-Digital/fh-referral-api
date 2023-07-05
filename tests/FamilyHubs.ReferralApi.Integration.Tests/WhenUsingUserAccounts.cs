@@ -116,8 +116,7 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
 #pragma warning disable CS8602
         //Assign 
         UserAccountDto userAccountDto = TestDataProvider.GetUserAccount();
-        userAccountDto.EmailAddress = "UpdatedUser@email.com";
-        userAccountDto.PhoneNumber = "0161 111 1112";
+       
 
         List<UserAccountDto> listUserAccounts = new List<UserAccountDto> { userAccountDto };
         Data.Entities.UserAccount userAccount = Mapper.Map<UserAccount>(userAccountDto);
@@ -127,6 +126,9 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
         userAccount.OrganisationUserAccounts[0].Organisation = TestDbContext.Organisations.First(x => x.Id == userAccount.OrganisationUserAccounts[0].Organisation.Id);
         TestDbContext.UserAccounts.Add(userAccount);
         await TestDbContext.SaveChangesAsync();
+
+        userAccountDto.EmailAddress = "UpdatedUser@email.com";
+        userAccountDto.PhoneNumber = "0161 111 1112";
 
         UpdateUserAccountsCommand command = new UpdateUserAccountsCommand(listUserAccounts);
         UpdateUserAccountsCommandHandler handler = new UpdateUserAccountsCommandHandler(TestDbContext, Mapper, new Mock<ILogger<UpdateUserAccountsCommandHandler>>().Object);
