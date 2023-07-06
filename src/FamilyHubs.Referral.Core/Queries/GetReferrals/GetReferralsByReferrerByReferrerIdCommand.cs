@@ -44,6 +44,10 @@ public class GetReferralsByReferrerByReferrerIdCommandHandler : GetReferralsHand
             .ThenInclude(x => x.OrganisationUserAccounts)
             .Include(x => x.UserAccount)
             .ThenInclude(x => x.ServiceUserAccounts)
+
+            .Include(x => x.UserAccount)
+            .ThenInclude(x => x.UserAccountRoles)
+
             .Include(x => x.Recipient)
             .Include(x => x.ReferralService)
             .ThenInclude(x => x.Organisation)
