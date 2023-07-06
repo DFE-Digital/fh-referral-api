@@ -64,8 +64,6 @@ public class WhenSendingNotificationsToApi
     public async Task ThenSendNotificationAsync_ValidRequest_ReturnsTrue()
     {
         // Arrange
-        var expectedUrl = "https://example.com/api/notify";
-        var expectedContent = "{\"property\":\"value\"}";
         var expectedStatusCode = HttpStatusCode.OK;
 
         var responseMessage = new HttpResponseMessage
