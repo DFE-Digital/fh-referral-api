@@ -81,20 +81,6 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        ////Make sure all Dto Id's are correctly updated
-        //request.ReferralDto.Id = entity.Id;
-        //request.ReferralDto.Status.Id = entity.Status.Id;
-        //request.ReferralDto.RecipientDto.Id = entity.Recipient.Id;
-        //request.ReferralDto.ReferralUserAccountDto.Id = entity.UserAccount.Id;
-        //request.ReferralDto.ReferralServiceDto.Id = entity.ReferralService.Id;
-        //request.ReferralDto.ReferralServiceDto.OrganisationDto.Id = entity.ReferralService.Organisation.Id;
-        
-        ////Update Referrer / Recipient / Service / Organisation with latest details
-        //entity = _mapper.Map(request.ReferralDto, entity);
-        //entity = AttachExistingUserAccount(entity);
-
-        //await _context.SaveChangesAsync(cancellationToken);
-
         return entity.Id;
     }
 
