@@ -16,6 +16,8 @@ using Serilog;
 using Serilog.Events;
 using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using FamilyHubs.SharedKernel.Identity;
+using System.Diagnostics.CodeAnalysis;
+using FamilyHubs.Referral.Core.ApiClients;
 
 namespace FamilyHubs.Referral.Api;
 
@@ -147,9 +149,38 @@ public static class StartupExtensions
         services.AddTransient<ExceptionHandlingMiddleware>();
     }
 
+    public static void AddHttpClients(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddHttpClient<INotificationClientService, NotificationClientService>(client =>
+        {
+            client.BaseAddress = new Uri(configuration.GetValue<string>("NotificationUrl")!);
+        });
+    }
+
+    public static IServiceCollection AddSecuredTypedHttpClient<TClient, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImplementation>(
+            this IServiceCollection services, Action<IServiceProvider, HttpClient> configureClient)
+            where TClient : class
+            where TImplementation : class, TClient
+    {
+        services.AddHttpClient<TClient, TImplementation>((serviceProvider, httpClient) =>
+        {
+            configureClient(serviceProvider, httpClient);
+            var httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
+            if (httpContextAccessor == null)
+                throw new ArgumentException($"IHttpContextAccessor required for {nameof(AddSecuredTypedHttpClient)}");
+
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext!.GetBearerToken()}");
+
+        });
+
+        return services;
+    }
+
     public static void ConfigureServices(this IServiceCollection services, IConfiguration configuration, bool isProduction)
     {
         services.AddApplicationInsightsTelemetry();
+        // Add services to the container.
+        services.AddHttpClients(configuration);
 
         // Add services to the container.
         services.AddControllers();
