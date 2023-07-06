@@ -1,4 +1,6 @@
 ﻿using FamilyHubs.Notification.Api.Contracts;
+using FamilyHubs.Referral.Core.Commands.CreateReferral;
+using Microsoft.Extensions.Logging;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
@@ -6,16 +8,18 @@ namespace FamilyHubs.Referral.Core.ApiClients;
 
 public interface INotificationClientService
 {
-    Task<bool> SendNotification(MessageDto messageDto, JwtSecurityToken token);
+    Task<bool> SendNotificationAsync(MessageDto messageDto, JwtSecurityToken token);
 }
 
 public class NotificationClientService : ApiService, INotificationClientService
 {
-    public NotificationClientService(HttpClient client) : base(client)
+    private readonly ILogger<NotificationClientService> _logger;
+    public NotificationClientService(HttpClient client, ILogger<NotificationClientService> logger) : base(client)
     {
+        _logger = logger;
     }
 
-    public async Task<bool> SendNotification(MessageDto messageDto, JwtSecurityToken token)
+    public async Task<bool> SendNotificationAsync(MessageDto messageDto, JwtSecurityToken token)
     {
         var request = new HttpRequestMessage
         {
@@ -28,7 +32,15 @@ public class NotificationClientService : ApiService, INotificationClientService
 
         using var response = await Client.SendAsync(request);
 
-        response.EnsureSuccessStatusCode();
+        try
+        {
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex) 
+        { 
+            _logger.LogError(ex, ex.Message);
+            return false;
+        }
 
         var stringResult = await response.Content.ReadAsStringAsync();
         bool.TryParse(stringResult, out var result);

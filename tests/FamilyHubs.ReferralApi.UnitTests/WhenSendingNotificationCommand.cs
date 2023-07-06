@@ -17,7 +17,7 @@ public class WhenSendingNotificationCommand : BaseCreateDbUnitTest
     private const string NewRequestTemplateId = "123";
     private const string ClientId = "ClientId";
     private const string BearerTokenSigningKey = "BearerTokenSigningKey";
-    private int _emailNaotification;
+    private int _emailNotification;
     public WhenSendingNotificationCommand()
     {
 
@@ -42,13 +42,12 @@ public class WhenSendingNotificationCommand : BaseCreateDbUnitTest
         _notificationClientService = new Mock<INotificationClientService>();
         _configuration = new Mock<IConfiguration>();
 
-        _configuration.Setup(x => x["ProfessionalSentRequest"]).Returns(NewRequestTemplateId);
         _configuration.Setup(x => x["GovUkOidcConfiguration:Oidc:ClientId"]).Returns(ClientId);
         _configuration.Setup(x => x["GovUkOidcConfiguration:BearerTokenSigningKey"]).Returns(BearerTokenSigningKey);
 
-        _emailNaotification = 0;
-        _notificationClientService.Setup(x => x.SendNotification(It.IsAny<MessageDto>(), It.IsAny<JwtSecurityToken>()))
-            .Callback(() => _emailNaotification++)
+        _emailNotification = 0;
+        _notificationClientService.Setup(x => x.SendNotificationAsync(It.IsAny<MessageDto>(), It.IsAny<JwtSecurityToken>()))
+            .Callback(() => _emailNotification++)
             .ReturnsAsync(true);
 
 
@@ -58,6 +57,7 @@ public class WhenSendingNotificationCommand : BaseCreateDbUnitTest
     public async Task ThenSendNotification()
     {
         //Arrange
+        _configuration.Setup(x => x["ProfessionalSentRequest"]).Returns(NewRequestTemplateId);
         long referralId = ReferralSeedData.SeedReferral().ElementAt(0).Id;
         SendNotificationCommand command = new(referralId);
         SendNotificationCommandHandler handler = new(_mockApplicationDbContext, _notificationClientService.Object, _configuration.Object);
@@ -67,7 +67,41 @@ public class WhenSendingNotificationCommand : BaseCreateDbUnitTest
 
         //Assert
         result.Should().BeTrue();
-        _emailNaotification.Should().BeGreaterThan(0);
+        _emailNotification.Should().BeGreaterThan(0);
+
+    }
+
+    [Fact]
+    public void ThenSendNotificationFailsAndThrowsException()
+    {
+        //Arrange
+        _configuration.Setup(x => x["ProfessionalSentRequest"]).Returns(NewRequestTemplateId);
+        SendNotificationCommand command = new(-1);
+        SendNotificationCommandHandler handler = new(_mockApplicationDbContext, _notificationClientService.Object, _configuration.Object);
+
+        //Act
+        Func<Task> act = async () => { await handler.Handle(command, new System.Threading.CancellationToken()); };
         
+        
+        //Assert
+        act.Should().ThrowAsync<Exception>();
+
+    }
+
+    [Fact]
+    public void ThenSendNotificationFailsAndThrowsExceptionWhenTemplateIdIsInvalid()
+    {
+        //Arrange
+        _configuration.Setup(x => x["ProfessionalSentRequest"]).Returns("");
+        SendNotificationCommand command = new(-1);
+        SendNotificationCommandHandler handler = new(_mockApplicationDbContext, _notificationClientService.Object, _configuration.Object);
+
+        //Act
+        Func<Task> act = async () => { await handler.Handle(command, new System.Threading.CancellationToken()); };
+
+
+        //Assert
+        act.Should().ThrowAsync<Exception>();
+
     }
 }

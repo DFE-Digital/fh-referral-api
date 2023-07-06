@@ -38,7 +38,7 @@ public class SendNotificationCommandHandler : IRequestHandler<SendNotificationCo
     {
         MessageDto messageDto = await GetMessages(request, cancellationToken);
 
-        return await _notificationClientService.SendNotification(messageDto, GetToken());
+        return await _notificationClientService.SendNotificationAsync(messageDto, GetToken());
     }
 
     private async Task<MessageDto> GetMessages(SendNotificationCommand request, CancellationToken cancellationToken)
