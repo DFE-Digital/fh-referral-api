@@ -3,6 +3,7 @@ using Ardalis.Specification;
 using AutoMapper;
 using Azure.Core;
 using FamilyHubs.Referral.Core.Interfaces.Commands;
+using FamilyHubs.Referral.Core.Queries;
 using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
@@ -51,6 +52,7 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
             entity = GetReferral(request);
 
             entity = _mapper.Map(request.ReferralDto, entity);
+            await UpdateUserAccount(entity, request, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
         }
@@ -65,12 +67,7 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
 
     private Data.Entities.Referral GetReferral(UpdateReferralCommand request)
     {
-        var entity = _context.Referrals
-            .Include(x => x.Status)
-            .Include(x => x.UserAccount)
-            .Include(x => x.Recipient)
-            .Include(x => x.ReferralService)
-            .ThenInclude(x => x.Organisation)
+        var entity = _context.Referrals.GetAll()
             .FirstOrDefault(x => x.Id == request.Id);
 
         if (entity == null)
@@ -104,8 +101,11 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
         {
             var updatedReferrer = _context.UserAccounts.SingleOrDefault(x => x.Id == request.ReferralDto.ReferralUserAccountDto.Id);
 
+            UpdateUserAccountRole(entity);
+
             if (updatedReferrer == null)
             {
+                
                 _context.UserAccounts.Add(_mapper.Map<UserAccount>(request.ReferralDto.ReferralUserAccountDto));
                 entity.UserAccountId = request.ReferralDto.ReferralUserAccountDto.Id;
                 await _context.SaveChangesAsync(cancellationToken);
@@ -114,6 +114,34 @@ public class UpdateReferralCommandHandler : IRequestHandler<UpdateReferralComman
 
             entity.UserAccount = updatedReferrer;
             await _context.SaveChangesAsync(cancellationToken);
+        }
+        else
+        {
+            UpdateUserAccountRole(entity);
+        }
+    }
+
+    private void UpdateUserAccountRole(Data.Entities.Referral entity)
+    {
+        if (entity.UserAccount != null && entity.UserAccount.UserAccountRoles != null)
+        {
+            for (int i = 0; i < entity.UserAccount.UserAccountRoles.Count; i++)
+            {
+                Role? role = _context.Roles.SingleOrDefault(x => x.Name == entity.UserAccount.UserAccountRoles[i].Role.Name);
+                if (role != null)
+                {
+                    UserAccountRole? userAccountRole = _context.UserAccountRoles.SingleOrDefault(x => x.RoleId == role.Id && x.UserAccountId == entity.UserAccount.Id);
+                    if (userAccountRole != null)
+                    {
+                        entity.UserAccount.UserAccountRoles[i] = userAccountRole;
+                        return;
+                    }
+
+                    entity.UserAccount.UserAccountRoles[i].Role = role;
+                    entity.UserAccount.UserAccountRoles[i].RoleId = role.Id;
+                    entity.UserAccount.UserAccountRoles[i].UserAccountId = entity.UserAccount.Id;
+                }
+            }
         }
     }
 
