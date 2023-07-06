@@ -1,44 +1,55 @@
 ﻿using Ardalis.GuardClauses;
 using FamilyHubs.Notification.Api.Contracts;
 using FamilyHubs.Referral.Core.ApiClients;
+using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Data.Repository;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace FamilyHubs.Referral.Core.Commands.Notifications;
 
-public class SendNotificationCommand : IRequest<bool> //, ISendNotificationCommand
+public class SendNotificationCommand : IRequest<bool>, ISendNotificationCommand
 {
-    public SendNotificationCommand(long referralId, long organisationId)
+    public SendNotificationCommand(long referralId)
     {
         ReferralId = referralId;
-        OrganisationId = organisationId;
     }
 
     public long ReferralId { get; }
-    public long OrganisationId { get; }
 }
 
 public class SendNotificationCommandHandler : IRequestHandler<SendNotificationCommand, bool>
 {
     private readonly ApplicationDbContext _context;
     private readonly INotificationClientService _notificationClientService;
-    private const string _templateKey = "";
+    private readonly IConfiguration _configuration;
 
-    protected SendNotificationCommandHandler(ApplicationDbContext context, INotificationClientService notificationClientService)
+    protected SendNotificationCommandHandler(ApplicationDbContext context, INotificationClientService notificationClientService, IConfiguration configuration)
     {
         _context = context;
         _notificationClientService = notificationClientService;
+        _configuration = configuration;
     }
     public async Task<bool> Handle(SendNotificationCommand request, CancellationToken cancellationToken)
     {
         MessageDto messageDto = await GetMessages(request, cancellationToken);
 
-        return await _notificationClientService.SendNotification(messageDto, new System.IdentityModel.Tokens.Jwt.JwtSecurityToken());
+        return await _notificationClientService.SendNotification(messageDto, GetToken());
     }
 
     private async Task<MessageDto> GetMessages(SendNotificationCommand request, CancellationToken cancellationToken)
     {
+        string templateId = _configuration["ProfessionalSentRequest"] ?? string.Empty;
+
+        if (string.IsNullOrEmpty(templateId)) 
+        {
+            throw new NotFoundException(nameof(Referral), $"Referral: {request.ReferralId.ToString()} - {templateId}" );
+        }
+
         var entity = await _context.Referrals
             .Include(x => x.UserAccount)
             .ThenInclude(x => x.OrganisationUserAccounts)
@@ -70,22 +81,40 @@ public class SendNotificationCommandHandler : IRequestHandler<SendNotificationCo
         {
             ApiKeyType = ApiKeyType.ConnectKey,
             NotificationEmails = new List<string> { entity.UserAccount.EmailAddress },
-            TemplateId = _templateKey,
+            TemplateId = templateId,
             TemplateTokens = dicTokens
         };
         
-
-
         var userentities = _context.UserAccountOrganisations
             .Include(x => x.UserAccount)
             .Include(x => x.Organisation)
             .AsNoTracking()
-            .Where(x => x.OrganisationId == request.OrganisationId);
+            .Where(x => x.OrganisationId == entity.ReferralService.Organisation.Id);
 
         List<string> emailAddress = userentities.Select(x => x.UserAccount.EmailAddress).ToList();
 
         messageDto.NotificationEmails.AddRange(emailAddress);
 
         return messageDto;
+    }
+
+    private JwtSecurityToken GetToken()
+    {
+        var jti = Guid.NewGuid().ToString();
+        var key = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(_configuration["GovUkOidcConfiguration:BearerTokenSigningKey"]!));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
+        var token = new JwtSecurityToken(
+            claims: new List<Claim>
+               {
+                    new Claim("sub", _configuration["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
+                    new Claim("jti", jti),
+                    new Claim(ClaimTypes.Role, "VcsProfessional")
+
+               },
+            signingCredentials: creds,
+            expires: DateTime.UtcNow.AddMinutes(10)
+            );
+
+        return token;
     }
 }
