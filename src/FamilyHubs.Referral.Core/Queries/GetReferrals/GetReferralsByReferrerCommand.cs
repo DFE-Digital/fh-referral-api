@@ -39,16 +39,7 @@ public class GetReferralsByReferrerCommandHandler : GetReferralsHandlerBase, IRe
     }
     public async Task<PaginatedList<ReferralDto>> Handle(GetReferralsByReferrerCommand request, CancellationToken cancellationToken)
     {
-        var entities = _context.Referrals
-            .Include(x => x.Status)
-            .Include(x => x.UserAccount)
-            .ThenInclude(x => x.OrganisationUserAccounts)
-            .Include(x => x.UserAccount)
-            .ThenInclude(x => x.ServiceUserAccounts)
-            .Include(x => x.Recipient)
-            .Include(x => x.ReferralService)
-            .ThenInclude(x => x.Organisation)
-
+        var entities = _context.Referrals.GetAll()
             .AsSplitQuery()
             .AsNoTracking();
 

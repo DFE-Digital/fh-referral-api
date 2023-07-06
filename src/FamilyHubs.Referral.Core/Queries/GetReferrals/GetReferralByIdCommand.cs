@@ -31,15 +31,7 @@ public class GetReferralByIdCommandHandler : IRequestHandler<GetReferralByIdComm
     }
     public async Task<ReferralDto> Handle(GetReferralByIdCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _context.Referrals
-            .Include(x => x.Status)
-            .Include(x => x.UserAccount)
-            .ThenInclude(x => x.OrganisationUserAccounts)
-            .Include(x => x.UserAccount)
-            .ThenInclude(x => x.ServiceUserAccounts)
-            .Include(x => x.Recipient)
-            .Include(x => x.ReferralService)
-            .ThenInclude(x => x.Organisation)
+        var entity = await _context.Referrals.GetAll()
             .AsNoTracking()
             .ProjectTo<ReferralDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken: cancellationToken);

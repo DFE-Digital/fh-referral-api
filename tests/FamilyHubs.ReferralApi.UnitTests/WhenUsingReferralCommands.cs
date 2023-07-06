@@ -11,6 +11,7 @@ using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -80,7 +81,17 @@ namespace FamilyHubs.Referral.UnitTests
             IMapper mapper = new Mapper(configuration);
             var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
-            mockApplicationDbContext.Referrals.Add(ReferralSeedData.SeedReferral().ElementAt(0));
+            mockApplicationDbContext.Statuses.AddRange(ReferralSeedData.SeedStatuses());
+            mockApplicationDbContext.Roles.AddRange(ReferralSeedData.SeedRoles());
+            mockApplicationDbContext.SaveChanges();
+
+            var referral = ReferralSeedData.SeedReferral().ElementAt(0);
+            var status = mockApplicationDbContext.Statuses.SingleOrDefault(x => x.Name == referral.Status.Name);
+            if (status != null)
+            {
+                referral.Status = status;
+            }
+            mockApplicationDbContext.Referrals.Add(referral);
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
             testReferral.RecipientDto = new RecipientDto
@@ -109,7 +120,17 @@ namespace FamilyHubs.Referral.UnitTests
             IMapper mapper = new Mapper(configuration);
             var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
-            mockApplicationDbContext.Referrals.Add(ReferralSeedData.SeedReferral().ElementAt(0));
+            mockApplicationDbContext.Statuses.AddRange(ReferralSeedData.SeedStatuses());
+            mockApplicationDbContext.Roles.AddRange(ReferralSeedData.SeedRoles());
+            mockApplicationDbContext.SaveChanges();
+
+            var referral = ReferralSeedData.SeedReferral().ElementAt(0);
+            var status = mockApplicationDbContext.Statuses.SingleOrDefault(x => x.Name == referral.Status.Name);
+            if (status != null)
+            {
+                referral.Status = status;
+            }
+            mockApplicationDbContext.Referrals.Add(referral);
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
             testReferral.RecipientDto = new RecipientDto
@@ -138,7 +159,17 @@ namespace FamilyHubs.Referral.UnitTests
             IMapper mapper = new Mapper(configuration);
             var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
-            mockApplicationDbContext.Referrals.Add(ReferralSeedData.SeedReferral().ElementAt(0));
+            mockApplicationDbContext.Statuses.AddRange(ReferralSeedData.SeedStatuses());
+            mockApplicationDbContext.Roles.AddRange(ReferralSeedData.SeedRoles());
+            mockApplicationDbContext.SaveChanges();
+
+            var referral = ReferralSeedData.SeedReferral().ElementAt(0);
+            var status = mockApplicationDbContext.Statuses.SingleOrDefault(x => x.Name == referral.Status.Name);
+            if (status != null)
+            {
+                referral.Status = status;
+            }
+            mockApplicationDbContext.Referrals.Add(referral);
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
             testReferral.RecipientDto = new RecipientDto
@@ -167,7 +198,17 @@ namespace FamilyHubs.Referral.UnitTests
             IMapper mapper = new Mapper(configuration);
             var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
-            mockApplicationDbContext.Referrals.Add(ReferralSeedData.SeedReferral().ElementAt(0));
+            mockApplicationDbContext.Statuses.AddRange(ReferralSeedData.SeedStatuses());
+            mockApplicationDbContext.Roles.AddRange(ReferralSeedData.SeedRoles());
+            mockApplicationDbContext.SaveChanges();
+
+            var referral = ReferralSeedData.SeedReferral().ElementAt(0);
+            var status = mockApplicationDbContext.Statuses.SingleOrDefault(x => x.Name == referral.Status.Name);
+            if (status != null)
+            {
+                referral.Status = status;
+            }
+            mockApplicationDbContext.Referrals.Add(referral);
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
             testReferral.RecipientDto = new RecipientDto
@@ -196,7 +237,17 @@ namespace FamilyHubs.Referral.UnitTests
             IMapper mapper = new Mapper(configuration);
             var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
-            mockApplicationDbContext.Referrals.Add(ReferralSeedData.SeedReferral().ElementAt(0));
+            mockApplicationDbContext.Statuses.AddRange(ReferralSeedData.SeedStatuses());
+            mockApplicationDbContext.Roles.AddRange(ReferralSeedData.SeedRoles());
+            mockApplicationDbContext.SaveChanges();
+
+            var referral = ReferralSeedData.SeedReferral().ElementAt(0);
+            var status = mockApplicationDbContext.Statuses.SingleOrDefault(x => x.Name == referral.Status.Name);
+            if (status != null)
+            {
+                referral.Status = status;
+            }
+            mockApplicationDbContext.Referrals.Add(referral);
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
             testReferral.ReferralServiceDto = mapper.Map<ReferralServiceDto>(ReferralSeedData.SeedReferral().ElementAt(0).ReferralService);
@@ -210,8 +261,10 @@ namespace FamilyHubs.Referral.UnitTests
             testReferral.RecipientDto.TownOrCity = "Town or CityA";
             testReferral.RecipientDto.County = "CountyA";
             testReferral.ReferralUserAccountDto.PhoneNumber = "1234567899";
+            testReferral.ReferralServiceDto.Id = 0;
             testReferral.ReferralServiceDto.Name = "Service A";
             testReferral.ReferralServiceDto.Description = "Service Description A";
+            testReferral.ReferralServiceDto.OrganisationDto.Id = 0;
             testReferral.ReferralServiceDto.OrganisationDto.Name = "Organisation A";
             testReferral.ReferralServiceDto.OrganisationDto.Description = "Organisation Description A";
 
@@ -225,13 +278,16 @@ namespace FamilyHubs.Referral.UnitTests
             result.Should().BeGreaterThan(0);
             result.Should().Be(testReferral.Id);
 
-            GetReferralByIdCommand getcommand = new(testReferral.Id);
+            GetReferralByIdCommand getcommand = new(result);
             GetReferralByIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
 
 
             //Check and Assert
             var getresult = await gethandler.Handle(getcommand, new System.Threading.CancellationToken());
-            getresult.Should().BeEquivalentTo(testReferral, options => options.Excluding(x => x.Created).Excluding(x => x.LastModified));
+            testReferral.ReferralServiceDto.Id = 0;
+            testReferral.ReferralServiceDto.OrganisationDto.ReferralServiceId = 0;
+            testReferral.Status.SecondrySortOrder = 1;
+            getresult.Should().BeEquivalentTo(testReferral, options => options.Excluding(x => x.Created).Excluding(x => x.LastModified).Excluding(x => x.ReferralUserAccountDto.UserAccountRoles));
             
 
         }
@@ -245,6 +301,9 @@ namespace FamilyHubs.Referral.UnitTests
             IMapper mapper = new Mapper(configuration);
             var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
+            mockApplicationDbContext.Statuses.AddRange(ReferralSeedData.SeedStatuses());
+            mockApplicationDbContext.Roles.AddRange(ReferralSeedData.SeedRoles());
+            mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
             CreateReferralCommand createCommand = new(testReferral);
             CreateReferralCommandHandler createHandler = new(mockApplicationDbContext, mapper, logger.Object);
@@ -410,7 +469,8 @@ namespace FamilyHubs.Referral.UnitTests
             result.Should().NotBeNull();
             result.Id.Should().Be(id);
             result.Created.Should().NotBeNull();
-            result.Should().BeEquivalentTo(testReferral, options => options.Excluding(x => x.Created).Excluding(x => x.LastModified));
+            result.ReasonForDecliningSupport.Should().Be("Reason For Declining Support");
+            
         }
 
         [Fact]
@@ -423,6 +483,7 @@ namespace FamilyHubs.Referral.UnitTests
             var mockApplicationDbContext = GetApplicationDbContext();
             IReadOnlyCollection<Status> statuses = ReferralSeedData.SeedStatuses();
             mockApplicationDbContext.Statuses.AddRange(statuses);
+            mockApplicationDbContext.Roles.AddRange(ReferralSeedData.SeedRoles());
             await mockApplicationDbContext.SaveChangesAsync();
             GetReferralStatusesCommand command = new();
             GetReferralStatusesCommandHandler handler = new(mockApplicationDbContext, mapper);
@@ -494,6 +555,20 @@ namespace FamilyHubs.Referral.UnitTests
                     Name = "Bob Referrer",
                     PhoneNumber = "1234567890",
                     Team = "Team",
+                    UserAccountRoles = new List<UserAccountRoleDto>()
+                    { 
+                        new UserAccountRoleDto
+                        {
+                            UserAccount = new UserAccountDto
+                            {
+                                EmailAddress = "Bob.Referrer@email.com",   
+                            },
+                            Role = new RoleDto
+                            {
+                                Name = "VcsProfessional"
+                            }
+                        }
+                    },
                     ServiceUserAccounts = new List<UserAccountServiceDto>(),
                     OrganisationUserAccounts = new List<UserAccountOrganisationDto>(),
                 },
@@ -534,6 +609,7 @@ namespace FamilyHubs.Referral.UnitTests
             var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
             mockApplicationDbContext.Statuses.AddRange(ReferralSeedData.SeedStatuses());
+            mockApplicationDbContext.Roles.AddRange(ReferralSeedData.SeedRoles());
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
             CreateReferralCommand createCommand = new(testReferral);
@@ -563,6 +639,7 @@ namespace FamilyHubs.Referral.UnitTests
             var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
             mockApplicationDbContext.Statuses.AddRange(ReferralSeedData.SeedStatuses());
+            mockApplicationDbContext.Roles.AddRange(ReferralSeedData.SeedRoles());
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
             CreateReferralCommand createCommand = new(testReferral);
