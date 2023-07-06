@@ -18,6 +18,10 @@ using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using FamilyHubs.SharedKernel.Identity;
 using System.Diagnostics.CodeAnalysis;
 using FamilyHubs.Referral.Core.ApiClients;
+using Polly;
+using Polly.Contrib.WaitAndRetry;
+using Microsoft.Extensions.DependencyInjection;
+using Polly.Extensions.Http;
 
 namespace FamilyHubs.Referral.Api;
 
@@ -151,10 +155,31 @@ public static class StartupExtensions
 
     public static void AddHttpClients(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddHttpClient<INotificationClientService, NotificationClientService>(client =>
+        var timeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(10);
+
+        var delay = Backoff.DecorrelatedJitterBackoffV2(
+            medianFirstRetryDelay: TimeSpan.FromSeconds(1),
+            retryCount: 2);
+
+        services.AddHttpClient<INotificationClientService, NotificationClientService>((serviceProvider, client) =>
         {
             client.BaseAddress = new Uri(configuration.GetValue<string>("NotificationUrl")!);
-        });
+
+            var httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>()
+                                      ?? throw new ArgumentException($"IHttpContextAccessor required for {nameof(AddHttpClients)}");
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext!.GetBearerToken()}");
+        })
+            .AddPolicyHandler((callbackServices, request) => HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .WaitAndRetryAsync(delay, (result, timespan, retryAttempt, context) =>
+                {
+                    callbackServices.GetService<ILogger<NotificationClientService>>()?
+                        .LogWarning("Delaying for {Timespan}, then making retry {RetryAttempt}.",
+                            timespan, retryAttempt);
+                }))
+            .AddPolicyHandler(timeoutPolicy);
+
+        services.AddTransient<INotificationClientService, NotificationClientService>();
     }
 
     public static IServiceCollection AddSecuredTypedHttpClient<TClient, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImplementation>(

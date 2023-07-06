@@ -31,6 +31,7 @@ namespace FamilyHubs.Referral.UnitTests
             var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
             var mockApplicationDbContext = GetApplicationDbContext();
             mockApplicationDbContext.Statuses.AddRange(ReferralSeedData.SeedStatuses());
+            mockApplicationDbContext.Roles.AddRange(ReferralSeedData.SeedRoles());
             mockApplicationDbContext.SaveChanges();
             var testReferral = GetReferralDto();
             testReferral.Status.Id = 0;
@@ -493,7 +494,6 @@ namespace FamilyHubs.Referral.UnitTests
                     Name = "Bob Referrer",
                     PhoneNumber = "1234567890",
                     Team = "Team",
-                    UserAccountRoles = new List<UserAccountRoleDto>(),
                     ServiceUserAccounts = new List<UserAccountServiceDto>(),
                     OrganisationUserAccounts = new List<UserAccountOrganisationDto>(),
                 },

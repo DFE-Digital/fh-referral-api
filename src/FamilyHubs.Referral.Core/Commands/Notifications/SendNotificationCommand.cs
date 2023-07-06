@@ -28,7 +28,7 @@ public class SendNotificationCommandHandler : IRequestHandler<SendNotificationCo
     private readonly INotificationClientService _notificationClientService;
     private readonly IConfiguration _configuration;
 
-    protected SendNotificationCommandHandler(ApplicationDbContext context, INotificationClientService notificationClientService, IConfiguration configuration)
+    public SendNotificationCommandHandler(ApplicationDbContext context, INotificationClientService notificationClientService, IConfiguration configuration)
     {
         _context = context;
         _notificationClientService = notificationClientService;
