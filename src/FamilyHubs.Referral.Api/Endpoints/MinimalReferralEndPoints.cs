@@ -165,27 +165,4 @@ public class MinimalReferralEndPoints
 
         return (accountId, role, organisationId);
     }
-
-    // the email will probably always be the same case as we get them from the claim, but just to be extra safe
-    public static bool AreEmailsEqual(string email1, string email2)
-    {
-        int atIndex1 = email1.IndexOf('@');
-        int atIndex2 = email2.IndexOf('@');
-
-        if (atIndex1 == -1 || atIndex2 == -1)
-        {
-            // Both email strings should have exactly one '@' symbol
-            return false;
-        }
-
-        string localPart1 = email1.Substring(0, atIndex1);
-        string localPart2 = email2.Substring(0, atIndex2);
-        string domainPart1 = email1.Substring(atIndex1 + 1);
-        string domainPart2 = email2.Substring(atIndex2 + 1);
-
-        bool areLocalPartsEqual = string.Equals(localPart1, localPart2, StringComparison.Ordinal);
-        bool areDomainPartsEqual = string.Equals(domainPart1, domainPart2, StringComparison.OrdinalIgnoreCase);
-
-        return areLocalPartsEqual && areDomainPartsEqual;
-    }
 }
