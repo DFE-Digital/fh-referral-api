@@ -63,7 +63,7 @@ public class MinimalReferralEndPoints
         //todo: add new ProfessionalOrDualRole RoleGroup (or LaOrVcsProfessionalOrDualRole)
         app.MapGet("api/referral/{id}", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole+","+RoleGroups.VcsProfessionalOrDualRole)] async (long id, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
         {
-            (string email, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
+            (long accountId, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
            
             GetReferralByIdCommand request = new(id);
             var result = await _mediator.Send(request, cancellationToken);
@@ -77,7 +77,7 @@ public class MinimalReferralEndPoints
             }
 
             if (role is RoleTypes.LaManager or RoleTypes.LaProfessional or RoleTypes.LaDualRole
-                && !AreEmailsEqual(email, result.ReferralUserAccountDto.EmailAddress))
+                && accountId != result.ReferralUserAccountDto.Id)
             {
                 return await SetForbidden<ReferralDto>(httpContext);
             }
@@ -96,7 +96,7 @@ public class MinimalReferralEndPoints
 
         app.MapPost("api/status/{referralId}/{status}", [Authorize(Roles = RoleGroups.VcsProfessionalOrDualRole)] async (long referralId, string status, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext, ILogger < MinimalReferralEndPoints> logger) =>
         {
-            (string _, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
+            (long _, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
 
             SetReferralStatusCommand command = new(role, organisationId, referralId, status, default!);
             var result = await _mediator.Send(command, cancellationToken);
@@ -110,7 +110,7 @@ public class MinimalReferralEndPoints
 
         app.MapPost("api/status/{referralId}/{status}/{reasonForDecliningSupport}", [Authorize(Roles = RoleGroups.VcsProfessionalOrDualRole)] async (long referralId, string status, string reasonForDecliningSupport, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext, ILogger <MinimalReferralEndPoints> logger) =>
         {
-            (string _, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
+            (long _, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
 
             SetReferralStatusCommand command = new(role, organisationId, referralId, status, reasonForDecliningSupport);
             var result = await _mediator.Send(command, cancellationToken);
@@ -139,17 +139,18 @@ public class MinimalReferralEndPoints
         return default!;
     }
 
-    private (string email, string role, long organisationId) GetUserDetailsFromClaims(HttpContext httpContext)
+    private (long accountId, string role, long organisationId) GetUserDetailsFromClaims(HttpContext httpContext)
     {
-        string email = string.Empty;
-        var roleEmail = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
-        if (roleEmail != null)
+        //todo: should really throw is claim is missing, rather than defaulting
+        long accountId = -1;
+        var accountIdClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == FamilyHubsClaimTypes.AccountId);
+        if (accountIdClaim != null)
         {
-            email = roleEmail.Value;
+            long.TryParse(accountIdClaim.Value, out accountId);
         }
 
-        long organisationId = 0;
-        var organisationIdClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == "OrganisationId");
+        long organisationId = -1;
+        var organisationIdClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == FamilyHubsClaimTypes.OrganisationId);
         if (organisationIdClaim != null) 
         {
             long.TryParse(organisationIdClaim.Value, out organisationId);
@@ -162,7 +163,7 @@ public class MinimalReferralEndPoints
             role = roleClaim.Value;
         }
 
-        return (email, role, organisationId);
+        return (accountId, role, organisationId);
     }
 
     // the email will probably always be the same case as we get them from the claim, but just to be extra safe
