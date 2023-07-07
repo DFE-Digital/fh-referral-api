@@ -63,13 +63,21 @@ public class MinimalReferralEndPoints
         //todo: add new ProfessionalOrDualRole RoleGroup (or LaOrVcsProfessionalOrDualRole)
         app.MapGet("api/referral/{id}", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole+","+RoleGroups.VcsProfessionalOrDualRole)] async (long id, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
         {
-            (string role, long organisationId) = GetUserRoleAndOrgansationFromClaims(httpContext);
+            (string email, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
            
             GetReferralByIdCommand request = new(id);
             var result = await _mediator.Send(request, cancellationToken);
 
             //If this is a VCS User make sure they can only see their own organisation details
-            if ((role == RoleTypes.VcsManager || role == RoleTypes.VcsProfessional || role == RoleTypes.VcsDualRole) && result.ReferralServiceDto.OrganisationDto.Id != organisationId)
+            // VcsManagers will be blocked at the endpoint, but the check still makes sense here
+            if (role is RoleTypes.VcsManager or RoleTypes.VcsProfessional or RoleTypes.VcsDualRole
+                && result.ReferralServiceDto.OrganisationDto.Id != organisationId)
+            {
+                return await SetForbidden<ReferralDto>(httpContext);
+            }
+
+            if (role is RoleTypes.LaManager or RoleTypes.LaProfessional or RoleTypes.LaDualRole
+                && !AreEmailsEqual(email, result.ReferralUserAccountDto.EmailAddress))
             {
                 return await SetForbidden<ReferralDto>(httpContext);
             }
@@ -88,7 +96,7 @@ public class MinimalReferralEndPoints
 
         app.MapPost("api/status/{referralId}/{status}", [Authorize(Roles = RoleGroups.VcsProfessionalOrDualRole)] async (long referralId, string status, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext, ILogger < MinimalReferralEndPoints> logger) =>
         {
-            (string role, long organisationId) = GetUserRoleAndOrgansationFromClaims(httpContext);
+            (string _, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
 
             SetReferralStatusCommand command = new(role, organisationId, referralId, status, default!);
             var result = await _mediator.Send(command, cancellationToken);
@@ -102,7 +110,7 @@ public class MinimalReferralEndPoints
 
         app.MapPost("api/status/{referralId}/{status}/{reasonForDecliningSupport}", [Authorize(Roles = RoleGroups.VcsProfessionalOrDualRole)] async (long referralId, string status, string reasonForDecliningSupport, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext, ILogger <MinimalReferralEndPoints> logger) =>
         {
-            (string role, long organisationId) = GetUserRoleAndOrgansationFromClaims(httpContext);
+            (string _, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
 
             SetReferralStatusCommand command = new(role, organisationId, referralId, status, reasonForDecliningSupport);
             var result = await _mediator.Send(command, cancellationToken);
@@ -131,9 +139,15 @@ public class MinimalReferralEndPoints
         return default!;
     }
 
-    private (string role, long organisationId) GetUserRoleAndOrgansationFromClaims(HttpContext httpContext)
+    private (string email, string role, long organisationId) GetUserDetailsFromClaims(HttpContext httpContext)
     {
-        string role = string.Empty;
+        string email = string.Empty;
+        var roleEmail = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+        if (roleEmail != null)
+        {
+            email = roleEmail.Value;
+        }
+
         long organisationId = 0;
         var organisationIdClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == "OrganisationId");
         if (organisationIdClaim != null) 
@@ -141,13 +155,36 @@ public class MinimalReferralEndPoints
             long.TryParse(organisationIdClaim.Value, out organisationId);
         }
 
+        string role = string.Empty;
         var roleClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
         if (roleClaim != null) 
         {
             role = roleClaim.Value;
         }
 
-        return (role, organisationId);
+        return (email, role, organisationId);
     }
 
+    // the email will probably always be the same case as we get them from the claim, but just to be extra safe
+    public static bool AreEmailsEqual(string email1, string email2)
+    {
+        int atIndex1 = email1.IndexOf('@');
+        int atIndex2 = email2.IndexOf('@');
+
+        if (atIndex1 == -1 || atIndex2 == -1)
+        {
+            // Both email strings should have exactly one '@' symbol
+            return false;
+        }
+
+        string localPart1 = email1.Substring(0, atIndex1);
+        string localPart2 = email2.Substring(0, atIndex2);
+        string domainPart1 = email1.Substring(atIndex1 + 1);
+        string domainPart2 = email2.Substring(atIndex2 + 1);
+
+        bool areLocalPartsEqual = string.Equals(localPart1, localPart2, StringComparison.Ordinal);
+        bool areDomainPartsEqual = string.Equals(domainPart1, domainPart2, StringComparison.OrdinalIgnoreCase);
+
+        return areLocalPartsEqual && areDomainPartsEqual;
+    }
 }
