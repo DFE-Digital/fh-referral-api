@@ -19,7 +19,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
 
     //Only run when there is a need to test
     //Use @education.gov.uk accounts but don't save to the repo
-    [Fact(Skip = "specific reason")]
+    [Fact(Skip = "Run when you need to test sending notifications")]
     public async Task ThenTheOpenReferralIsCreatedAndNotificationIsSent()
     {
         if (!IsRunningLocally() || Client == null)
@@ -84,30 +84,6 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         {
             ReferralDto = command,
             UserAccounts = new List<UserAccountDto>()
-            {
-                new UserAccountDto
-                {
-                    Id = 2,
-                    EmailAddress = "<referrer with education account>",
-                    PhoneNumber = "0121 777 8888",
-                    Team = "TBD",
-                    UserAccountRoles = new List<UserAccountRoleDto>()
-                    {
-                        new UserAccountRoleDto
-                        { 
-                            Id = 1,
-                            Role = new RoleDto
-                            {
-                                Name = "LaProfessional"
-                            },
-                            UserAccount = new UserAccountDto
-                            {
-                                EmailAddress = "<referrer with education account>",
-                            }
-                        }
-                    },
-                }
-            },
         };
 
         var request = new HttpRequestMessage

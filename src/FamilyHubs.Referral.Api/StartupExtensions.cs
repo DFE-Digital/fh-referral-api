@@ -178,8 +178,6 @@ public static class StartupExtensions
                             timespan, retryAttempt);
                 }))
             .AddPolicyHandler(timeoutPolicy);
-
-        services.AddTransient<INotificationClientService, NotificationClientService>();
     }
 
     public static IServiceCollection AddSecuredTypedHttpClient<TClient, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImplementation>(
