@@ -63,13 +63,21 @@ public class MinimalReferralEndPoints
         //todo: add new ProfessionalOrDualRole RoleGroup (or LaOrVcsProfessionalOrDualRole)
         app.MapGet("api/referral/{id}", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole+","+RoleGroups.VcsProfessionalOrDualRole)] async (long id, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
         {
-            (string role, long organisationId) = GetUserRoleAndOrgansationFromClaims(httpContext);
+            (long accountId, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
            
             GetReferralByIdCommand request = new(id);
             var result = await _mediator.Send(request, cancellationToken);
 
             //If this is a VCS User make sure they can only see their own organisation details
-            if ((role == RoleTypes.VcsManager || role == RoleTypes.VcsProfessional || role == RoleTypes.VcsDualRole) && result.ReferralServiceDto.OrganisationDto.Id != organisationId)
+            // VcsManagers will be blocked at the endpoint, but the check still makes sense here
+            if (role is RoleTypes.VcsManager or RoleTypes.VcsProfessional or RoleTypes.VcsDualRole
+                && result.ReferralServiceDto.OrganisationDto.Id != organisationId)
+            {
+                return await SetForbidden<ReferralDto>(httpContext);
+            }
+
+            if (role is RoleTypes.LaManager or RoleTypes.LaProfessional or RoleTypes.LaDualRole
+                && accountId != result.ReferralUserAccountDto.Id)
             {
                 return await SetForbidden<ReferralDto>(httpContext);
             }
@@ -88,7 +96,7 @@ public class MinimalReferralEndPoints
 
         app.MapPost("api/status/{referralId}/{status}", [Authorize(Roles = RoleGroups.VcsProfessionalOrDualRole)] async (long referralId, string status, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext, ILogger < MinimalReferralEndPoints> logger) =>
         {
-            (string role, long organisationId) = GetUserRoleAndOrgansationFromClaims(httpContext);
+            (long _, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
 
             SetReferralStatusCommand command = new(role, organisationId, referralId, status, default!);
             var result = await _mediator.Send(command, cancellationToken);
@@ -102,7 +110,7 @@ public class MinimalReferralEndPoints
 
         app.MapPost("api/status/{referralId}/{status}/{reasonForDecliningSupport}", [Authorize(Roles = RoleGroups.VcsProfessionalOrDualRole)] async (long referralId, string status, string reasonForDecliningSupport, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext, ILogger <MinimalReferralEndPoints> logger) =>
         {
-            (string role, long organisationId) = GetUserRoleAndOrgansationFromClaims(httpContext);
+            (long _, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
 
             SetReferralStatusCommand command = new(role, organisationId, referralId, status, reasonForDecliningSupport);
             var result = await _mediator.Send(command, cancellationToken);
@@ -131,23 +139,30 @@ public class MinimalReferralEndPoints
         return default!;
     }
 
-    private (string role, long organisationId) GetUserRoleAndOrgansationFromClaims(HttpContext httpContext)
+    private (long accountId, string role, long organisationId) GetUserDetailsFromClaims(HttpContext httpContext)
     {
-        string role = string.Empty;
-        long organisationId = 0;
-        var organisationIdClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == "OrganisationId");
+        //todo: should really throw is claim is missing, rather than defaulting
+        long accountId = -1;
+        var accountIdClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == FamilyHubsClaimTypes.AccountId);
+        if (accountIdClaim != null)
+        {
+            long.TryParse(accountIdClaim.Value, out accountId);
+        }
+
+        long organisationId = -1;
+        var organisationIdClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == FamilyHubsClaimTypes.OrganisationId);
         if (organisationIdClaim != null) 
         {
             long.TryParse(organisationIdClaim.Value, out organisationId);
         }
 
+        string role = string.Empty;
         var roleClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
         if (roleClaim != null) 
         {
             role = roleClaim.Value;
         }
 
-        return (role, organisationId);
+        return (accountId, role, organisationId);
     }
-
 }
