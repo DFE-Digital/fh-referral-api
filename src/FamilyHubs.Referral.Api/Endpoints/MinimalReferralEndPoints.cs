@@ -1,8 +1,11 @@
 ﻿using FamilyHubs.Referral.Core.Commands.CreateReferral;
+using FamilyHubs.Referral.Core.Commands.CreateUserAccount;
+using FamilyHubs.Referral.Core.Commands.Notifications;
 using FamilyHubs.Referral.Core.Commands.SetReferralStatus;
 using FamilyHubs.Referral.Core.Commands.UpdateReferral;
 using FamilyHubs.Referral.Core.Queries.GetReferrals;
 using FamilyHubs.Referral.Core.Queries.GetReferralStatus;
+using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
@@ -19,6 +22,25 @@ public class MinimalReferralEndPoints
 {
     public void RegisterReferralEndPoints(WebApplication app)
     {
+        app.MapPost("api/referralwithnotification", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole)] async ([FromBody] ReferralDataDto request, CancellationToken cancellationToken, ISender _mediator) =>
+        {
+            CreateReferralCommand referralcommand = new(request.ReferralDto);
+            long referralId  = await _mediator.Send(referralcommand, cancellationToken);
+
+            if (referralId > 0)
+            {
+                CreateUserAccountsCommand useraccountcommand = new(request.UserAccounts);
+                await _mediator.Send(useraccountcommand, cancellationToken);
+
+                SendNotificationCommand sendNotificationCommand = new SendNotificationCommand(referralId);
+                var result = await _mediator.Send(sendNotificationCommand, cancellationToken);
+
+            }
+
+            return referralId;
+
+        }).WithMetadata(new SwaggerOperationAttribute("Referrals", "Create Referral and Send Notification") { Tags = new[] { "Referrals" } });
+
         app.MapPost("api/referrals", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole)] async ([FromBody] ReferralDto request, CancellationToken cancellationToken, ISender _mediator) =>
         {
             CreateReferralCommand command = new(request);
