@@ -16,6 +16,7 @@ using Serilog;
 using Serilog.Events;
 using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using FamilyHubs.SharedKernel.Identity;
+using FamilyHubs.SharedKernel.Security;
 
 namespace FamilyHubs.Referral.Api;
 
@@ -42,6 +43,7 @@ public static class StartupExtensions
 
     public static void RegisterApplicationComponents(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddTransient<ICrypto, Crypto>();
         services.AddAuthorizationPolicy(configuration);
 
         services.AddBearerAuthentication(configuration);

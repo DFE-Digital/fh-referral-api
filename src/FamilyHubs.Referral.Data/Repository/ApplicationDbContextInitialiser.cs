@@ -1,4 +1,5 @@
 ﻿using FamilyHubs.Referral.Data.Entities;
+using FamilyHubs.SharedKernel.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -8,11 +9,13 @@ public class ApplicationDbContextInitialiser
 {
     private readonly ILogger<ApplicationDbContextInitialiser> _logger;
     private readonly ApplicationDbContext _context;
+    private readonly ICrypto _crypto;
 
-    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context)
+    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, ICrypto crypto)
     {
         _logger = logger;
         _context = context;
+        _crypto = crypto;
     }
 
     public async Task InitialiseAsync(bool isProduction, bool shouldRestDatabaseOnRestart)
@@ -130,6 +133,9 @@ public class ApplicationDbContextInitialiser
                 {
                     referral.Status = status;
                 }
+
+                referral.ReasonForSupport = _crypto.EncryptData(referral.ReasonForSupport);
+                referral.EngageWithFamily = _crypto.EncryptData(referral.EngageWithFamily);
             }
 
             _context.Referrals.AddRange(referrals);
