@@ -43,6 +43,7 @@ public static class StartupExtensions
 
     public static void RegisterApplicationComponents(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddTransient<IKeyProvider, KeyProvider>();
         services.AddTransient<ICrypto, Crypto>();
         services.AddAuthorizationPolicy(configuration);
 
