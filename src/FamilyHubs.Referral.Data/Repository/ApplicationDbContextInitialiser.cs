@@ -134,8 +134,8 @@ public class ApplicationDbContextInitialiser
                     referral.Status = status;
                 }
 
-                referral.ReasonForSupport = _crypto.EncryptData(referral.ReasonForSupport);
-                referral.EngageWithFamily = _crypto.EncryptData(referral.EngageWithFamily);
+                referral.ReasonForSupport = await _crypto.EncryptData(referral.ReasonForSupport);
+                referral.EngageWithFamily = await _crypto.EncryptData(referral.EngageWithFamily);
             }
 
             _context.Referrals.AddRange(referrals);
