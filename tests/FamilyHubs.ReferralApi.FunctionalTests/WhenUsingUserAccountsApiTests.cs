@@ -1,6 +1,7 @@
 ﻿using FamilyHubs.Referral.Api.Endpoints;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Models;
+using FamilyHubs.SharedKernel.Identity.Models;
 using FluentAssertions;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
