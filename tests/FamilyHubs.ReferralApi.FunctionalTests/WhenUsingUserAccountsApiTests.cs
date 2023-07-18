@@ -1,4 +1,5 @@
-﻿using FamilyHubs.ReferralService.Shared.Dto;
+﻿using FamilyHubs.Referral.Api.Endpoints;
+using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Models;
 using FluentAssertions;
 using System.IdentityModel.Tokens.Jwt;
@@ -249,5 +250,63 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
 #pragma warning disable CS8602        
         retVal.Items[0].OrganisationUserAccounts[0].Organisation.Should().BeEquivalentTo(userAccount.OrganisationUserAccounts[0].Organisation);
 #pragma warning restore CS8602
+    }
+
+    [Fact]
+    public async Task ThenSingleUserAccountsIsCreatedFromEvent()
+    {
+        if (!IsRunningLocally() || Client == null)
+        {
+            // Skip the test if not running locally
+            Assert.True(true, "Test skipped because it is not running locally.");
+            return;
+        }
+
+        UserAccountDto userAccountDto = new UserAccountDto
+        {
+            Id = 3,
+            EmailAddress = "EventUser@email.com",
+            Name = "Event User",
+            PhoneNumber = "0171 111 2222",
+            Team = "Test Team"
+        };
+
+        userAccountDto.OrganisationUserAccounts = new List<UserAccountOrganisationDto>
+        {
+            new UserAccountOrganisationDto
+            {
+                UserAccount = default!,
+                Organisation = new OrganisationDto
+                {
+                    Id = 2,
+                    Name = "Organisation",
+                    Description = "Organisation Description",
+                }
+            }
+        };
+
+        var command = new List<CustomEvent<UserAccountDto>>
+        {
+            new CustomEvent<UserAccountDto>()
+            {
+                Data = userAccountDto,
+            }
+        };
+            
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Post,
+            RequestUri = new Uri(Client.BaseAddress + "events"),
+            Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(command.ToArray()), Encoding.UTF8, "application/json"),
+        };
+
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+
+        using var response = await Client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        
     }
 }
