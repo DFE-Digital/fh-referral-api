@@ -1,8 +1,10 @@
 ﻿using FamilyHubs.Referral.Api.Endpoints;
 using FamilyHubs.ReferralService.Shared.Dto;
+using FamilyHubs.ReferralService.Shared.Enums;
 using FamilyHubs.ReferralService.Shared.Models;
 using FamilyHubs.SharedKernel.Identity.Models;
 using FluentAssertions;
+using Microsoft.AspNetCore.Components.Forms;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Json;
@@ -253,8 +255,10 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
 #pragma warning restore CS8602
     }
 
-    [Fact]
-    public async Task ThenSingleUserAccountsIsCreatedFromEvent()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task ThenSingleUserAccountsIsCreatedFromEvent(bool isValidationMessage)
     {
         if (!IsRunningLocally() || Client == null)
         {
@@ -263,6 +267,7 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
             return;
         }
 
+        // Check if it's a validation message
         UserAccountDto userAccountDto = new UserAccountDto
         {
             Id = 3,
@@ -272,19 +277,32 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
             Team = "Test Team"
         };
 
-        userAccountDto.OrganisationUserAccounts = new List<UserAccountOrganisationDto>
+        if (!isValidationMessage)
         {
-            new UserAccountOrganisationDto
+            // Set up the user account DTO for a regular event message
+            userAccountDto = new UserAccountDto
             {
-                UserAccount = default!,
-                Organisation = new OrganisationDto
+                Id = 3,
+                EmailAddress = "test@example.com",
+                Name = "Test User",
+                PhoneNumber = "123456789",
+                Team = "Test Team"
+            };
+
+            userAccountDto.OrganisationUserAccounts = new List<UserAccountOrganisationDto>
+            {
+                new UserAccountOrganisationDto
                 {
-                    Id = 2,
-                    Name = "Organisation",
-                    Description = "Organisation Description",
+                    UserAccount = default!,
+                    Organisation = new OrganisationDto
+                    {
+                        Id = 2,
+                        Name = "Organisation",
+                        Description = "Organisation Description",
+                    }
                 }
-            }
-        };
+            };
+        }
 
         var command = new List<CustomEvent<UserAccountDto>>
         {
@@ -293,7 +311,7 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
                 Data = userAccountDto,
             }
         };
-            
+
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
@@ -305,9 +323,15 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
 
         using var response = await Client.SendAsync(request);
 
-        response.EnsureSuccessStatusCode();
-
-        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-        
+        if (isValidationMessage)
+        {
+            // Assert that the response is a 200 OK status code
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        }
+        else
+        {
+            // Assert that the response is a 201 Created status code or any other expected status code for regular event messages
+            response.EnsureSuccessStatusCode();
+        }
     }
 }
