@@ -157,15 +157,6 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
     {
 #pragma warning disable CS8602
         //Assign 
-        //UserAccountDto userAccountDto = TestDataProvider.GetUserAccount();
-        //Data.Entities.UserAccount userAccount = Mapper.Map<UserAccount>(userAccountDto);
-        //userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccounts);
-        //TestDbContext.Organisations.Add(userAccount.OrganisationUserAccounts[0].Organisation);
-        //await TestDbContext.SaveChangesAsync();
-        //userAccount.OrganisationUserAccounts[0].Organisation = TestDbContext.Organisations.First(x => x.Id == userAccount.OrganisationUserAccounts[0].Organisation.Id);
-        //TestDbContext.UserAccounts.Add(userAccount);
-        //await TestDbContext.SaveChangesAsync();
-
         GetUserByIdCommand command = new (1);
         GetUserByIdCommandHandler handler = new(TestDbContext, Mapper);
 

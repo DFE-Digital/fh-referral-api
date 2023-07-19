@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using FamilyHubs.Referral.Core.Commands.CreateUserAccount;
+﻿using FamilyHubs.Referral.Core.Commands.CreateUserAccount;
 using FamilyHubs.Referral.Core.Commands.UpdateUserAccount;
 using FamilyHubs.Referral.Core.Queries.GetUserAccounts;
 using FamilyHubs.ReferralService.Shared.Dto;
@@ -8,13 +7,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.EventGrid.Models;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Reflection.PortableExecutable;
-using FamilyHubs.Referral.Data.Entities;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace FamilyHubs.Referral.Api.Endpoints;
 public class MinimalUserAccountEndPoints
@@ -75,10 +69,29 @@ public class MinimalUserAccountEndPoints
             EventGridEvent? eventGridEvent = null;
 
             //Deserializing the request 
-            var eventGridEvents = await System.Text.Json.JsonSerializer.DeserializeAsync<EventGridEvent[]>(context.Request.Body);
+            using (StreamReader reader = new StreamReader(context.Request.Body))
+            {
+                string requestBody = await reader.ReadToEndAsync();
 
-            eventGridEvent = eventGridEvents?.FirstOrDefault();
-            
+                logger.LogInformation("Deserialize the event");
+
+                var eventGridEvents = Newtonsoft.Json.JsonConvert.DeserializeObject<EventGridEvent[]>(requestBody);
+                if (eventGridEvents != null && eventGridEvents.Any())
+                {
+                    eventGridEvent = eventGridEvents.FirstOrDefault();
+                }
+            }
+
+            if (eventGridEvent == null)
+            {
+                var badresponseDataResult = new SubscriptionValidationResponseData
+                {
+                    ValidationResponse = "eventGridEvent is null"
+                };
+                return JObject.FromObject(badresponseDataResult);
+            }
+
+
             // Validate whether EventType is of "Microsoft.EventGrid.SubscriptionValidationEvent"
             if (eventGridEvent != null && (string.Equals(eventGridEvent.EventType, "Microsoft.EventGrid.SubscriptionValidationEvent", StringComparison.OrdinalIgnoreCase) || (eventGridEvent.EventType != null && eventGridEvent.EventType.IndexOf("Validation", StringComparison.OrdinalIgnoreCase) > 1)))
             {
