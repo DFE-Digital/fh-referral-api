@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Reflection.PortableExecutable;
 using FamilyHubs.Referral.Data.Entities;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace FamilyHubs.Referral.Api.Endpoints;
 public class MinimalUserAccountEndPoints
@@ -102,35 +103,24 @@ public class MinimalUserAccountEndPoints
                 if (userAccount != null)
                 {
                     logger.LogInformation($"Creating User Account for Processing Events: {userAccount.Name}-{userAccount.EmailAddress}");
-                    CreateUserAccountCommand command = new(userAccount);
-                    await _mediator.Send(command, cancellationToken);
+
+                    try
+                    {
+                        GetUserByIdCommand getUserByIdCommand = new(userAccount.Id);
+                        var result = await _mediator.Send(getUserByIdCommand, cancellationToken);
+                        if (result != null)
+                        {
+                            UpdateUserAccountCommand updateUserAccountCommand = new UpdateUserAccountCommand(result.Id, userAccount);
+                            await _mediator.Send(updateUserAccountCommand, cancellationToken);
+                        }
+                    }
+                    catch
+                    {
+                        //Will have throw a NotFoundException so need to add
+                        CreateUserAccountCommand command = new(userAccount);
+                        await _mediator.Send(command, cancellationToken);
+                    }
                 }
-                
-
-                //using (StreamReader reader = new StreamReader(context.Request.Body))
-                //{
-                //    string requestBody = await reader.ReadToEndAsync();
-
-                //    logger.LogInformation("Deserialize the event");
-
-                //    // Deserialize the event
-                //    var events = Newtonsoft.Json.JsonConvert.DeserializeObject<CustomEvent<UserAccountDto>[]>(requestBody);
-
-                //    logger.LogInformation($"Processing Events: {events?.Any()}");
-
-                //    if (events != null)
-                //    {
-                //        var customEvents = events.Select(x => x.Data).ToList();
-
-                //        // Process the events
-                //        foreach (var userAccount in customEvents)
-                //        {
-                //            logger.LogInformation($"Creating User Account for Processing Events: {userAccount.Name}-{userAccount.EmailAddress}");
-                //            CreateUserAccountCommand command = new(userAccount);
-                //            await _mediator.Send(command, cancellationToken);
-                //        }
-                //    }
-                //}
             }
 
             var responseDataResult = new SubscriptionValidationResponseData
