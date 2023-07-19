@@ -1,4 +1,5 @@
-﻿using FamilyHubs.Referral.Core.Commands.CreateUserAccount;
+﻿using Azure.Core;
+using FamilyHubs.Referral.Core.Commands.CreateUserAccount;
 using FamilyHubs.Referral.Core.Commands.UpdateUserAccount;
 using FamilyHubs.Referral.Core.Queries.GetUserAccounts;
 using FamilyHubs.ReferralService.Shared.Dto;
@@ -7,7 +8,12 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.EventGrid.Models;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Reflection.PortableExecutable;
+using FamilyHubs.Referral.Data.Entities;
 
 namespace FamilyHubs.Referral.Api.Endpoints;
 public class MinimalUserAccountEndPoints
@@ -59,53 +65,78 @@ public class MinimalUserAccountEndPoints
 
         }).WithMetadata(new SwaggerOperationAttribute("User Accounts", "Get User Accounts By Organisation Id") { Tags = new[] { "User Accounts" } });
 
+        
         app.MapPost("/events", async (HttpContext context, CancellationToken cancellationToken, ISender _mediator, ILogger<MinimalUserAccountEndPoints> logger) =>
         {
             logger.LogInformation("Calling MinimalUserAccountEndPoints (Process Azure Grid Events)");
 
-            if (context.Request.Headers.TryGetValue("aeg-event-type", out var eventType) && eventType == "SubscriptionValidation")
-            {
-                logger.LogInformation("Handling Event Grid validation message");
+            EventGridEvent? eventGridEvent = null;
 
-                // Deserialize the validation event
-                var eventData = await System.Text.Json.JsonSerializer.DeserializeAsync<SubscriptionValidationEventData>(context.Request.Body);
-               
-                // Send back the validation response
-                var responseData = new SubscriptionValidationResponseData { ValidationResponse = eventData?.ValidationCode ?? string.Empty };
-                var responseJson = System.Text.Json.JsonSerializer.Serialize(responseData);
-                context.Response.StatusCode = StatusCodes.Status200OK;
-                context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync(responseJson);
+            //Deserializing the request 
+            var eventGridEvents = await System.Text.Json.JsonSerializer.DeserializeAsync<EventGridEvent[]>(context.Request.Body);
+
+            eventGridEvent = eventGridEvents?.FirstOrDefault();
+            
+            // Validate whether EventType is of "Microsoft.EventGrid.SubscriptionValidationEvent"
+            if (eventGridEvent != null && string.Equals(eventGridEvent.EventType, "SubscriptionValidation", StringComparison.OrdinalIgnoreCase))
+            {
+                var data = eventGridEvent?.Data as JObject;
+                var eventData = data?.ToObject<SubscriptionValidationEventData>();
+                var responseData = new SubscriptionValidationResponseData
+                {
+                    ValidationResponse = eventData?.ValidationCode ?? string.Empty
+                };
+
+                if (responseData.ValidationResponse != null)
+                {
+                    return JObject.FromObject(responseData);
+                }
             }
             else
             {
-                logger.LogInformation("Handling Event Grid event message");
+                logger.LogInformation("Handling the Custom Event Grid event message");
 
-                using (StreamReader reader = new StreamReader(context.Request.Body))
+                var userAccount = Newtonsoft.Json.JsonConvert.DeserializeObject<UserAccountDto>(eventGridEvent?.Data.ToString() ?? string.Empty);
+
+                if (userAccount != null)
                 {
-                    string requestBody = await reader.ReadToEndAsync();
-
-                    logger.LogInformation("Deserialize the event");
-
-                    // Deserialize the event
-                    var events = Newtonsoft.Json.JsonConvert.DeserializeObject<CustomEvent<UserAccountDto>[]>(requestBody);
-
-                    logger.LogInformation($"Processing Events: {events?.Any()}");
-
-                    if (events != null)
-                    {
-                        var customEvents = events.Select(x => x.Data).ToList();
-
-                        // Process the events
-                        foreach (var userAccount in customEvents)
-                        {
-                            logger.LogInformation($"Creating User Account for Processing Events: {userAccount.Name}-{userAccount.EmailAddress}");
-                            CreateUserAccountCommand command = new(userAccount);
-                            await _mediator.Send(command, cancellationToken);
-                        }
-                    }
+                    logger.LogInformation($"Creating User Account for Processing Events: {userAccount.Name}-{userAccount.EmailAddress}");
+                    CreateUserAccountCommand command = new(userAccount);
+                    await _mediator.Send(command, cancellationToken);
                 }
+                
+
+                //using (StreamReader reader = new StreamReader(context.Request.Body))
+                //{
+                //    string requestBody = await reader.ReadToEndAsync();
+
+                //    logger.LogInformation("Deserialize the event");
+
+                //    // Deserialize the event
+                //    var events = Newtonsoft.Json.JsonConvert.DeserializeObject<CustomEvent<UserAccountDto>[]>(requestBody);
+
+                //    logger.LogInformation($"Processing Events: {events?.Any()}");
+
+                //    if (events != null)
+                //    {
+                //        var customEvents = events.Select(x => x.Data).ToList();
+
+                //        // Process the events
+                //        foreach (var userAccount in customEvents)
+                //        {
+                //            logger.LogInformation($"Creating User Account for Processing Events: {userAccount.Name}-{userAccount.EmailAddress}");
+                //            CreateUserAccountCommand command = new(userAccount);
+                //            await _mediator.Send(command, cancellationToken);
+                //        }
+                //    }
+                //}
             }
+
+            var responseDataResult = new SubscriptionValidationResponseData
+            {
+                ValidationResponse = "Done"
+            };
+            return JObject.FromObject(responseDataResult);
         });
     }
 }

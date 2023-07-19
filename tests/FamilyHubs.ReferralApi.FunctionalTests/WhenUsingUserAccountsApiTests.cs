@@ -5,6 +5,8 @@ using FamilyHubs.ReferralService.Shared.Models;
 using FamilyHubs.SharedKernel.Identity.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.Azure.EventGrid;
+using Microsoft.Azure.EventGrid.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Json;
@@ -268,19 +270,35 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
         }
 
         // Check if it's a validation message
-        UserAccountDto userAccountDto = new UserAccountDto
-        {
-            Id = 3,
-            EmailAddress = "EventUser@email.com",
-            Name = "Event User",
-            PhoneNumber = "0171 111 2222",
-            Team = "Test Team"
-        };
 
-        if (!isValidationMessage)
+        HttpRequestMessage request = default!;
+        if (isValidationMessage)
+        {
+            var command = new[]
+            {
+                new
+                {
+                    EventType = "SubscriptionValidation",
+                    EventTime = DateTime.UtcNow,
+                    Data = new
+                    {
+                        ValidationCode = "123456"
+                    }
+                }
+            };
+
+            request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri(Client.BaseAddress + "events"),
+                Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json"),
+            };
+
+        }
+        else
         {
             // Set up the user account DTO for a regular event message
-            userAccountDto = new UserAccountDto
+            UserAccountDto userAccountDto = new UserAccountDto
             {
                 Id = 3,
                 EmailAddress = "test@example.com",
@@ -302,22 +320,24 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
                     }
                 }
             };
+
+            var command = new List<CustomEvent<UserAccountDto>>
+            {
+                new CustomEvent<UserAccountDto>()
+                {
+                    Data = userAccountDto,
+                }
+            };
+
+            request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri(Client.BaseAddress + "events"),
+                Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(command.ToArray()), Encoding.UTF8, "application/json"),
+            };
         }
 
-        var command = new List<CustomEvent<UserAccountDto>>
-        {
-            new CustomEvent<UserAccountDto>()
-            {
-                Data = userAccountDto,
-            }
-        };
-
-        var request = new HttpRequestMessage
-        {
-            Method = HttpMethod.Post,
-            RequestUri = new Uri(Client.BaseAddress + "events"),
-            Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(command.ToArray()), Encoding.UTF8, "application/json"),
-        };
+        
 
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
 
