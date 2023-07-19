@@ -66,6 +66,7 @@ public class MinimalUserAccountEndPoints
         }).WithMetadata(new SwaggerOperationAttribute("User Accounts", "Get User Accounts By Organisation Id") { Tags = new[] { "User Accounts" } });
 
         
+
         app.MapPost("/events", async (HttpContext context, CancellationToken cancellationToken, ISender _mediator, ILogger<MinimalUserAccountEndPoints> logger) =>
         {
             logger.LogInformation("Calling MinimalUserAccountEndPoints (Process Azure Grid Events)");
@@ -78,7 +79,7 @@ public class MinimalUserAccountEndPoints
             eventGridEvent = eventGridEvents?.FirstOrDefault();
             
             // Validate whether EventType is of "Microsoft.EventGrid.SubscriptionValidationEvent"
-            if (eventGridEvent != null && string.Equals(eventGridEvent.EventType, "SubscriptionValidation", StringComparison.OrdinalIgnoreCase))
+            if (eventGridEvent != null && (string.Equals(eventGridEvent.EventType, "Microsoft.EventGrid.SubscriptionValidationEvent", StringComparison.OrdinalIgnoreCase) || (eventGridEvent.EventType != null && eventGridEvent.EventType.IndexOf("Validation", StringComparison.OrdinalIgnoreCase) > 1)))
             {
                 var data = eventGridEvent?.Data as JObject;
                 var eventData = data?.ToObject<SubscriptionValidationEventData>();
