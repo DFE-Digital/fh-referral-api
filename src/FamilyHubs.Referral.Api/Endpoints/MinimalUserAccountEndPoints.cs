@@ -75,6 +75,8 @@ public class MinimalUserAccountEndPoints
 
                 logger.LogInformation("Deserialize the event");
 
+                logger.LogInformation($"Payload {requestBody}");
+
                 var eventGridEvents = Newtonsoft.Json.JsonConvert.DeserializeObject<EventGridEvent[]>(requestBody);
                 if (eventGridEvents != null && eventGridEvents.Any())
                 {
