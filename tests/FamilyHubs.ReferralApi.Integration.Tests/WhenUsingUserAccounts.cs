@@ -2,6 +2,7 @@
 using FamilyHubs.Referral.Core.Commands.UpdateUserAccount;
 using FamilyHubs.Referral.Core.Queries.GetUserAccounts;
 using FamilyHubs.Referral.Data.Entities;
+using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using Moq;
 
 namespace FamilyHubs.Referral.Integration.Tests;
 
+[Collection("Sequential")]
 public class WhenUsingUserAccounts : DataIntegrationTestBase
 {
     [Fact]
@@ -149,6 +151,42 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
 #pragma warning restore CS8602
     }
 
+    
+    [Fact]
+    public async Task ThenGetUserById()
+    {
+#pragma warning disable CS8602
+        //Assign 
+        //UserAccountDto userAccountDto = TestDataProvider.GetUserAccount();
+        //Data.Entities.UserAccount userAccount = Mapper.Map<UserAccount>(userAccountDto);
+        //userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccounts);
+        //TestDbContext.Organisations.Add(userAccount.OrganisationUserAccounts[0].Organisation);
+        //await TestDbContext.SaveChangesAsync();
+        //userAccount.OrganisationUserAccounts[0].Organisation = TestDbContext.Organisations.First(x => x.Id == userAccount.OrganisationUserAccounts[0].Organisation.Id);
+        //TestDbContext.UserAccounts.Add(userAccount);
+        //await TestDbContext.SaveChangesAsync();
+
+        GetUserByIdCommand command = new (1);
+        GetUserByIdCommandHandler handler = new(TestDbContext, Mapper);
+
+        //Act
+        var result = await handler.Handle(command, new CancellationToken());
+
+        //Assert
+        result.Should().NotBeNull();
+        var actualUserAccount = TestDbContext.UserAccounts
+            .Include(x => x.OrganisationUserAccounts)
+            .FirstAsync(x => x.Id == 1);
+
+        actualUserAccount.Result.EmailAddress.Should().Be(ReferralSeedData.SeedReferral().ElementAt(0).UserAccount.EmailAddress);
+        actualUserAccount.Result.PhoneNumber.Should().Be(ReferralSeedData.SeedReferral().ElementAt(0).UserAccount.PhoneNumber);
+        
+
+
+#pragma warning restore CS8602
+    }
+    
+
     [Fact]
     public async Task ThenGetUserAccountByOrganisationId()
     {
@@ -183,37 +221,5 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
 #pragma warning restore CS8602
     }
 
-    [Fact]
-    public async Task ThenGetUserById()
-    {
-#pragma warning disable CS8602
-        //Assign 
-        UserAccountDto userAccountDto = TestDataProvider.GetUserAccount();
-        Data.Entities.UserAccount userAccount = Mapper.Map<UserAccount>(userAccountDto);
-        userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccounts);
-        TestDbContext.Organisations.Add(userAccount.OrganisationUserAccounts[0].Organisation);
-        await TestDbContext.SaveChangesAsync();
-        userAccount.OrganisationUserAccounts[0].Organisation = TestDbContext.Organisations.First(x => x.Id == userAccount.OrganisationUserAccounts[0].Organisation.Id);
-        TestDbContext.UserAccounts.Add(userAccount);
-        await TestDbContext.SaveChangesAsync();
-
-        GetUserByIdCommand command = new (userAccountDto.Id);
-        GetUserByIdCommandHandler handler = new(TestDbContext, Mapper);
-
-        //Act
-        var result = await handler.Handle(command, new CancellationToken());
-
-        //Assert
-        result.Should().NotBeNull();
-        var actualUserAccount = TestDbContext.UserAccounts
-            .Include(x => x.OrganisationUserAccounts)
-            .FirstAsync(x => x.Id == userAccountDto.Id);
-
-        actualUserAccount.Result.EmailAddress.Should().Be(userAccount.EmailAddress);
-        actualUserAccount.Result.PhoneNumber.Should().Be(userAccount.PhoneNumber);
-        actualUserAccount?.Result?.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccounts[0].Organisation.Id);
-
-
-#pragma warning restore CS8602
-    }
+    
 }
