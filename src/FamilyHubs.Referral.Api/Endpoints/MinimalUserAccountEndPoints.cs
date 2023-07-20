@@ -1,20 +1,15 @@
-﻿using Azure.Messaging.EventGrid.SystemEvents;
-using Azure.Messaging.EventGrid;
-using FamilyHubs.Referral.Core.Commands.CreateUserAccount;
+﻿using FamilyHubs.Referral.Core.Commands.CreateUserAccount;
 using FamilyHubs.Referral.Core.Commands.UpdateUserAccount;
 using FamilyHubs.Referral.Core.Queries.GetUserAccounts;
+using FamilyHubs.Referral.Data.Models;
 using FamilyHubs.ReferralService.Shared.Dto;
-using FamilyHubs.SharedKernel.Identity.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Net.Http;
-using Microsoft.AspNetCore.Http.Features;
 using System.Text.Json;
-using FamilyHubs.Referral.Data.Models;
-using Newtonsoft.Json;
 
 namespace FamilyHubs.Referral.Api.Endpoints;
 public class MinimalUserAccountEndPoints
@@ -86,17 +81,6 @@ public class MinimalUserAccountEndPoints
                 var item = Newtonsoft.Json.JsonConvert.DeserializeObject<EventGridEventEx>(requestDocument.RootElement.ToString());
                 if (item != null)
                 {
-                    //Type? myType = Type.GetType(item.EventType);
-                    //if (myType != null && item.Data != null)
-                    //{
-                    //    string data = item.Data.ToString() ?? string.Empty;
-                    //    if (data.StartsWith("{{"))
-                    //    {
-                    //        data = data.Substring(1, data.Length - 2) ?? string.Empty;
-                    //    }
-                    //    item.Data = JsonConvert.DeserializeObject(data, myType);
-                    //}
-
                     egEvents = new EventGridEventEx[1];
                     egEvents[0] = item;
 
@@ -111,20 +95,8 @@ public class MinimalUserAccountEndPoints
                     var item = Newtonsoft.Json.JsonConvert.DeserializeObject<EventGridEventEx>(property.ToString());
                     if (item != null)
                     {
-                        
-                        //Type? myType = Type.GetType(item.EventType);
-                        //if (myType != null && item.Data != null)
-                        //{
-                        //    string data = item.Data.ToString() ?? string.Empty;
-                        //    if (data.StartsWith("{{"))
-                        //    {
-                        //        data = data.Substring(1, data.Length - 2) ?? string.Empty;
-                        //    }
-                        //    item.Data = JsonConvert.DeserializeObject(data, myType);
-                        //}
                         egEvents[i++] = item;
                     }
-                    
                 }
             }
 
