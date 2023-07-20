@@ -1,4 +1,5 @@
-﻿using FamilyHubs.Referral.Core.Commands.CreateUserAccount;
+﻿using FamilyHubs.Referral.Core.Commands;
+using FamilyHubs.Referral.Core.Commands.CreateUserAccount;
 using FamilyHubs.Referral.Core.Commands.UpdateUserAccount;
 using FamilyHubs.Referral.Core.Queries.GetUserAccounts;
 using FamilyHubs.Referral.Data.Models;
@@ -10,14 +11,11 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Text.Json;
+using System.Threading;
 
 namespace FamilyHubs.Referral.Api.Endpoints;
 public class MinimalUserAccountEndPoints
-{
-    public class SubscriptionValidationResponseData
-    {
-        public string ValidationResponse { get; set; } = default!;
-    }
+{ 
 
     public void RegisterUserAccountEndPoints(WebApplication app)
     {
@@ -63,110 +61,12 @@ public class MinimalUserAccountEndPoints
 
         
 
-        app.MapPost("/events", async (HttpContext context, CancellationToken cancellationToken, ISender _mediator, ILogger<MinimalUserAccountEndPoints> logger) =>
+        app.MapPost("/events", async (HttpContext context, CancellationToken cancellationToken, ISender _mediator, ILogger <MinimalUserAccountEndPoints> logger) =>
         {
-            logger.LogInformation("Calling MinimalUserAccountEndPoints (Process Azure Grid Events)");
-
-            var syncIOFeature = context.Features.Get<IHttpBodyControlFeature>();
-            if (syncIOFeature != null)
-            {
-                syncIOFeature.AllowSynchronousIO = true;
-            }
-
-            EventGridEventEx[] egEvents = default!;
-
-            using JsonDocument requestDocument = JsonDocument.Parse(context.Request.Body);
-            if (requestDocument.RootElement.ValueKind == JsonValueKind.Object)
-            {
-                var item = Newtonsoft.Json.JsonConvert.DeserializeObject<EventGridEventEx>(requestDocument.RootElement.ToString());
-                if (item != null)
-                {
-                    egEvents = new EventGridEventEx[1];
-                    egEvents[0] = item;
-
-                }
-            }
-            else if (requestDocument.RootElement.ValueKind == JsonValueKind.Array)
-            {
-                egEvents = new EventGridEventEx[requestDocument.RootElement.GetArrayLength()];
-                int i = 0;
-                foreach (JsonElement property in requestDocument.RootElement.EnumerateArray())
-                {
-                    var item = Newtonsoft.Json.JsonConvert.DeserializeObject<EventGridEventEx>(property.ToString());
-                    if (item != null)
-                    {
-                        egEvents[i++] = item;
-                    }
-                }
-            }
-
-            if (egEvents == null)
-            {
-                var badresponseDataResult = new SubscriptionValidationResponseData
-                {
-                    ValidationResponse = "Event Not Handled"
-                };
-                return JObject.FromObject(badresponseDataResult);
-            }
-
-            foreach (EventGridEventEx egEvent in egEvents)
-            {
-                if (egEvent.Data == null)
-                {
-                    var badresponseDataResult = new SubscriptionValidationResponseData
-                    {
-                        ValidationResponse = "Event Not Handled"
-                    };
-                    return JObject.FromObject(badresponseDataResult);
-
-                }
-                if (egEvent.EventType.IndexOf("Validation", StringComparison.OrdinalIgnoreCase) > 1)
-                {
-                    dynamic item = egEvent.Data;
-                    var responseData = new SubscriptionValidationResponseData
-                    {
-                        ValidationResponse = item.ValidationCode
-                    };
-                    logger.LogInformation($"ValidationCode: {item.ValidationCode}");
-                    return JObject.FromObject(responseData);
-                }
-                else
-                {
-                    //Process Custom Event
-                    logger.LogInformation("Handling the Custom Event Grid event message");
-
-                    var userAccount = Newtonsoft.Json.JsonConvert.DeserializeObject<UserAccountDto>(egEvent.Data.ToString() ?? string.Empty);
-
-                    if (userAccount != null)
-                    {
-                        logger.LogInformation($"Creating User Account for Processing Events: {userAccount.Name}-{userAccount.EmailAddress}");
-
-                        try
-                        {
-                            GetUserByIdCommand getUserByIdCommand = new(userAccount.Id);
-                            var result = await _mediator.Send(getUserByIdCommand, cancellationToken);
-                            if (result != null)
-                            {
-                                UpdateUserAccountCommand updateUserAccountCommand = new UpdateUserAccountCommand(result.Id, userAccount);
-                                await _mediator.Send(updateUserAccountCommand, cancellationToken);
-                            }
-                        }
-                        catch
-                        {
-                            //Will have throw a NotFoundException so need to add
-                            CreateUserAccountCommand command = new(userAccount);
-                            await _mediator.Send(command, cancellationToken);
-                        }
-                    }
-                }
-            
-            }
-    
-            var responseDataResult = new SubscriptionValidationResponseData
-            {
-                ValidationResponse = "Done"
-            };
-            return JObject.FromObject(responseDataResult);
+            logger.LogInformation("Entered the Events End Point");
+            ProcessUserGidEventCommand command = new(context);
+            var result = await _mediator.Send(command, cancellationToken);
+            return result;
 
         });
     }
