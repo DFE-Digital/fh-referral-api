@@ -1,10 +1,21 @@
-﻿using FamilyHubs.ReferralService.Shared.Dto;
+﻿using Azure.Messaging.EventGrid;
+using Azure.Messaging.EventGrid.SystemEvents;
+using FamilyHubs.Referral.Api.Endpoints;
+using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Models;
 using FamilyHubs.SharedKernel.Identity.Models;
 using FluentAssertions;
+using MediatR;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Json;
+using static FamilyHubs.Referral.Api.Endpoints.MinimalUserAccountEndPoints;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
+using Microsoft.OpenApi.Validations;
 
 namespace FamilyHubs.Referral.FunctionalTests;
 
@@ -269,25 +280,13 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
         HttpRequestMessage request = default!;
         if (isValidationMessage)
         {
-            //string command = @"[{
-            //  ""id"": ""2d1781af-3a4c-4d7c-bd0c-e34b19da4e66"",
-            //  ""topic"": ""/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"",
-            //  ""subject"": """",
-            //  ""data"": {
-            //    ""validationCode"": ""512d38b6-c7b8-40c8-89fe-f46f9e9622b6"",
-            //    ""validationUrl"": ""https://rp-eastus2.eventgrid.azure.net:553/eventsubscriptions/estest/validate?id=B2E34264-7D71-453A-B5FB-B62D0FDC85EE&t=2018-04-26T20:30:54.4538837Z&apiVersion=2018-05-01-preview&token=1BNqCxBBSSE9OnNSfZM4%2b5H9zDegKMY6uJ%2fO2DFRkwQ%3d""
-            //  },
-            //  ""eventType"": ""Microsoft.EventGrid.SubscriptionValidationEvent"",
-            //  ""eventTime"": ""2018-07-15T22:12:19.4556811Z"",
-            //  ""metadataVersion"": ""1"",
-            //  ""dataVersion"": ""1""
-            //}]";
-
             var command = new[]
             {
                 new
                 {
-                    EventType = "Microsoft.EventGrid.SubscriptionValidationEvent",
+                    Id = Guid.NewGuid(),
+                    EventType = typeof(SubscriptionValidationEventData).AssemblyQualifiedName,
+                    Subject = "Unit Test",
                     EventTime = DateTime.UtcNow,
                     Data = new
                     {
@@ -330,11 +329,15 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
                 }
             };
 
-            var command = new List<CustomEvent<UserAccountDto>>
+            var command = new[]
             {
-                new CustomEvent<UserAccountDto>()
+                new
                 {
-                    Data = userAccountDto,
+                    Id = Guid.NewGuid(),
+                    EventType = typeof(CustomEvent<UserAccountDto>).AssemblyQualifiedName,
+                    Subject = "Unit Test",
+                    EventTime = DateTime.UtcNow,
+                    Data = userAccountDto
                 }
             };
 
@@ -342,8 +345,9 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
             {
                 Method = HttpMethod.Post,
                 RequestUri = new Uri(Client.BaseAddress + "events"),
-                Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(command.ToArray()), Encoding.UTF8, "application/json"),
+                Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json"),
             };
+
         }
 
 
