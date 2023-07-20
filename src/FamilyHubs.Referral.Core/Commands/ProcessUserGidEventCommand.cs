@@ -1,10 +1,6 @@
-﻿using AutoMapper;
-using Azure.Core;
-using FamilyHubs.Referral.Core.Commands.CreateReferral;
+﻿using Azure.Messaging.EventGrid.SystemEvents;
 using FamilyHubs.Referral.Core.Commands.CreateUserAccount;
 using FamilyHubs.Referral.Core.Commands.UpdateUserAccount;
-using FamilyHubs.Referral.Core.Interfaces.Commands;
-using FamilyHubs.Referral.Core.Queries.GetUserAccounts;
 using FamilyHubs.Referral.Data.Models;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
@@ -12,21 +8,15 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
-using Serilog.Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace FamilyHubs.Referral.Core.Commands;
 
+//Reference: https://learn.microsoft.com/en-us/azure/event-grid/receive-events
+
 public class SubscriptionValidationResponseData
 {
-    public string ValidationResponse { get; set; } = default!;
+    public string validationResponse { get; set; } = default!;
 }
 
 public class ProcessUserGidEventCommand : IRequest<SubscriptionValidationResponseData>//, IProcessUserGidEventCommand
@@ -67,7 +57,7 @@ public class ProcessUserGidEventCommandHandler : IRequestHandler<ProcessUserGidE
         {
             return new SubscriptionValidationResponseData
             {
-                ValidationResponse = "Event Not Handled"
+                validationResponse = "Event Not Handled"
             };
         }
 
@@ -77,17 +67,30 @@ public class ProcessUserGidEventCommandHandler : IRequestHandler<ProcessUserGidE
             {
                 return new SubscriptionValidationResponseData
                 {
-                    ValidationResponse = "Event Not Handled"
+                    validationResponse = "Event Not Handled"
                 };
 
             }
             if (egEvent.EventType.IndexOf("Validation", StringComparison.OrdinalIgnoreCase) > 1)
             {
+                if (egEvent.Data is SubscriptionValidationEventData)
+                {
+                    SubscriptionValidationEventData? subscriptionValidationEventData = egEvent.Data as SubscriptionValidationEventData;
+                    if (subscriptionValidationEventData != null)
+                    {
+                        _logger.LogInformation($"Using SubscriptionValidationEventData - ValidationCode: {subscriptionValidationEventData.ValidationCode}");
+                        return new SubscriptionValidationResponseData
+                        {
+                            validationResponse = subscriptionValidationEventData.ValidationCode
+                        };
+                    }
+                }
+
                 dynamic item = egEvent.Data;
-                _logger.LogInformation($"ValidationCode: {item.ValidationCode}");
+                _logger.LogInformation($"Using dynamic type - ValidationCode: {item.validationCode}");
                 return new SubscriptionValidationResponseData
                 {
-                    ValidationResponse = item.ValidationCode
+                    validationResponse = item.validationCode
                 };
             }
             else
@@ -99,7 +102,7 @@ public class ProcessUserGidEventCommandHandler : IRequestHandler<ProcessUserGidE
 
         return new SubscriptionValidationResponseData
         {
-            ValidationResponse = "Done"
+            validationResponse = "All Done!"
         };
     }
 
@@ -107,6 +110,7 @@ public class ProcessUserGidEventCommandHandler : IRequestHandler<ProcessUserGidE
     {
         EventGridEventEx[] egEvents = default!;
         using JsonDocument requestDocument = JsonDocument.Parse(request.HttpContext.Request.Body);
+        _logger.LogInformation("Payload - " + requestDocument.RootElement.ToString());
         if (requestDocument.RootElement.ValueKind == JsonValueKind.Object)
         {
             var item = Newtonsoft.Json.JsonConvert.DeserializeObject<EventGridEventEx>(requestDocument.RootElement.ToString());
