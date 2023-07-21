@@ -44,6 +44,98 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
     }
 
     [Fact]
+    public async Task ThenCreateASingleUserAccountWithoutOrganisation()
+    {
+#pragma warning disable CS8602
+        //Assign 
+        UserAccountDto userAccountDto = new UserAccountDto
+        {
+            Id = 3,
+            EmailAddress = "SecondUser@email.com",
+            Name = "Second User",
+            PhoneNumber = "0161 111 3333",
+            Team = "Test Team"
+            
+        };
+
+        Data.Entities.UserAccount userAccount = Mapper.Map<UserAccount>(userAccountDto);
+        userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccounts);
+
+        CreateUserAccountCommand command = new CreateUserAccountCommand(userAccountDto);
+        CreateUserAccountCommandHandler handler = new CreateUserAccountCommandHandler(TestDbContext, Mapper, new Mock<ILogger<CreateUserAccountCommandHandler>>().Object);
+
+        //Act
+        var result = await handler.Handle(command, new CancellationToken());
+
+        //Assert
+        result.Should().BeGreaterThan(0);
+        var actualUserAccount = TestDbContext.UserAccounts
+            .Include(x => x.OrganisationUserAccounts)
+            .FirstAsync(x => x.Id == userAccountDto.Id);
+
+        actualUserAccount.Result.EmailAddress.Should().Be(userAccount.EmailAddress);
+        actualUserAccount.Result.PhoneNumber.Should().Be(userAccount.PhoneNumber);
+        
+#pragma warning restore CS8602
+    }
+
+    [Fact]
+    public async Task ThenCreateASingleUserAccountWithOrganisationWithOnlyId()
+    {
+#pragma warning disable CS8602
+        //Assign 
+        UserAccountDto userAccountDto = new UserAccountDto
+        {
+            Id = 3,
+            EmailAddress = "SecondUser@email.com",
+            Name = "Second User",
+            PhoneNumber = "0161 111 3333",
+            Team = "Test Team"
+        };
+
+        userAccountDto.OrganisationUserAccounts = new List<UserAccountOrganisationDto>
+        {
+            new UserAccountOrganisationDto
+            {
+                UserAccount = new UserAccountDto
+                {
+                    Id = 3,
+                    EmailAddress = "SecondUser@email.com",
+                    Name = "Second User",
+                    PhoneNumber = "0161 111 3333",
+                    Team = "Test Team"
+                },
+                Organisation = new OrganisationDto
+                {
+                    Id = 9999,
+                    Name = "",
+                    Description = "",
+                }
+            }
+        };
+
+        Data.Entities.UserAccount userAccount = Mapper.Map<UserAccount>(userAccountDto);
+        userAccount.OrganisationUserAccounts = Mapper.Map<List<UserAccountOrganisation>>(userAccountDto.OrganisationUserAccounts);
+
+        CreateUserAccountCommand command = new CreateUserAccountCommand(userAccountDto);
+        CreateUserAccountCommandHandler handler = new CreateUserAccountCommandHandler(TestDbContext, Mapper, new Mock<ILogger<CreateUserAccountCommandHandler>>().Object);
+
+        //Act
+        var result = await handler.Handle(command, new CancellationToken());
+
+        //Assert
+        result.Should().BeGreaterThan(0);
+        var actualUserAccount = TestDbContext.UserAccounts
+            .Include(x => x.OrganisationUserAccounts)
+            .FirstAsync(x => x.Id == userAccountDto.Id);
+
+        actualUserAccount.Result.EmailAddress.Should().Be(userAccount.EmailAddress);
+        actualUserAccount.Result.PhoneNumber.Should().Be(userAccount.PhoneNumber);
+
+#pragma warning restore CS8602
+    }
+
+    [Fact]
     public async Task ThenCreateUserAccounts()
     {
 #pragma warning disable CS8602

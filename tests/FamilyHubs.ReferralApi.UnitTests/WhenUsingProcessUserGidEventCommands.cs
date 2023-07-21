@@ -93,7 +93,7 @@ public class WhenUsingProcessUserGidEventCommands : BaseCreateDbUnitTest
     }
 
     [Fact]
-    public async Task ThenHandle_WithCustomEvent_CallsProcessUserAccount()
+    public async Task ThenHandle_WithCustomEventDataAsUser_CallsProcessUserAccount()
     {
         // Arrange
         var mediatorMock = new Mock<ISender>();
@@ -148,6 +148,44 @@ public class WhenUsingProcessUserGidEventCommands : BaseCreateDbUnitTest
         // Verify that the ProcessUserAccount method was called with the correct parameters
         mediatorMock.Verify(m => m.Send(It.IsAny<UpdateUserAccountCommand>(), It.IsAny<CancellationToken>()), Times.Never);
         mediatorMock.Verify(m => m.Send(It.IsAny<CreateUserAccountCommand>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ThenHandle_WithCustomEventDataAsOrganisation_CallsProcessUserAccount()
+    {
+        // Arrange
+        var mediatorMock = new Mock<ISender>();
+        var contextMock = GetApplicationDbContext();
+        var handler = CreateHandler(contextMock, mediatorMock.Object);
+
+        // Set up the user account DTO for a regular event message
+        var eventData = new[]
+        {
+            new
+            {
+                Id = Guid.NewGuid(),
+                EventType = typeof(CustomEvent<OrganisationDto>).AssemblyQualifiedName,
+                Subject = "Unit Test",
+                EventTime = DateTime.UtcNow,
+                Data = new OrganisationDto
+                {
+                    Id = 3,
+                    Name = "Event Grid Organisation",
+                    Description = "Event Grid Organisation Description",
+                }
+            }
+        };
+
+        var requestBody = Newtonsoft.Json.JsonConvert.SerializeObject(eventData);
+        var command = CreateCommand(CreateHttpContext(requestBody));
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+        
+
+        // Assert
+        result.Should().NotBeNull();
+        contextMock.Organisations.FirstOrDefault(x => x.Id == eventData[0].Data.Id).Should().NotBeNull();
     }
 
     [Fact]
@@ -222,12 +260,15 @@ public class WhenUsingProcessUserGidEventCommands : BaseCreateDbUnitTest
         ISender mediator = default!,
         ILogger<ProcessUserGidEventCommandHandler> logger = default!)
     {
-       
+        var myProfile = new AutoMappingProfiles();
+        var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+        IMapper mapper = new Mapper(configuration);
+
         context ??= GetApplicationDbContext();
         mediator ??= Mock.Of<ISender>();
         logger ??= Mock.Of<ILogger<ProcessUserGidEventCommandHandler>>();
 
-        return new ProcessUserGidEventCommandHandler(context, mediator, logger);
+        return new ProcessUserGidEventCommandHandler(context, mediator, mapper, logger);
     }
 
     // Helper method to create a new instance of HttpContext with the specified request body
@@ -239,8 +280,8 @@ public class WhenUsingProcessUserGidEventCommands : BaseCreateDbUnitTest
     }
 
     // Helper method to create a new instance of ProcessUserGidEventCommand with the specified HttpContext
-    private ProcessUserGidEventCommand CreateCommand(HttpContext httpContext)
+    private ProcessGidEventCommand CreateCommand(HttpContext httpContext)
     {
-        return new ProcessUserGidEventCommand(httpContext);
+        return new ProcessGidEventCommand(httpContext);
     }
 }
