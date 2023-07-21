@@ -149,16 +149,13 @@ public class ProcessUserGidEventCommandHandler : IRequestHandler<ProcessUserGidE
         {
             _logger.LogInformation($"Creating User Account for Processing Events: {userAccount.Name}-{userAccount.EmailAddress}");
 
-            try
+            var user = _context.UserAccounts.FirstOrDefault(x => x.Id == userAccount.Id);
+            if (user != null)
             {
-                var user = _context.UserAccounts.FirstOrDefault(x => x.Id == userAccount.Id);
-                if (user != null)
-                {
-                    UpdateUserAccountCommand updateUserAccountCommand = new UpdateUserAccountCommand(userAccount.Id, userAccount);
-                    await _mediator.Send(updateUserAccountCommand, cancellationToken);
-                }
+                UpdateUserAccountCommand updateUserAccountCommand = new UpdateUserAccountCommand(userAccount.Id, userAccount);
+                await _mediator.Send(updateUserAccountCommand, cancellationToken);
             }
-            catch
+            else
             {
                 //Will have throw a NotFoundException so need to add
                 CreateUserAccountCommand command = new(userAccount);
