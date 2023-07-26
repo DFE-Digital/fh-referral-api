@@ -23,7 +23,7 @@ public class SubscriptionValidationResponseData
     public string validationResponse { get; set; } = default!;
 }
 
-public class ProcessGridEventCommand : IRequest<SubscriptionValidationResponseData>, IProcessUserGidEventCommand
+public class ProcessGridEventCommand : IRequest<SubscriptionValidationResponseData>, IProcessUserGridEventCommand
 {
     public ProcessGridEventCommand(HttpContext context)
     {

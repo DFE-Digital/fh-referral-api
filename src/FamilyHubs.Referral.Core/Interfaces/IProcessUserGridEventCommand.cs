@@ -2,7 +2,7 @@
 
 namespace FamilyHubs.Referral.Core.Interfaces;
 
-public interface IProcessUserGidEventCommand
+public interface IProcessUserGridEventCommand
 {
     HttpContext HttpContext { get; }
 }

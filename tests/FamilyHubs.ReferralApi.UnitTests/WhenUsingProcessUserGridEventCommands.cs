@@ -7,7 +7,6 @@ using FamilyHubs.Referral.Core.Commands.UpdateUserAccount;
 using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
-using FamilyHubs.SharedKernel.Identity.Models;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +15,7 @@ using Moq;
 
 namespace FamilyHubs.Referral.UnitTests;
 
-public class WhenUsingProcessUserGidEventCommands : BaseCreateDbUnitTest
+public class WhenUsingProcessUserGridEventCommands : BaseCreateDbUnitTest
 {
     [Fact]
     public async Task ThenHandle_WithInvalidEventData_ReturnsValidationResponse()
@@ -254,7 +253,7 @@ public class WhenUsingProcessUserGidEventCommands : BaseCreateDbUnitTest
     }
 
 
-    // Helper method to create a new instance of ProcessUserGidEventCommandHandler
+    // Helper method to create a new instance of ProcessUserGridEventCommandHandler
     private ProcessUserGridEventCommandHandler CreateHandler(
         ApplicationDbContext context = default!,
         ISender mediator = default!,
@@ -279,7 +278,7 @@ public class WhenUsingProcessUserGidEventCommands : BaseCreateDbUnitTest
         return httpContext;
     }
 
-    // Helper method to create a new instance of ProcessUserGidEventCommand with the specified HttpContext
+    // Helper method to create a new instance of ProcessUserGridEventCommand with the specified HttpContext
     private ProcessGridEventCommand CreateCommand(HttpContext httpContext)
     {
         return new ProcessGridEventCommand(httpContext);
