@@ -129,7 +129,7 @@ public class WhenUsingProcessUserGidEventCommands : BaseCreateDbUnitTest
             new
             {
                 Id = Guid.NewGuid(),
-                EventType = typeof(CustomEvent<UserAccountDto>).AssemblyQualifiedName,
+                EventType = "UserAccountDto",
                 Subject = "Unit Test",
                 EventTime = DateTime.UtcNow,
                 Data = userAccountDto
@@ -164,7 +164,7 @@ public class WhenUsingProcessUserGidEventCommands : BaseCreateDbUnitTest
             new
             {
                 Id = Guid.NewGuid(),
-                EventType = typeof(CustomEvent<OrganisationDto>).AssemblyQualifiedName,
+                EventType = "OrganisationDto",
                 Subject = "Unit Test",
                 EventTime = DateTime.UtcNow,
                 Data = new OrganisationDto
@@ -232,7 +232,7 @@ public class WhenUsingProcessUserGidEventCommands : BaseCreateDbUnitTest
             new
             {
                 Id = Guid.NewGuid(),
-                EventType = typeof(CustomEvent<UserAccountDto>).AssemblyQualifiedName,
+                EventType = "UserAccountDto",
                 Subject = "Unit Test",
                 EventTime = DateTime.UtcNow,
                 Data = userAccountDto
