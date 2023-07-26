@@ -255,10 +255,10 @@ public class WhenUsingProcessUserGidEventCommands : BaseCreateDbUnitTest
 
 
     // Helper method to create a new instance of ProcessUserGidEventCommandHandler
-    private ProcessUserGidEventCommandHandler CreateHandler(
+    private ProcessUserGridEventCommandHandler CreateHandler(
         ApplicationDbContext context = default!,
         ISender mediator = default!,
-        ILogger<ProcessUserGidEventCommandHandler> logger = default!)
+        ILogger<ProcessUserGridEventCommandHandler> logger = default!)
     {
         var myProfile = new AutoMappingProfiles();
         var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
@@ -266,9 +266,9 @@ public class WhenUsingProcessUserGidEventCommands : BaseCreateDbUnitTest
 
         context ??= GetApplicationDbContext();
         mediator ??= Mock.Of<ISender>();
-        logger ??= Mock.Of<ILogger<ProcessUserGidEventCommandHandler>>();
+        logger ??= Mock.Of<ILogger<ProcessUserGridEventCommandHandler>>();
 
-        return new ProcessUserGidEventCommandHandler(context, mediator, mapper, logger);
+        return new ProcessUserGridEventCommandHandler(context, mediator, mapper, logger);
     }
 
     // Helper method to create a new instance of HttpContext with the specified request body
@@ -280,8 +280,8 @@ public class WhenUsingProcessUserGidEventCommands : BaseCreateDbUnitTest
     }
 
     // Helper method to create a new instance of ProcessUserGidEventCommand with the specified HttpContext
-    private ProcessGidEventCommand CreateCommand(HttpContext httpContext)
+    private ProcessGridEventCommand CreateCommand(HttpContext httpContext)
     {
-        return new ProcessGidEventCommand(httpContext);
+        return new ProcessGridEventCommand(httpContext);
     }
 }

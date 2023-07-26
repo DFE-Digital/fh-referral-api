@@ -23,23 +23,23 @@ public class SubscriptionValidationResponseData
     public string validationResponse { get; set; } = default!;
 }
 
-public class ProcessGidEventCommand : IRequest<SubscriptionValidationResponseData>, IProcessUserGidEventCommand
+public class ProcessGridEventCommand : IRequest<SubscriptionValidationResponseData>, IProcessUserGidEventCommand
 {
-    public ProcessGidEventCommand(HttpContext context)
+    public ProcessGridEventCommand(HttpContext context)
     {
         HttpContext = context;
     }
 
     public HttpContext HttpContext { get; set; }
 }
-public class ProcessUserGidEventCommandHandler : IRequestHandler<ProcessGidEventCommand, SubscriptionValidationResponseData>
+public class ProcessUserGridEventCommandHandler : IRequestHandler<ProcessGridEventCommand, SubscriptionValidationResponseData>
 {
     private readonly ApplicationDbContext _context;
     private readonly ISender _mediator;
     private readonly IMapper _mapper;
-    private readonly ILogger<ProcessUserGidEventCommandHandler> _logger;
+    private readonly ILogger<ProcessUserGridEventCommandHandler> _logger;
 
-    public ProcessUserGidEventCommandHandler(ApplicationDbContext context, ISender mediator, IMapper mapper, ILogger<ProcessUserGidEventCommandHandler> logger)
+    public ProcessUserGridEventCommandHandler(ApplicationDbContext context, ISender mediator, IMapper mapper, ILogger<ProcessUserGridEventCommandHandler> logger)
     {
         _context = context;
         _mapper = mapper;
@@ -47,7 +47,7 @@ public class ProcessUserGidEventCommandHandler : IRequestHandler<ProcessGidEvent
         _logger = logger;
     }
 
-    public async Task<SubscriptionValidationResponseData> Handle(ProcessGidEventCommand request, CancellationToken cancellationToken)
+    public async Task<SubscriptionValidationResponseData> Handle(ProcessGridEventCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Calling MinimalUserAccountEndPoints (Process Azure Grid Events)");
 
@@ -142,7 +142,7 @@ public class ProcessUserGidEventCommandHandler : IRequestHandler<ProcessGidEvent
         };
     }
 
-    private EventGridEventEx[] GetEventGridEvents(ProcessGidEventCommand request)
+    private EventGridEventEx[] GetEventGridEvents(ProcessGridEventCommand request)
     {
         EventGridEventEx[] egEvents = default!;
         using JsonDocument requestDocument = JsonDocument.Parse(request.HttpContext.Request.Body);
