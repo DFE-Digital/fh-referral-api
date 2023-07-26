@@ -17,6 +17,7 @@ using Serilog.Events;
 using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Security;
+using Microsoft.VisualBasic;
 
 namespace FamilyHubs.Referral.Api;
 
@@ -27,17 +28,22 @@ public static class StartupExtensions
         // ApplicationInsights
         builder.Host.UseSerilog((_, services, loggerConfiguration) =>
         {
-            var logLevelString = builder.Configuration["LogLevel"];
+            string? logLevelString = builder.Configuration["LogLevel"];
+
+            if (logLevelString == null) 
+            {
+                logLevelString = "Information";
+            }
 
             var parsed = Enum.TryParse<LogEventLevel>(logLevelString, out var logLevel);
 
             loggerConfiguration.WriteTo.ApplicationInsights(
                 services.GetRequiredService<TelemetryConfiguration>(),
                 TelemetryConverter.Traces,
-                parsed ? logLevel : LogEventLevel.Warning);
+                parsed ? logLevel : LogEventLevel.Information);
 
             loggerConfiguration.WriteTo.Console(
-                parsed ? logLevel : LogEventLevel.Warning);
+                parsed ? logLevel : LogEventLevel.Information);
         });
     }
 

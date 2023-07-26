@@ -1,5 +1,6 @@
 ﻿using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
+using Microsoft.IdentityModel.Tokens;
 
 namespace FamilyHubs.Referral.Core.Commands;
 
@@ -38,17 +39,23 @@ public abstract class BaseUserAccountHandler
         {
             return entity;
         }
-        foreach (UserAccountOrganisation organisationUserAccount in entity.OrganisationUserAccounts)
+        for(int i = 0; i < entity.OrganisationUserAccounts.Count; i++)
         {
-            Organisation? organisation = _context.Organisations.SingleOrDefault(x => x.Id == organisationUserAccount.Organisation.Id);
+            Organisation? organisation = _context.Organisations.SingleOrDefault(x => x.Id == entity.OrganisationUserAccounts[i].Organisation.Id);
 
             if (organisation == null)
             {
-                _context.Organisations.Add(organisationUserAccount.Organisation);
+                if (string.IsNullOrEmpty(entity.OrganisationUserAccounts[i].Organisation.Name))
+                {
+                    entity.OrganisationUserAccounts.RemoveAt(i);
+                    i--;
+                    continue;
+                }
+                _context.Organisations.Add(entity.OrganisationUserAccounts[i].Organisation);
                 await _context.SaveChangesAsync(cancellationToken);
             }
 
-            organisationUserAccount.Organisation = _context.Organisations.Single(x => x.Id == organisationUserAccount.Organisation.Id);
+            entity.OrganisationUserAccounts[i].Organisation = _context.Organisations.Single(x => x.Id == entity.OrganisationUserAccounts[i].Organisation.Id);
         }
 
         return entity;
