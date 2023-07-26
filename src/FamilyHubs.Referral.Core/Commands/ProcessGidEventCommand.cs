@@ -102,9 +102,9 @@ public class ProcessUserGidEventCommandHandler : IRequestHandler<ProcessGidEvent
             else
             {
                 bool handled = false;
-                _logger.LogInformation($"Event Type = {typeof(CustomEvent<UserAccountDto>).AssemblyQualifiedName}");
+                _logger.LogInformation($"Event Type = {egEvent.EventType}");
 
-                if (egEvent.EventType == typeof(CustomEvent<UserAccountDto>).AssemblyQualifiedName || egEvent.EventType == typeof(UserAccountDto).AssemblyQualifiedName)
+                if (egEvent.EventType == "UserAccountDto")
                 {
                     UserAccountDto? userAccountDto = Deserialize<UserAccountDto>(egEvent.Data.ToString());
                     if (userAccountDto != null)
@@ -114,7 +114,7 @@ public class ProcessUserGidEventCommandHandler : IRequestHandler<ProcessGidEvent
                     }
                 }
 
-                if (egEvent.EventType == typeof(CustomEvent<OrganisationDto>).AssemblyQualifiedName || egEvent.EventType == typeof(OrganisationDto).AssemblyQualifiedName)
+                if (egEvent.EventType == "OrganisationDto")
                 {
                     OrganisationDto? organisationDto = Deserialize<OrganisationDto>(egEvent.Data.ToString());
                     if (organisationDto != null)
