@@ -237,13 +237,17 @@ public class ProcessUserGridEventCommandHandler : IRequestHandler<ProcessGridEve
             if (organisation != null)
             {
                 organisation = mappedOrganisation ?? organisation;
+                _logger.LogInformation($"Event Grid Found Organisation {organisationDto.Name} with ID: {organisationDto.Id}");
             }
             else
             {
                 _context.Organisations.Add(mappedOrganisation);
+                _logger.LogInformation($"Event Grid Adding New Organisation {organisationDto.Name} with ID: {organisationDto.Id}");
             }
 
+            _logger.LogInformation($"Saving Changes for Organisation {organisationDto.Name} with ID: {organisationDto.Id}");
             await _context.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation($"Saved Changes for Organisation {organisationDto.Name} with ID: {organisationDto.Id}");
         }
         catch (Exception ex) 
         {
