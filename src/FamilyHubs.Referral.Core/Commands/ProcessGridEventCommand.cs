@@ -197,45 +197,61 @@ public class ProcessUserGridEventCommandHandler : IRequestHandler<ProcessGridEve
 
     private async Task ProcessUserAccount(UserAccountDto userAccountDto, CancellationToken cancellationToken)
     {
-        //Process Custom Event
-        _logger.LogInformation("Processing User Account Event Grid event message");
-
-        _logger.LogInformation($"Creating User Account for Processing Events: {userAccountDto.Name}-{userAccountDto.EmailAddress}");
-
-        var user = _context.UserAccounts.FirstOrDefault(x => x.Id == userAccountDto.Id);
-        if (user != null)
+        try
         {
-            UpdateUserAccountCommand updateUserAccountCommand = new UpdateUserAccountCommand(userAccountDto.Id, userAccountDto);
-            await _mediator.Send(updateUserAccountCommand, cancellationToken);
+            //Process Custom Event
+            _logger.LogInformation("Processing User Account Event Grid event message");
+
+            _logger.LogInformation("Creating User Account for Processing Events: {UserAccountName}-{UserAccountEmailAddress}", userAccountDto.Name,userAccountDto.EmailAddress);
+
+            var user = _context.UserAccounts.FirstOrDefault(x => x.Id == userAccountDto.Id);
+            if (user != null)
+            {
+                UpdateUserAccountCommand updateUserAccountCommand = new UpdateUserAccountCommand(userAccountDto.Id, userAccountDto);
+                await _mediator.Send(updateUserAccountCommand, cancellationToken);
+            }
+            else
+            {
+                //Will have throw a NotFoundException so need to add
+                CreateUserAccountCommand command = new(userAccountDto);
+                await _mediator.Send(command, cancellationToken);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            //Will have throw a NotFoundException so need to add
-            CreateUserAccountCommand command = new(userAccountDto);
-            await _mediator.Send(command, cancellationToken);
+            _logger.LogError(ex, "Event Grid Receive Message - Failed to save Account" );
         }
     }
 
     private async Task ProcessOrganisation(OrganisationDto organisationDto, CancellationToken cancellationToken)
     {
-        //Process Custom Event
-        _logger.LogInformation("Processing User Account Event Grid event message");
-
-        _logger.LogInformation($"Creating Organisation for Processing Events: {organisationDto.Name}");
-
-        var mappedOrganisation = _mapper.Map<Organisation>(organisationDto);
-
-        Organisation? organisation = _context.Organisations.FirstOrDefault(x => x.Id == organisationDto.Id);
-        if (organisation != null)
+        try
         {
-            organisation = mappedOrganisation ?? organisation;
-        }
-        else
-        {
-            _context.Organisations.Add(mappedOrganisation);
-        }
+            //Process Custom Event
+            _logger.LogInformation("Creating Organisation for Processing Events: {OrganisationName} ",organisationDto.Name);
 
-        await _context.SaveChangesAsync(cancellationToken);
+            var mappedOrganisation = _mapper.Map<Organisation>(organisationDto);
+
+            Organisation? organisation = _context.Organisations.FirstOrDefault(x => x.Id == organisationDto.Id);
+            if (organisation != null)
+            {
+                organisation = mappedOrganisation ?? organisation;
+                _logger.LogInformation("Event Grid Found Organisation {OrganisationName} with ID: {OrganisationId}", organisationDto.Name, organisationDto.Id);
+            }
+            else
+            {
+                _context.Organisations.Add(mappedOrganisation);
+                _logger.LogInformation("Event Grid Adding New Organisation {OrganisationName} with ID: {OrganisationId}", organisationDto.Name, organisationDto.Id);
+            }
+
+            _logger.LogInformation("Saving Changes for Organisation {OrganisationName} with ID: {OrganisationId}", organisationDto.Name, organisationDto.Id);
+            await _context.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation("Saved Changes for Organisation {OrganisationName} with ID: {OrganisationId}", organisationDto.Name, organisationDto.Id);
+        }
+        catch (Exception ex) 
+        {
+            _logger.LogError(ex, "Event Grid Receive Message - Failed to save organisation");
+        }
 
     }
 }
