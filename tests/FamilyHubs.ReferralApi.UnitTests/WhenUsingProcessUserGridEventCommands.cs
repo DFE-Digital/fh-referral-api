@@ -12,6 +12,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System.Text.Json;
 
 namespace FamilyHubs.Referral.UnitTests;
 
@@ -268,6 +269,45 @@ public class WhenUsingProcessUserGridEventCommands : BaseCreateDbUnitTest
         logger ??= Mock.Of<ILogger<ProcessUserGridEventCommandHandler>>();
 
         return new ProcessUserGridEventCommandHandler(context, mediator, mapper, logger);
+    }
+
+    //
+    [Fact]
+    public async Task ThenHandle_WithCustomEventDataAsOrganisation_RealPayload_CallsProcessUserAccount()
+    {
+        // Arrange
+        var mediatorMock = new Mock<ISender>();
+        var contextMock = GetApplicationDbContext();
+        var handler = CreateHandler(contextMock, mediatorMock.Object);
+
+
+        string Data = "{\"Services\":[],\"Reviews\":[],\"OrganisationType\":2,\"Name\":\"Test organisation2\",\"Description\":\"Test organisation2\",\"AdminAreaCode\":\"E09000026\",\"AssociatedOrganisationId\":3,\"Logo\":null,\"Uri\":null,\"Url\":null,\"Id\":0}";
+
+        OrganisationDto org = JsonSerializer.Deserialize<OrganisationDto>(Data);
+
+        // Set up the user account DTO for a regular event message
+        var eventData = new[]
+        {
+            new
+            {
+                Id = "7844f40e-ef4d-483a-8104-25f52344258d",
+                EventType = "OrganisationDto",
+                Subject = "Organisation",
+                EventTime = DateTime.UtcNow,
+                Data = org
+            }
+        };
+
+        var requestBody = Newtonsoft.Json.JsonConvert.SerializeObject(eventData);
+        var command = CreateCommand(CreateHttpContext(requestBody));
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+
+        // Assert
+        result.Should().NotBeNull();
+        contextMock.Organisations.FirstOrDefault(x => x.Id == eventData[0].Data.Id).Should().NotBeNull();
     }
 
     // Helper method to create a new instance of HttpContext with the specified request body
