@@ -202,7 +202,7 @@ public class ProcessUserGridEventCommandHandler : IRequestHandler<ProcessGridEve
             //Process Custom Event
             _logger.LogInformation("Processing User Account Event Grid event message");
 
-            _logger.LogInformation($"Creating User Account for Processing Events: {userAccountDto.Name}-{userAccountDto.EmailAddress}");
+            _logger.LogInformation("Creating User Account for Processing Events: {UserAccountName}-{UserAccountEmailAddress}", userAccountDto.Name,userAccountDto.EmailAddress);
 
             var user = _context.UserAccounts.FirstOrDefault(x => x.Id == userAccountDto.Id);
             if (user != null)
@@ -219,8 +219,7 @@ public class ProcessUserGridEventCommandHandler : IRequestHandler<ProcessGridEve
         }
         catch (Exception ex)
         {
-            _logger.LogError("Event Grid Receive Message - Failed to save Account");
-            _logger.LogError(ex, ex.Message);
+            _logger.LogError(ex, "Event Grid Receive Message - Failed to save Account" );
         }
     }
 
@@ -229,7 +228,7 @@ public class ProcessUserGridEventCommandHandler : IRequestHandler<ProcessGridEve
         try
         {
             //Process Custom Event
-            _logger.LogInformation($"Creating Organisation for Processing Events: {organisationDto.Name}");
+            _logger.LogInformation("Creating Organisation for Processing Events: {OrganisationName} ",organisationDto.Name);
 
             var mappedOrganisation = _mapper.Map<Organisation>(organisationDto);
 
@@ -237,22 +236,21 @@ public class ProcessUserGridEventCommandHandler : IRequestHandler<ProcessGridEve
             if (organisation != null)
             {
                 organisation = mappedOrganisation ?? organisation;
-                _logger.LogInformation($"Event Grid Found Organisation {organisationDto.Name} with ID: {organisationDto.Id}");
+                _logger.LogInformation("Event Grid Found Organisation {OrganisationName} with ID: {OrganisationId}", organisationDto.Name, organisationDto.Id);
             }
             else
             {
                 _context.Organisations.Add(mappedOrganisation);
-                _logger.LogInformation($"Event Grid Adding New Organisation {organisationDto.Name} with ID: {organisationDto.Id}");
+                _logger.LogInformation("Event Grid Adding New Organisation {OrganisationName} with ID: {OrganisationId}", organisationDto.Name, organisationDto.Id);
             }
 
-            _logger.LogInformation($"Saving Changes for Organisation {organisationDto.Name} with ID: {organisationDto.Id}");
+            _logger.LogInformation("Saving Changes for Organisation {OrganisationName} with ID: {OrganisationId}", organisationDto.Name, organisationDto.Id);
             await _context.SaveChangesAsync(cancellationToken);
-            _logger.LogInformation($"Saved Changes for Organisation {organisationDto.Name} with ID: {organisationDto.Id}");
+            _logger.LogInformation("Saved Changes for Organisation {OrganisationName} with ID: {OrganisationId}", organisationDto.Name, organisationDto.Id);
         }
         catch (Exception ex) 
         {
-            _logger.LogError("Event Grid Receive Message - Failed to save organisation");
-            _logger.LogError(ex, ex.Message);
+            _logger.LogError(ex, "Event Grid Receive Message - Failed to save organisation");
         }
 
     }
