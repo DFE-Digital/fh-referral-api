@@ -219,7 +219,7 @@ public class ProcessUserGridEventCommandHandler : IRequestHandler<ProcessGridEve
         }
         catch (Exception ex)
         {
-            _logger.LogError("Event Grid Receive Message - Failed to save organisation");
+            _logger.LogError("Event Grid Receive Message - Failed to save Account");
             _logger.LogError(ex, ex.Message);
         }
     }
