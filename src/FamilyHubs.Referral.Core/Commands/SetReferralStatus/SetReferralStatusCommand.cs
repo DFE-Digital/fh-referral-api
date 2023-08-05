@@ -59,7 +59,7 @@ public class SetReferralStatusCommandHandler : IRequestHandler<SetReferralStatus
 
             //Only modify Status if DfEAdmin or belong to VCS Organisation,
             //assumption is VCS Professional will have correct organisation id other users will not
-            if (entity.ReferralService.Organisation.Id == request.UserOrganisationId || RoleTypes.DfeAdmin == request.Role) 
+            if (entity.ReferralService.Organisation!.Id == request.UserOrganisationId || RoleTypes.DfeAdmin == request.Role) 
             {
                 var updatedStatus = _context.Statuses.SingleOrDefault(x => x.Name == request.Status) ?? throw new NotFoundException(nameof(Status), request.Status);
 

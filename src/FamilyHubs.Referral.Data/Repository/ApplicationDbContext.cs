@@ -27,6 +27,18 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         modelBuilder.Entity<Entities.Organisation>().Property(c => c.Id).ValueGeneratedNever();
         modelBuilder.Entity<Entities.UserAccount>().Property(c => c.Id).ValueGeneratedNever();
 
+        modelBuilder.Entity<Data.Entities.Referral>()
+            .HasOne(r => r.UserAccount)
+            .WithMany()
+            .HasForeignKey(r => r.UserAccountId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Entities.ReferralService> ()
+            .HasOne(r => r.Organisation)
+            .WithMany()
+            .HasForeignKey(r => r.OrganisationId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         base.OnModelCreating(modelBuilder);
     }
 

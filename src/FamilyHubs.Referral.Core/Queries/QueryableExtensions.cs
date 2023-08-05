@@ -9,12 +9,12 @@ public static class QueryableExtensions
         return referralcontext
             .Include(x => x.Status)
             .Include(x => x.UserAccount)
-            .ThenInclude(x => x.OrganisationUserAccounts)
+            .ThenInclude(x => x!.OrganisationUserAccounts)
             .Include(x => x.UserAccount)
-            .ThenInclude(x => x.ServiceUserAccounts)
+            .ThenInclude(x => x!.ServiceUserAccounts)
 
             .Include(x => x.UserAccount)
-            .ThenInclude(x => x.UserAccountRoles)
+            .ThenInclude(x => x!.UserAccountRoles)
 
             .Include(x => x.Recipient)
             .Include(x => x.ReferralService)

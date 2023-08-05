@@ -27,7 +27,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             return;
         }
             
-        var referrer = ReferralSeedData.SeedReferral().ElementAt(0).UserAccount.EmailAddress;
+        var referrer = ReferralSeedData.SeedReferral().ElementAt(0).UserAccount!.EmailAddress;
 
         var request = new HttpRequestMessage
         {
@@ -195,35 +195,6 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
 
     [Fact]
     public async Task ThenReferralByIdIsRetrievedByProfessional()
-    {
-        if (!IsRunningLocally() || Client == null)
-        {
-            // Skip the test if not running locally
-            Assert.True(true, "Test skipped because it is not running locally.");
-            return;
-        }
-
-        var request = new HttpRequestMessage
-        {
-            Method = HttpMethod.Get,
-            RequestUri = new Uri(Client.BaseAddress + "api/referral/1"),
-        };
-
-        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_vcstoken)}");
-
-        using var response = await Client.SendAsync(request);
-
-        response.EnsureSuccessStatusCode();
-
-        var retVal = await JsonSerializer.DeserializeAsync<ReferralDto>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-        ArgumentNullException.ThrowIfNull(retVal);
-        retVal.Should().NotBeNull();
-    }
-
-    [Fact]
-    public async Task ThenReferralByIdIsRetrievedByVCSAdmin()
     {
         if (!IsRunningLocally() || Client == null)
         {

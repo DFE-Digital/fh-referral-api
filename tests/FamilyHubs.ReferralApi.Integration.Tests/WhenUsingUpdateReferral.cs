@@ -105,7 +105,7 @@ public class WhenUsingUpdateReferral : DataIntegrationTestBase
         result.Should().Be(referral.Id);
         var actualService = TestDbContext.Referrals.SingleOrDefault(s => s.Id == referral.Id);
         actualService.Should().NotBeNull();
-        actualService!.UserAccount.EmailAddress.Should().Be(expected.EmailAddress);
+        actualService!.UserAccount!.EmailAddress.Should().Be(expected.EmailAddress);
     }
 
     [Fact]
@@ -132,7 +132,7 @@ public class WhenUsingUpdateReferral : DataIntegrationTestBase
         actualService.Should().NotBeNull();
         actualService!.ReferralService.Name.Should().Be(expected.Name);
         actualService!.ReferralService.Description.Should().Be(expected.Description);
-        actualService!.ReferralService.Organisation.Name.Should().Be(expected.OrganisationDto.Name);
+        actualService!.ReferralService.Organisation!.Name.Should().Be(expected.OrganisationDto.Name);
         actualService!.ReferralService.Organisation.Description.Should().Be(expected.OrganisationDto.Description);
     }
 

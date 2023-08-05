@@ -41,15 +41,15 @@ public class GetReferralsByOrganisationIdCommandHandler : GetReferralsHandlerBas
     {
         var entities = _context.Referrals.GetAll()
             .AsNoTracking()
-            .Where(x => x.ReferralService.Organisation.Id == request.OrganisationId);
+            .Where(x => x.ReferralService.Organisation!.Id == request.OrganisationId);
 
         if (request.IncludeDeclined != null && request.IncludeDeclined == true)
         {
-            entities = entities.Where(x => x.ReferralService.Organisation.Id == request.OrganisationId);
+            entities = entities.Where(x => x.ReferralService.Organisation!.Id == request.OrganisationId);
         }
         else
         {
-            entities = entities.Where(x => x.ReferralService.Organisation.Id == request.OrganisationId && x.Status.Name != "Declined");
+            entities = entities.Where(x => x.ReferralService.Organisation!.Id == request.OrganisationId && x.Status.Name != "Declined");
         }
 
         if (entities == null)

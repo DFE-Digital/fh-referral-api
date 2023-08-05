@@ -44,11 +44,11 @@ public class GetReferralsByReferrerByReferrerIdCommandHandler : GetReferralsHand
 
         if (request.IncludeDeclined != null && request.IncludeDeclined == true)
         {
-            entities = entities.Where(x => x.UserAccount.Id == request.Id);
+            entities = entities.Where(x => x.UserAccount!.Id == request.Id);
         }
         else
         {
-            entities = entities.Where(x => x.UserAccount.Id == request.Id && x.Status.Name != "Declined");
+            entities = entities.Where(x => x.UserAccount!.Id == request.Id && x.Status.Name != "Declined");
         }
 
         if (entities == null)

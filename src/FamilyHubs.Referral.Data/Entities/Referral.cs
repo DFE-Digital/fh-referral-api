@@ -15,9 +15,9 @@ public class Referral : EntityBase<long>
     public long RecipientId { get; set; }
     [ForeignKey("RecipientId")]
     public virtual required Recipient Recipient { get; set; }
-    public long UserAccountId { get; set; }
-    [ForeignKey("UserAccountId")]
-    public virtual required UserAccount UserAccount { get; set; }
+
+    public long? UserAccountId { get; set; }
+    public virtual UserAccount? UserAccount { get; set; }
 
     public long ReferralServiceId { get; set; }
     [ForeignKey("ReferralServiceId")]

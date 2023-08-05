@@ -45,11 +45,11 @@ public class GetReferralsByReferrerCommandHandler : GetReferralsHandlerBase, IRe
 
         if (request.IncludeDeclined != null && request.IncludeDeclined == true)
         {
-            entities = entities.Where(x => x.UserAccount.EmailAddress == request.EmailAddress);
+            entities = entities.Where(x => x.UserAccount!.EmailAddress == request.EmailAddress);
         }
         else
         {
-            entities = entities.Where(x => x.UserAccount.EmailAddress == request.EmailAddress && x.Status.Name != "Declined");
+            entities = entities.Where(x => x.UserAccount!.EmailAddress == request.EmailAddress && x.Status.Name != "Declined");
         }
 
         if (entities == null)

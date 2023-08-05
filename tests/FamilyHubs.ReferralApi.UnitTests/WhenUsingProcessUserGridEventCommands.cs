@@ -283,7 +283,7 @@ public class WhenUsingProcessUserGridEventCommands : BaseCreateDbUnitTest
 
         string Data = "{\"Services\":[],\"Reviews\":[],\"OrganisationType\":2,\"Name\":\"Test organisation2\",\"Description\":\"Test organisation2\",\"AdminAreaCode\":\"E09000026\",\"AssociatedOrganisationId\":3,\"Logo\":null,\"Uri\":null,\"Url\":null,\"Id\":0}";
 
-        OrganisationDto org = JsonSerializer.Deserialize<OrganisationDto>(Data);
+        OrganisationDto? org = JsonSerializer.Deserialize<OrganisationDto>(Data);
 
         // Set up the user account DTO for a regular event message
         var eventData = new[]
@@ -306,8 +306,11 @@ public class WhenUsingProcessUserGridEventCommands : BaseCreateDbUnitTest
 
 
         // Assert
+        
         result.Should().NotBeNull();
+#pragma warning disable CS8602        
         contextMock.Organisations.FirstOrDefault(x => x.Id == eventData[0].Data.Id).Should().NotBeNull();
+#pragma warning restore CS8602    
     }
 
     // Helper method to create a new instance of HttpContext with the specified request body
