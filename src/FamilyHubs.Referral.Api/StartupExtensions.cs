@@ -80,7 +80,7 @@ public static class StartupExtensions
         services.AddAuthorization(options => {
             options.AddPolicy("ReferralUser", policy =>
                 policy.RequireAssertion(context =>
-                    userRoles.Any(role => context.User.IsInRole(role))));
+                    userRoles.Exists(role => context.User.IsInRole(role))));
         });
     }
 

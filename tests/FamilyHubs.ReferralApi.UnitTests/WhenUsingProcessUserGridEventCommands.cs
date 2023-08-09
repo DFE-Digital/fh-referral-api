@@ -2,6 +2,8 @@
 using Azure.Messaging.EventGrid.SystemEvents;
 using FamilyHubs.Referral.Core;
 using FamilyHubs.Referral.Core.Commands;
+using FamilyHubs.Referral.Core.Commands.CreateOrUpdateOrganisation;
+using FamilyHubs.Referral.Core.Commands.CreateOrUpdateService;
 using FamilyHubs.Referral.Core.Commands.CreateUserAccount;
 using FamilyHubs.Referral.Core.Commands.UpdateUserAccount;
 using FamilyHubs.Referral.Data.Entities;
@@ -151,10 +153,11 @@ public class WhenUsingProcessUserGridEventCommands : BaseCreateDbUnitTest
     }
 
     [Fact]
-    public async Task ThenHandle_WithCustomEventDataAsOrganisation_CallsProcessUserAccount()
+    public async Task ThenHandle_WithCustomEventDataAsOrganisation_CallsProcessOrganisation()
     {
         // Arrange
         var mediatorMock = new Mock<ISender>();
+        mediatorMock.Setup(x => x.Send(It.IsAny<CreateOrUpdateOrganisationCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(1L);
         var contextMock = GetApplicationDbContext();
         var handler = CreateHandler(contextMock, mediatorMock.Object);
 
@@ -181,11 +184,58 @@ public class WhenUsingProcessUserGridEventCommands : BaseCreateDbUnitTest
 
         // Act
         var result = await handler.Handle(command, CancellationToken.None);
-        
+
 
         // Assert
         result.Should().NotBeNull();
-        contextMock.Organisations.FirstOrDefault(x => x.Id == eventData[0].Data.Id).Should().NotBeNull();
+        result.validationResponse.Should().Be("All Done!");
+    }
+
+    //
+    [Fact]
+    public async Task ThenHandle_WithCustomEventDataAsService_CallsProcessService()
+    {
+        // Arrange
+        var mediatorMock = new Mock<ISender>();
+        mediatorMock.Setup(x => x.Send(It.IsAny<CreateOrUpdateServiceCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(1L);
+        var contextMock = GetApplicationDbContext();
+        var handler = CreateHandler(contextMock, mediatorMock.Object);
+
+        // Set up the user account DTO for a regular event message
+        var eventData = new[]
+        {
+            new
+            {
+                Id = Guid.NewGuid(),
+                EventType = "ReferralServiceDto",
+                Subject = "Unit Test",
+                EventTime = DateTime.UtcNow,
+                Data = new ReferralServiceDto
+                {
+                    Id = 3,
+                    Name = "Test Event Grid Service",
+                    Description = "Test Event Grid Service Description",
+                    OrganisationDto = new OrganisationDto
+                    {
+                        Id = 3,
+                        ReferralServiceId = 3,
+                        Name = "Test Event Grid Organisation",
+                        Description = "Test Event Grid Organisation Description",
+                    }
+                }
+            }
+        };
+
+        var requestBody = Newtonsoft.Json.JsonConvert.SerializeObject(eventData);
+        var command = CreateCommand(CreateHttpContext(requestBody));
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+
+        // Assert
+        result.Should().NotBeNull();
+        result.validationResponse.Should().Be("All Done!");
     }
 
     [Fact]
@@ -260,15 +310,11 @@ public class WhenUsingProcessUserGridEventCommands : BaseCreateDbUnitTest
         ISender mediator = default!,
         ILogger<ProcessUserGridEventCommandHandler> logger = default!)
     {
-        var myProfile = new AutoMappingProfiles();
-        var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
-        IMapper mapper = new Mapper(configuration);
-
         context ??= GetApplicationDbContext();
         mediator ??= Mock.Of<ISender>();
         logger ??= Mock.Of<ILogger<ProcessUserGridEventCommandHandler>>();
 
-        return new ProcessUserGridEventCommandHandler(context, mediator, mapper, logger);
+        return new ProcessUserGridEventCommandHandler(context, mediator, logger);
     }
 
     //
@@ -277,13 +323,14 @@ public class WhenUsingProcessUserGridEventCommands : BaseCreateDbUnitTest
     {
         // Arrange
         var mediatorMock = new Mock<ISender>();
+        mediatorMock.Setup(x => x.Send(It.IsAny<CreateOrUpdateOrganisationCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(1L);
         var contextMock = GetApplicationDbContext();
         var handler = CreateHandler(contextMock, mediatorMock.Object);
 
 
         string Data = "{\"Services\":[],\"Reviews\":[],\"OrganisationType\":2,\"Name\":\"Test organisation2\",\"Description\":\"Test organisation2\",\"AdminAreaCode\":\"E09000026\",\"AssociatedOrganisationId\":3,\"Logo\":null,\"Uri\":null,\"Url\":null,\"Id\":0}";
 
-        OrganisationDto org = JsonSerializer.Deserialize<OrganisationDto>(Data);
+        OrganisationDto? org = JsonSerializer.Deserialize<OrganisationDto>(Data);
 
         // Set up the user account DTO for a regular event message
         var eventData = new[]
@@ -307,7 +354,7 @@ public class WhenUsingProcessUserGridEventCommands : BaseCreateDbUnitTest
 
         // Assert
         result.Should().NotBeNull();
-        contextMock.Organisations.FirstOrDefault(x => x.Id == eventData[0].Data.Id).Should().NotBeNull();
+        result.validationResponse.Should().Be("All Done!");
     }
 
     // Helper method to create a new instance of HttpContext with the specified request body

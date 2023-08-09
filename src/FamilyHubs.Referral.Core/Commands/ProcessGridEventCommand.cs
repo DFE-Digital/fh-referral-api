@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Azure.Messaging.EventGrid.SystemEvents;
+using FamilyHubs.Referral.Core.Commands.CreateOrUpdateOrganisation;
+using FamilyHubs.Referral.Core.Commands.CreateOrUpdateService;
 using FamilyHubs.Referral.Core.Commands.CreateUserAccount;
 using FamilyHubs.Referral.Core.Commands.UpdateUserAccount;
 using FamilyHubs.Referral.Core.Interfaces;
@@ -13,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace FamilyHubs.Referral.Core.Commands;
 
@@ -36,13 +39,11 @@ public class ProcessUserGridEventCommandHandler : IRequestHandler<ProcessGridEve
 {
     private readonly ApplicationDbContext _context;
     private readonly ISender _mediator;
-    private readonly IMapper _mapper;
     private readonly ILogger<ProcessUserGridEventCommandHandler> _logger;
 
-    public ProcessUserGridEventCommandHandler(ApplicationDbContext context, ISender mediator, IMapper mapper, ILogger<ProcessUserGridEventCommandHandler> logger)
+    public ProcessUserGridEventCommandHandler(ApplicationDbContext context, ISender mediator, ILogger<ProcessUserGridEventCommandHandler> logger)
     {
         _context = context;
-        _mapper = mapper;
         _mediator = mediator;
         _logger = logger;
     }
@@ -121,6 +122,16 @@ public class ProcessUserGridEventCommandHandler : IRequestHandler<ProcessGridEve
                     {
                         handled = true;
                         await ProcessOrganisation(organisationDto, cancellationToken);
+                    }
+                }
+
+                if (egEvent.EventType == "ReferralServiceDto")
+                {
+                    ReferralServiceDto? serviceDto = Deserialize<ReferralServiceDto>(egEvent.Data.ToString());
+                    if (serviceDto != null)
+                    {
+                        handled = true;
+                        await ProcessService(serviceDto, cancellationToken);
                     }
                 }
 
@@ -225,33 +236,13 @@ public class ProcessUserGridEventCommandHandler : IRequestHandler<ProcessGridEve
 
     private async Task ProcessOrganisation(OrganisationDto organisationDto, CancellationToken cancellationToken)
     {
-        try
-        {
-            //Process Custom Event
-            _logger.LogInformation("Creating Organisation for Processing Events: {OrganisationName} ",organisationDto.Name);
+        CreateOrUpdateOrganisationCommand createOrUpdateOrganisationCommand = new(organisationDto);
+        await _mediator.Send(createOrUpdateOrganisationCommand, cancellationToken);
+    }
 
-            var mappedOrganisation = _mapper.Map<Organisation>(organisationDto);
-
-            Organisation? organisation = _context.Organisations.FirstOrDefault(x => x.Id == organisationDto.Id);
-            if (organisation != null)
-            {
-                organisation = mappedOrganisation ?? organisation;
-                _logger.LogInformation("Event Grid Found Organisation {OrganisationName} with ID: {OrganisationId}", organisationDto.Name, organisationDto.Id);
-            }
-            else
-            {
-                _context.Organisations.Add(mappedOrganisation);
-                _logger.LogInformation("Event Grid Adding New Organisation {OrganisationName} with ID: {OrganisationId}", organisationDto.Name, organisationDto.Id);
-            }
-
-            _logger.LogInformation("Saving Changes for Organisation {OrganisationName} with ID: {OrganisationId}", organisationDto.Name, organisationDto.Id);
-            await _context.SaveChangesAsync(cancellationToken);
-            _logger.LogInformation("Saved Changes for Organisation {OrganisationName} with ID: {OrganisationId}", organisationDto.Name, organisationDto.Id);
-        }
-        catch (Exception ex) 
-        {
-            _logger.LogError(ex, "Event Grid Receive Message - Failed to save organisation");
-        }
-
+    private async Task ProcessService(ReferralServiceDto referralServiceDto, CancellationToken cancellationToken)
+    {
+        CreateOrUpdateServiceCommand createOrUpdateOrganisationCommand = new(referralServiceDto);
+        await _mediator.Send(createOrUpdateOrganisationCommand, cancellationToken);
     }
 }
