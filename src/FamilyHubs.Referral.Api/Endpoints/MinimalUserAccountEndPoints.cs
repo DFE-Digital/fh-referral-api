@@ -59,15 +59,15 @@ public class MinimalUserAccountEndPoints
 
         }).WithMetadata(new SwaggerOperationAttribute("User Accounts", "Get User Accounts By Organisation Id") { Tags = new[] { "User Accounts" } });
 
-        
 
-        app.MapPost("/events", async (HttpContext context, CancellationToken cancellationToken, ISender _mediator, ILogger <MinimalUserAccountEndPoints> logger) =>
-        {
-            logger.LogInformation("Entered the Events End Point");
-            ProcessGridEventCommand command = new(context);
-            var result = await _mediator.Send(command, cancellationToken);
-            return result;
 
-        });
+        //app.MapPost("/events", async (HttpContext context, CancellationToken cancellationToken, ISender _mediator, ILogger<MinimalUserAccountEndPoints> logger) =>
+        //{
+        //    logger.LogInformation("Entered the Events End Point");
+        //    ProcessGridEventCommand command = new(context);
+        //    var result = await _mediator.Send(command, cancellationToken);
+        //    return result;
+
+        //});
     }
 }

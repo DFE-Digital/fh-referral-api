@@ -263,6 +263,7 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
 #pragma warning restore CS8602
     }
 
+    /*
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
@@ -366,5 +367,5 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
             // Assert that the response is a 201 Created status code or any other expected status code for regular event messages
             response.EnsureSuccessStatusCode();
         }
-    }
+    }*/
 }
