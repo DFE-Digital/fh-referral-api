@@ -127,10 +127,11 @@ public class ProcessUserGridEventCommandHandler : IRequestHandler<ProcessGridEve
                 if (!handled)
                 {
                     _logger.LogWarning("Unknown Event Data Property Type");
-                    return new SubscriptionValidationResponseData
-                    {
-                        validationResponse = "Unknown Event Data Property Type"
-                    };
+                    throw new ArgumentException($"Event Type {egEvent.EventType} did not match any known types");
+                    //return new SubscriptionValidationResponseData
+                    //{
+                    //    validationResponse = "Unknown Event Data Property Type"
+                    //};
                 }
             }
 
