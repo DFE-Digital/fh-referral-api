@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Ardalis.Specification;
+using AutoMapper;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
@@ -74,6 +75,7 @@ public class CreateOrUpdateServiceCommandHandler : IRequestHandler<CreateOrUpdat
             _logger.LogInformation("Creating Organisation for Processing Events: {OrganisationName} ", request.ReferralServiceDto.Name);
 
             var mappedService = _mapper.Map<Data.Entities.ReferralService>(request.ReferralServiceDto);
+            mappedService = AttachExistingOrganisation(mappedService);
 
             Data.Entities.ReferralService? service = _context.ReferralServices.Include(x => x.Organisation).FirstOrDefault(x => x.Id == request.ReferralServiceDto.Id);
             if (service != null)
@@ -82,7 +84,7 @@ public class CreateOrUpdateServiceCommandHandler : IRequestHandler<CreateOrUpdat
                 _logger.LogInformation("Event Grid Found Organisation {OrganisationName} with ID: {OrganisationId}", request.ReferralServiceDto.Name, request.ReferralServiceDto.Id);
             }
             else
-            {
+            { 
                 _context.ReferralServices.Add(mappedService);
                 _logger.LogInformation("Event Grid Adding New Organisation {OrganisationName} with ID: {OrganisationId}", request.ReferralServiceDto.Name, request.ReferralServiceDto.Id);
             }
@@ -98,6 +100,23 @@ public class CreateOrUpdateServiceCommandHandler : IRequestHandler<CreateOrUpdat
             _logger.LogError(ex, "Event Grid Receive Message - Failed to save organisation");
             return 0L;
         }
+    }
+
+    private Data.Entities.ReferralService AttachExistingOrganisation(Data.Entities.ReferralService entity)
+    {
+        Data.Entities.Organisation? organisation = _context.Organisations.SingleOrDefault(x => x.Id == entity.Organisation.Id);
+        if (organisation != null)
+        {
+            entity.Organisation = organisation;
+            entity.Organisation.Name = entity.Organisation.Name ?? string.Empty;
+            entity.Organisation.Description = entity.Organisation.Description ?? string.Empty;
+        }
+        return entity;
+    }
+
+    private void AttachExistingOrganisation()
+    {
+
     }
 }
 
