@@ -334,7 +334,7 @@ public class WhenUsingUserAccountsApiTests : BaseWhenUsingOpenReferralApiUnitTes
                 new
                 {
                     Id = Guid.NewGuid(),
-                    EventType = typeof(CustomEvent<UserAccountDto>).AssemblyQualifiedName,
+                    EventType ="UserAccountDto",
                     Subject = "Unit Test",
                     EventTime = DateTime.UtcNow,
                     Data = userAccountDto
