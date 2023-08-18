@@ -7,11 +7,6 @@ namespace FamilyHubs.Referral.FunctionalTests;
 public class WhenUsingServiceDirectoryApiTests : BaseWhenUsingOpenReferralApiUnitTests
 {
 
-    public WhenUsingServiceDirectoryApiTests()
-    {
-        Client!.BaseAddress = new Uri("https://localhost:7022/");
-    }
-
     [Fact]
     public async Task ThenGetOrganisationByIdIsRetrieved()
     {
