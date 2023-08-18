@@ -18,6 +18,7 @@ using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Security;
 using Microsoft.VisualBasic;
+using FamilyHubs.Referral.Core.ClientServices;
 
 namespace FamilyHubs.Referral.Api;
 
@@ -51,6 +52,16 @@ public static class StartupExtensions
     {
         services.AddTransient<IKeyProvider, KeyProvider>();
         services.AddTransient<ICrypto, Crypto>();
+
+        var serviceDirectoryApiBaseUrl = configuration["ServiceDirectoryApiBaseUrl"];
+        if (!string.IsNullOrWhiteSpace(serviceDirectoryApiBaseUrl))
+        {
+            services.AddHttpClient<IServiceDirectoryService, ServiceDirectoryService>(client =>
+            {
+                client.BaseAddress = new Uri(serviceDirectoryApiBaseUrl);
+            });
+        }
+
         services.AddAuthorizationPolicy(configuration);
 
         services.AddBearerAuthentication(configuration);

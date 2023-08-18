@@ -14,7 +14,7 @@ namespace FamilyHubs.Referral.FunctionalTests;
 public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
 {
     protected HttpClient? Client;
-    private readonly CustomWebApplicationFactory? _webAppFactory;
+    protected readonly CustomWebApplicationFactory? _webAppFactory;
     private bool _disposed;
     protected readonly JwtSecurityToken? _token;
     protected readonly JwtSecurityToken? _vcstoken;

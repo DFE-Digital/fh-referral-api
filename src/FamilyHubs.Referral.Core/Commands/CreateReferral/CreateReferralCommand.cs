@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FamilyHubs.Referral.Core.ClientServices;
 using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
@@ -23,12 +24,14 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 {
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly IServiceDirectoryService _serviceDirectoryService;
     private readonly ILogger<CreateReferralCommandHandler> _logger;
-    public CreateReferralCommandHandler(ApplicationDbContext context, IMapper mapper, ILogger<CreateReferralCommandHandler> logger)
+    public CreateReferralCommandHandler(ApplicationDbContext context, IMapper mapper, IServiceDirectoryService serviceDirectoryService, ILogger<CreateReferralCommandHandler> logger)
     {
         _logger = logger;
         _context = context;
         _mapper = mapper;
+        _serviceDirectoryService = serviceDirectoryService;
     }
 
     public async Task<long> Handle(CreateReferralCommand request, CancellationToken cancellationToken)
@@ -75,7 +78,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
         entity = AttachExistingStatus(entity);
         entity = AttachExistingUserAccount(entity);
-        entity = AttachExistingService(entity);
+        entity = await AttachExistingService(entity);
 
         _context.Referrals.Add(entity);
 
@@ -128,9 +131,36 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         }
         return entity;
     }
-    private Data.Entities.Referral AttachExistingService(Data.Entities.Referral entity)
+    private async Task<Data.Entities.Referral> AttachExistingService(Data.Entities.Referral entity)
     {
         Data.Entities.ReferralService? referralService = _context.ReferralServices.SingleOrDefault(x => x.Id == entity.ReferralService.Id);
+        if (referralService == null)
+        {
+            FamilyHubs.ServiceDirectory.Shared.Dto.OrganisationDto? sdOrganisation = await _serviceDirectoryService.GetOrganisationById(entity.ReferralService.Organisation.Id);
+            FamilyHubs.ServiceDirectory.Shared.Dto.ServiceDto? sdService = await _serviceDirectoryService.GetServiceById(entity.ReferralService.Id);
+
+            if (sdService != null && sdOrganisation != null) 
+            {
+                Data.Entities.ReferralService srv = new Data.Entities.ReferralService
+                {
+                    Id = sdService.Id,
+                    Name = sdService.Name,
+                    Description = sdService.Description,
+                    Organisation = new Organisation
+                    {
+                        Id = sdOrganisation.Id, 
+                        ReferralServiceId = sdService.Id,
+                        Name = sdOrganisation.Name,
+                        Description = sdOrganisation.Description,
+                    }
+                };
+
+                _context.ReferralServices.Add(srv);
+                await _context.SaveChangesAsync();
+                referralService = _context.ReferralServices.SingleOrDefault(x => x.Id == entity.ReferralService.Id);
+            }
+        }
+
         if (referralService != null)
         {
             entity.ReferralService = referralService;

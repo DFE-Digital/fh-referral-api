@@ -1,21 +1,10 @@
-﻿using Azure.Messaging.EventGrid;
-using Azure.Messaging.EventGrid.SystemEvents;
-using FamilyHubs.Referral.Api.Endpoints;
+﻿using Azure.Messaging.EventGrid.SystemEvents;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Models;
-using FamilyHubs.SharedKernel.Identity.Models;
 using FluentAssertions;
-using MediatR;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Json;
-using static FamilyHubs.Referral.Api.Endpoints.MinimalUserAccountEndPoints;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
-using Microsoft.OpenApi.Validations;
 
 namespace FamilyHubs.Referral.FunctionalTests;
 
