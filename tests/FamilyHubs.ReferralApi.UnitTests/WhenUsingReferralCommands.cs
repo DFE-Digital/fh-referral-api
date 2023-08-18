@@ -28,8 +28,8 @@ namespace FamilyHubs.Referral.UnitTests
             _serviceDirectoryService.Setup(x => x.GetOrganisationById(It.IsAny<long>())).ReturnsAsync(new ServiceDirectory.Shared.Dto.OrganisationDto
             {
                 Id = 2,
-                Name = "Name",
-                Description = "Description",
+                Name = "Organisation",
+                Description = "Organisation Description",
                 OrganisationType = ServiceDirectory.Shared.Enums.OrganisationType.VCFS,
                 AdminAreaCode = "AdminAreaCode"
             });
@@ -37,8 +37,8 @@ namespace FamilyHubs.Referral.UnitTests
             _serviceDirectoryService.Setup(x => x.GetServiceById(It.IsAny<long>())).ReturnsAsync(new ServiceDirectory.Shared.Dto.ServiceDto
             {
                 Id = 2,
-                Name = "Name",
-                Description = "Description",
+                Name = "Service",
+                Description = "Service Description",
                 ServiceOwnerReferenceId = "ServiceOwnerReferenceId",
                 ServiceType = ServiceDirectory.Shared.Enums.ServiceType.FamilyExperience
             });
@@ -68,8 +68,9 @@ namespace FamilyHubs.Referral.UnitTests
             var result = await handler.Handle(command, new System.Threading.CancellationToken());
 
             //Assert
-            result.Should().BeGreaterThan(0);
-            result.Should().Be(testReferral.Id);
+            result.Id.Should().BeGreaterThan(0);
+            result.Id.Should().Be(testReferral.Id);
+            result.ServiceName.Should().Be(testReferral.ReferralServiceDto.Name);
         }
 
         [Fact]
@@ -93,8 +94,9 @@ namespace FamilyHubs.Referral.UnitTests
             var result = await handler.Handle(command, new System.Threading.CancellationToken());
 
             //Assert
-            result.Should().BeGreaterThan(0);
-            result.Should().Be(testReferral.Id);
+            result.Id.Should().BeGreaterThan(0);
+            result.Id.Should().Be(testReferral.Id);
+            result.ServiceName.Should().Be(testReferral.ReferralServiceDto.Name);
         }
 
         [Fact]
@@ -132,8 +134,9 @@ namespace FamilyHubs.Referral.UnitTests
             var result = await handler.Handle(command, new System.Threading.CancellationToken());
 
             //Assert
-            result.Should().BeGreaterThan(0);
-            result.Should().Be(testReferral.Id);
+            result.Id.Should().BeGreaterThan(0);
+            result.Id.Should().Be(testReferral.Id);
+            result.ServiceName.Should().Be(testReferral.ReferralServiceDto.Name);
         }
 
         [Fact]
@@ -171,8 +174,9 @@ namespace FamilyHubs.Referral.UnitTests
             var result = await handler.Handle(command, new System.Threading.CancellationToken());
 
             //Assert
-            result.Should().BeGreaterThan(0);
-            result.Should().Be(testReferral.Id);
+            result.Id.Should().BeGreaterThan(0);
+            result.Id.Should().Be(testReferral.Id);
+            result.ServiceName.Should().Be(testReferral.ReferralServiceDto.Name);
         }
 
         [Fact]
@@ -210,8 +214,9 @@ namespace FamilyHubs.Referral.UnitTests
             var result = await handler.Handle(command, new System.Threading.CancellationToken());
 
             //Assert
-            result.Should().BeGreaterThan(0);
-            result.Should().Be(testReferral.Id);
+            result.Id.Should().BeGreaterThan(0);
+            result.Id.Should().Be(testReferral.Id);
+            result.ServiceName.Should().Be(testReferral.ReferralServiceDto.Name);
         }
 
         [Fact]
@@ -249,8 +254,9 @@ namespace FamilyHubs.Referral.UnitTests
             var result = await handler.Handle(command, new System.Threading.CancellationToken());
 
             //Assert
-            result.Should().BeGreaterThan(0);
-            result.Should().Be(testReferral.Id);
+            result.Id.Should().BeGreaterThan(0);
+            result.Id.Should().Be(testReferral.Id);
+            result.ServiceName.Should().Be(testReferral.ReferralServiceDto.Name);
         }
 
         [Fact]
@@ -300,10 +306,11 @@ namespace FamilyHubs.Referral.UnitTests
             var result = await handler.Handle(command, new System.Threading.CancellationToken());
 
             //Assert
-            result.Should().BeGreaterThan(0);
-            result.Should().Be(testReferral.Id);
+            result.Id.Should().BeGreaterThan(0);
+            result.Id.Should().Be(testReferral.Id);
+            result.ServiceName.Should().Be(testReferral.ReferralServiceDto.Name);
 
-            GetReferralByIdCommand getcommand = new(result);
+            GetReferralByIdCommand getcommand = new(result.Id);
             GetReferralByIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
 
 
@@ -338,15 +345,16 @@ namespace FamilyHubs.Referral.UnitTests
             testReferral.RecipientDto.Telephone = testReferral.RecipientDto.Telephone + " Test";
             testReferral.RecipientDto.TextPhone = testReferral.RecipientDto.TextPhone + " Test";
             testReferral.ReasonForSupport = testReferral.ReasonForSupport + " Test";
-            UpdateReferralCommand command = new(setResult, testReferral);
+            UpdateReferralCommand command = new(setResult.Id, testReferral);
             UpdateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, new Mock<ILogger<UpdateReferralCommandHandler>>().Object);
 
             //Act
             var result = await handler.Handle(command, new System.Threading.CancellationToken());
 
             //Assert
-            setResult.Should().BeGreaterThan(0);
-            setResult.Should().Be(testReferral.Id);
+            setResult.Id.Should().BeGreaterThan(0);
+            setResult.Id.Should().Be(testReferral.Id);
+            setResult.ServiceName.Should().Be(testReferral.ReferralServiceDto.Name);
             result.Should().BeGreaterThan(0);
             result.Should().Be(testReferral.Id);
         }
@@ -481,9 +489,9 @@ namespace FamilyHubs.Referral.UnitTests
             testReferral.ReasonForDecliningSupport = "Reason For Declining Support";
             CreateReferralCommand command = new(testReferral);
             CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, _serviceDirectoryService.Object, logger.Object);
-            var id = await handler.Handle(command, new System.Threading.CancellationToken());
+            var response = await handler.Handle(command, new System.Threading.CancellationToken());
 
-            GetReferralByIdCommand getcommand = new(id);
+            GetReferralByIdCommand getcommand = new(response.Id);
             GetReferralByIdCommandHandler gethandler = new(mockApplicationDbContext, mapper);
 
 
@@ -492,7 +500,7 @@ namespace FamilyHubs.Referral.UnitTests
 
             //Assert
             result.Should().NotBeNull();
-            result.Id.Should().Be(id);
+            result.Id.Should().Be(response.Id);
             result.Created.Should().NotBeNull();
             result.ReasonForDecliningSupport.Should().Be("Reason For Declining Support");
             
@@ -647,8 +655,8 @@ namespace FamilyHubs.Referral.UnitTests
             var result = await handler.Handle(command, new System.Threading.CancellationToken());
 
             //Assert
-            setupresult.Should().BeGreaterThan(0);
-            setupresult.Should().Be(testReferral.Id);
+            setupresult.Id.Should().BeGreaterThan(0);
+            setupresult.Id.Should().Be(testReferral.Id);
             result.Should().NotBeNull();
             result.Should().Be("Declined");
 
@@ -677,8 +685,8 @@ namespace FamilyHubs.Referral.UnitTests
             var result = await handler.Handle(command, new System.Threading.CancellationToken());
 
             //Assert
-            setupresult.Should().BeGreaterThan(0);
-            setupresult.Should().Be(testReferral.Id);
+            setupresult.Id.Should().BeGreaterThan(0);
+            setupresult.Id.Should().Be(testReferral.Id);
             result.Should().NotBeNull();
             result.Should().Be(SetReferralStatusCommandHandler.Forbidden);
 
