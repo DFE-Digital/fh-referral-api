@@ -54,13 +54,16 @@ public static class StartupExtensions
         services.AddTransient<ICrypto, Crypto>();
 
         var serviceDirectoryApiBaseUrl = configuration["ServiceDirectoryApiBaseUrl"];
-        if (!string.IsNullOrWhiteSpace(serviceDirectoryApiBaseUrl))
+        if (string.IsNullOrWhiteSpace(serviceDirectoryApiBaseUrl))
         {
-            services.AddHttpClient<IServiceDirectoryService, ServiceDirectoryService>(client =>
-            {
-                client.BaseAddress = new Uri(serviceDirectoryApiBaseUrl);
-            });
+            //todo: config exception
+            throw new ArgumentException("ServiceDirectoryApiBaseUrl is not configured");
         }
+
+        services.AddHttpClient<IServiceDirectoryService, ServiceDirectoryService>(client =>
+        {
+            client.BaseAddress = new Uri(serviceDirectoryApiBaseUrl);
+        });
 
         services.AddAuthorizationPolicy(configuration);
 
