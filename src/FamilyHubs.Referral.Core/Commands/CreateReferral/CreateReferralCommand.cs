@@ -141,18 +141,16 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         Data.Entities.ReferralService? referralService = _context.ReferralServices.SingleOrDefault(x => x.Id == entity.ReferralService.Id);
         if (referralService == null)
         {
-            FamilyHubs.ServiceDirectory.Shared.Dto.OrganisationDto? sdOrganisation = await _serviceDirectoryService.GetOrganisationById(entity.ReferralService.Organisation.Id);
-            FamilyHubs.ServiceDirectory.Shared.Dto.ServiceDto? sdService = await _serviceDirectoryService.GetServiceById(entity.ReferralService.Id);
-
-            if (sdOrganisation == null)
-            {
-                throw new ArgumentException($"Failed to return Organisation from service directory for Id = {entity.ReferralService.Organisation.Id}");
-            }
-
-
+            ServiceDirectory.Shared.Dto.ServiceDto? sdService = await _serviceDirectoryService.GetServiceById(entity.ReferralService.Id);
             if (sdService == null)
             {
                 throw new ArgumentException($"Failed to return Service from service directory for Id = {entity.ReferralService.Id}");
+            }
+
+            ServiceDirectory.Shared.Dto.OrganisationDto? sdOrganisation = await _serviceDirectoryService.GetOrganisationById(sdService.OrganisationId);
+            if (sdOrganisation == null)
+            {
+                throw new ArgumentException($"Failed to return Organisation from service directory for Id = {sdService.OrganisationId}");
             }
 
             Data.Entities.ReferralService srv = new Data.Entities.ReferralService
