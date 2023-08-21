@@ -89,6 +89,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         {
             Id = entity.Id,
             ServiceName = entity.ReferralService.Name,
+            OrganisationId = entity.ReferralService.Organisation.Id,
         };
     }
 
