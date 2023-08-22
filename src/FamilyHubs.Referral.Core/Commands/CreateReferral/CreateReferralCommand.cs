@@ -4,13 +4,14 @@ using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
+using FamilyHubs.ReferralService.Shared.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace FamilyHubs.Referral.Core.Commands.CreateReferral;
 
-public class CreateReferralCommand : IRequest<long>, ICreateReferralCommand
+public class CreateReferralCommand : IRequest<ReferralResponse>, ICreateReferralCommand
 {
     public CreateReferralCommand(ReferralDto referralDto)
     {
@@ -20,7 +21,7 @@ public class CreateReferralCommand : IRequest<long>, ICreateReferralCommand
     public ReferralDto ReferralDto { get; }
 }
 
-public class CreateReferralCommandHandler : IRequestHandler<CreateReferralCommand, long>
+public class CreateReferralCommandHandler : IRequestHandler<CreateReferralCommand, ReferralResponse>
 {
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -34,15 +35,15 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         _serviceDirectoryService = serviceDirectoryService;
     }
 
-    public async Task<long> Handle(CreateReferralCommand request, CancellationToken cancellationToken)
+    public async Task<ReferralResponse> Handle(CreateReferralCommand request, CancellationToken cancellationToken)
     {
-        long id;
+        ReferralResponse referralResponse;
         if (_context.Database.IsSqlServer())
         {
             await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
             try
             {
-                id = await CreateAndUpdateReferral(request, cancellationToken);
+                referralResponse = await CreateAndUpdateReferral(request, cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
             }
             catch (Exception ex)
@@ -56,7 +57,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         {
             try
             {
-                id = await CreateAndUpdateReferral(request, cancellationToken);
+                referralResponse = await CreateAndUpdateReferral(request, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -66,10 +67,10 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         }
             
 
-        return id;
+        return referralResponse;
     }
 
-    private async Task<long> CreateAndUpdateReferral(CreateReferralCommand request, CancellationToken cancellationToken)
+    private async Task<ReferralResponse> CreateAndUpdateReferral(CreateReferralCommand request, CancellationToken cancellationToken)
     {
         Data.Entities.Referral entity = _mapper.Map<Data.Entities.Referral>(request.ReferralDto);
         ArgumentNullException.ThrowIfNull(entity);
@@ -84,7 +85,12 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return entity.Id;
+        return new ReferralResponse
+        {
+            Id = entity.Id,
+            ServiceName = entity.ReferralService.Name,
+            OrganisationId = entity.ReferralService.Organisation.Id,
+        };
     }
 
     private Data.Entities.Referral AttachExistingStatus(Data.Entities.Referral entity)
@@ -136,29 +142,35 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         Data.Entities.ReferralService? referralService = _context.ReferralServices.SingleOrDefault(x => x.Id == entity.ReferralService.Id);
         if (referralService == null)
         {
-            FamilyHubs.ServiceDirectory.Shared.Dto.OrganisationDto? sdOrganisation = await _serviceDirectoryService.GetOrganisationById(entity.ReferralService.Organisation.Id);
-            FamilyHubs.ServiceDirectory.Shared.Dto.ServiceDto? sdService = await _serviceDirectoryService.GetServiceById(entity.ReferralService.Id);
-
-            if (sdService != null && sdOrganisation != null) 
+            ServiceDirectory.Shared.Dto.ServiceDto? sdService = await _serviceDirectoryService.GetServiceById(entity.ReferralService.Id);
+            if (sdService == null)
             {
-                Data.Entities.ReferralService srv = new Data.Entities.ReferralService
-                {
-                    Id = sdService.Id,
-                    Name = sdService.Name,
-                    Description = sdService.Description,
-                    Organisation = new Organisation
-                    {
-                        Id = sdOrganisation.Id, 
-                        ReferralServiceId = sdService.Id,
-                        Name = sdOrganisation.Name,
-                        Description = sdOrganisation.Description,
-                    }
-                };
-
-                _context.ReferralServices.Add(srv);
-                await _context.SaveChangesAsync();
-                referralService = _context.ReferralServices.SingleOrDefault(x => x.Id == entity.ReferralService.Id);
+                throw new ArgumentException($"Failed to return Service from service directory for Id = {entity.ReferralService.Id}");
             }
+
+            ServiceDirectory.Shared.Dto.OrganisationDto? sdOrganisation = await _serviceDirectoryService.GetOrganisationById(sdService.OrganisationId);
+            if (sdOrganisation == null)
+            {
+                throw new ArgumentException($"Failed to return Organisation from service directory for Id = {sdService.OrganisationId}");
+            }
+
+            Data.Entities.ReferralService srv = new Data.Entities.ReferralService
+            {
+                Id = sdService.Id,
+                Name = sdService.Name,
+                Description = sdService.Description,
+                Organisation = new Organisation
+                {
+                    Id = sdOrganisation.Id,
+                    ReferralServiceId = sdService.Id,
+                    Name = sdOrganisation.Name,
+                    Description = sdOrganisation.Description,
+                }
+            };
+
+            _context.ReferralServices.Add(srv);
+            await _context.SaveChangesAsync();
+            referralService = _context.ReferralServices.SingleOrDefault(x => x.Id == entity.ReferralService.Id);
         }
 
         if (referralService != null)
@@ -168,4 +180,3 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         return entity;
     }
 }
-

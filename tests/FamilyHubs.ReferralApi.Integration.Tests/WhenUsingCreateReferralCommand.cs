@@ -50,7 +50,7 @@ namespace FamilyHubs.Referral.Integration.Tests
             .Include(x => x.ReferralService)
             .ThenInclude(x => x.Organisation)
             .AsNoTracking()
-            .SingleOrDefault(s => s.Id == result);
+            .SingleOrDefault(s => s.Id == result.Id);
             actualService.Should().NotBeNull();
 
             var actualReferral = Mapper.Map<ReferralDto>(actualService);
