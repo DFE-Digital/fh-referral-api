@@ -1,5 +1,6 @@
 ﻿using Ardalis.Specification;
 using AutoMapper;
+using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
@@ -10,7 +11,7 @@ namespace FamilyHubs.Referral.Core.Commands.CreateOrUpdateService;
 
 
 
-public class CreateOrUpdateServiceCommand : IRequest<long>//, ICreateOrUpdateServiceCommand
+public class CreateOrUpdateServiceCommand : IRequest<long>, ICreateOrUpdateServiceCommand
 {
     public CreateOrUpdateServiceCommand(ReferralServiceDto referralServiceDto)
     {
@@ -112,11 +113,6 @@ public class CreateOrUpdateServiceCommandHandler : IRequestHandler<CreateOrUpdat
             entity.Organisation.Description = entity.Organisation.Description ?? string.Empty;
         }
         return entity;
-    }
-
-    private void AttachExistingOrganisation()
-    {
-
     }
 }
 

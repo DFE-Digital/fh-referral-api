@@ -74,6 +74,68 @@ namespace FamilyHubs.Referral.UnitTests
         }
 
         [Fact]
+        public async Task ThenCreateReferralWithOrganisationNullReturnFromServiceDirectoryService()
+        {
+            //Arange
+            var myProfile = new AutoMappingProfiles();
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            IMapper mapper = new Mapper(configuration);
+            var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
+            var mockApplicationDbContext = GetApplicationDbContext();
+            mockApplicationDbContext.Statuses.AddRange(ReferralSeedData.SeedStatuses());
+            mockApplicationDbContext.Roles.AddRange(ReferralSeedData.SeedRoles());
+            mockApplicationDbContext.SaveChanges();
+
+            ServiceDirectory.Shared.Dto.OrganisationDto? organisation = null;
+            _serviceDirectoryService.Setup(x => x.GetOrganisationById(It.IsAny<long>())).ReturnsAsync(organisation);
+
+            var testReferral = GetReferralDto();
+            testReferral.Status.Id = 0;
+            CreateReferralCommand command = new(testReferral);
+            CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, _serviceDirectoryService.Object, logger.Object);
+
+            //Act
+            Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
+
+
+            //Assert
+            await act.Should().ThrowAsync<ArgumentException>().WithMessage("Failed to return Organisation from service directory for Id = 0");
+
+            
+        }
+
+        [Fact]
+        public async Task ThenCreateReferralWithServiceNullReturnFromServiceDirectoryService()
+        {
+            //Arange
+            var myProfile = new AutoMappingProfiles();
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            IMapper mapper = new Mapper(configuration);
+            var logger = new Mock<ILogger<CreateReferralCommandHandler>>();
+            var mockApplicationDbContext = GetApplicationDbContext();
+            mockApplicationDbContext.Statuses.AddRange(ReferralSeedData.SeedStatuses());
+            mockApplicationDbContext.Roles.AddRange(ReferralSeedData.SeedRoles());
+            mockApplicationDbContext.SaveChanges();
+
+            ServiceDirectory.Shared.Dto.ServiceDto? service = null;
+            _serviceDirectoryService.Setup(x => x.GetServiceById(It.IsAny<long>())).ReturnsAsync(service);
+
+            var testReferral = GetReferralDto();
+            testReferral.Status.Id = 0;
+            CreateReferralCommand command = new(testReferral);
+            CreateReferralCommandHandler handler = new(mockApplicationDbContext, mapper, _serviceDirectoryService.Object, logger.Object);
+
+            //Act
+            Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
+
+
+            //Assert
+            await act.Should().ThrowAsync<ArgumentException>().WithMessage("Failed to return Service from service directory for Id = 2");
+
+
+        }
+
+        [Fact]
         public async Task ThenCreateReferralWithExitingReferrer()
         {
             //Arange

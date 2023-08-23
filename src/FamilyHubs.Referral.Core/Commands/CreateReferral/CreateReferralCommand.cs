@@ -105,7 +105,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     private Data.Entities.Referral AttachExistingUserAccount(Data.Entities.Referral entity)
     {
-        UserAccount? professional = _context.UserAccounts.SingleOrDefault(x => x.EmailAddress == entity.UserAccount.EmailAddress);
+        UserAccount? professional = _context.UserAccounts.SingleOrDefault(x => x.Id == entity.UserAccount.Id);
         if (professional != null) 
         {
             entity.UserAccount = professional;
