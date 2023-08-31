@@ -17,6 +17,7 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
     protected readonly CustomWebApplicationFactory? _webAppFactory;
     private bool _disposed;
     protected readonly JwtSecurityToken? _token;
+    protected readonly JwtSecurityToken? _token_forOrganisation1;
     protected readonly JwtSecurityToken? _vcstoken;
     protected readonly JwtSecurityToken? _forbiddentoken;
     private readonly IConfiguration? _configuration;
@@ -50,7 +51,21 @@ public abstract class BaseWhenUsingOpenReferralApiUnitTests : IDisposable
         expires: DateTime.UtcNow.AddMinutes(5)
             );
 
-        _vcstoken = new JwtSecurityToken(
+        _token_forOrganisation1 = new JwtSecurityToken(
+            claims: new List<Claim>
+                {
+        new Claim("sub", configuration["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
+        new Claim("jti", jti),
+        new Claim("AccountId", "1"),
+        new Claim(ClaimTypes.Role, RoleTypes.LaProfessional),
+        new Claim(FamilyHubsClaimTypes.OrganisationId, "1")
+
+                },
+            signingCredentials: creds,
+        expires: DateTime.UtcNow.AddMinutes(5)
+            );
+
+            _vcstoken = new JwtSecurityToken(
             claims: new List<Claim>
                 {
         new Claim("sub", configuration["GovUkOidcConfiguration:Oidc:ClientId"] ?? ""),
