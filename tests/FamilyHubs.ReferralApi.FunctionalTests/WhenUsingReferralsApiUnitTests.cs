@@ -154,14 +154,13 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
 
         response.EnsureSuccessStatusCode();
 
-        var stringResult = await response.Content.ReadAsStringAsync();
-        long.TryParse(stringResult, out var result);
+        var result = await JsonSerializer.DeserializeAsync<ReferralResponse>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-        result.Should().BeGreaterThan(0);
+        ArgumentNullException.ThrowIfNull(result);
+        result.Id.Should().Be(command.ReferralServiceDto.Id);
+        result.ServiceName.Should().NotBeNullOrEmpty();
     }
-
-    
 
     [Fact]
     public async Task ThenReferralsByOrganisationIdAreRetrieved()
@@ -209,7 +208,7 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
             RequestUri = new Uri(Client.BaseAddress + "api/referral/1"),
         };
 
-        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token_forOrganisation1)}");
 
         using var response = await Client.SendAsync(request);
 
