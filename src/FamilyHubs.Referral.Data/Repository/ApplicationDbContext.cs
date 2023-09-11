@@ -46,4 +46,5 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<UserAccountOrganisation> UserAccountOrganisations => Set<UserAccountOrganisation>();
     public DbSet<UserAccountRole> UserAccountRoles => Set<UserAccountRole>();
     public DbSet<UserAccountService> UserAccountServices => Set<UserAccountService>();
+    public DbSet<Audit> AuditLogs { get; set; }
 }

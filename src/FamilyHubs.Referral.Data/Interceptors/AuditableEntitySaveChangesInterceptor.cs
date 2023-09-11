@@ -1,4 +1,5 @@
 ﻿using FamilyHubs.Referral.Data.Entities;
+using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,61 @@ public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 
+    private void OnBeforeSaveChanges(DbContext context, string userId)
+    {
+        context.ChangeTracker.DetectChanges();
+        var auditEntries = new List<AuditEntry>();
+        foreach (var entry in context.ChangeTracker.Entries())
+        {
+            if (entry.Entity is Audit || entry.State == EntityState.Detached || entry.State == EntityState.Unchanged)
+                continue;
+            var auditEntry = new AuditEntry(entry);
+            auditEntry.TableName = entry.Entity.GetType().Name;
+            auditEntry.UserId = userId;
+            auditEntries.Add(auditEntry);
+            foreach (var property in entry.Properties)
+            {
+                string propertyName = property.Metadata.Name;
+                if (property.Metadata.IsPrimaryKey())
+                {
+                    auditEntry.KeyValues[propertyName] = property.CurrentValue ?? default!;
+                    continue;
+                }
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        auditEntry.AuditType = AuditType.Create;
+                        auditEntry.NewValues[propertyName] = property.CurrentValue ?? default!;
+                        break;
+                    case EntityState.Deleted:
+                        auditEntry.AuditType = AuditType.Delete;
+                        auditEntry.OldValues[propertyName] = property.OriginalValue ?? default!;
+                        break;
+                    case EntityState.Modified:
+                        if (property.IsModified)
+                        {
+                            auditEntry.ChangedColumns.Add(propertyName);
+                            auditEntry.AuditType = AuditType.Update;
+                            auditEntry.OldValues[propertyName] = property.OriginalValue ?? default!;
+                            auditEntry.NewValues[propertyName] = property.CurrentValue ?? default!;
+                        }
+                        break;
+                }
+            }
+        }
+        if (context is ApplicationDbContext)
+        {
+            ApplicationDbContext? appContext = context as ApplicationDbContext;
+            if (appContext != null)
+            {
+                foreach (var auditEntry in auditEntries)
+                {
+                    appContext.AuditLogs.Add(auditEntry.ToAudit());
+                }
+            }
+        }
+    }
+
     public void UpdateEntities(DbContext? context)
     {
         if (context is null) return;
@@ -39,6 +95,8 @@ public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
         {
             updatedBy = user.Email;
         }
+
+        OnBeforeSaveChanges(context, updatedBy);
 
         foreach (var entry in context.ChangeTracker.Entries<EntityBase<byte>>())
         {
