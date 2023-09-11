@@ -5,10 +5,12 @@ using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Interceptors;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 
 namespace FamilyHubs.Referral.Integration.Tests;
 
@@ -35,7 +37,8 @@ public abstract class DataIntegrationTestBase : IDisposable, IAsyncDisposable
     {
         var serviceDirectoryConnection = $"Data Source=sd-{Random.Shared.Next().ToString()}.db;Mode=ReadWriteCreate;Cache=Shared;Foreign Keys=True;Recursive Triggers=True;Default Timeout=30;Pooling=True";
 
-        var auditableEntitySaveChangesInterceptor = new AuditableEntitySaveChangesInterceptor();
+        var mockIHttpContextAccessor = Mock.Of<IHttpContextAccessor>();
+        var auditableEntitySaveChangesInterceptor = new AuditableEntitySaveChangesInterceptor(mockIHttpContextAccessor);
 
         return new ServiceCollection()
             .AddEntityFrameworkSqlite()
