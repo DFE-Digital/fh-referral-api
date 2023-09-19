@@ -31,13 +31,13 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
 
         //Assert
         result.Should().BeGreaterThan(0);
-        var actualUserAccount = TestDbContext.UserAccounts
+        var actualUserAccount = await TestDbContext.UserAccounts
             .Include(x => x.OrganisationUserAccounts)
             .FirstAsync(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == userAccountDto.OrganisationUserAccounts[0].Organisation.Id));
 
-        actualUserAccount.Result.EmailAddress.Should().Be(userAccount.EmailAddress);
-        actualUserAccount.Result.PhoneNumber.Should().Be(userAccount.PhoneNumber);
-        actualUserAccount?.Result?.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccounts[0].Organisation.Id);
+        actualUserAccount.EmailAddress.Should().Be(userAccount.EmailAddress);
+        actualUserAccount.PhoneNumber.Should().Be(userAccount.PhoneNumber);
+        actualUserAccount.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccounts[0].Organisation.Id);
 
 
 #pragma warning restore CS8602
@@ -69,12 +69,12 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
 
         //Assert
         result.Should().BeGreaterThan(0);
-        var actualUserAccount = TestDbContext.UserAccounts
+        var actualUserAccount = await TestDbContext.UserAccounts
             .Include(x => x.OrganisationUserAccounts)
             .FirstAsync(x => x.Id == userAccountDto.Id);
 
-        actualUserAccount.Result.EmailAddress.Should().Be(userAccount.EmailAddress);
-        actualUserAccount.Result.PhoneNumber.Should().Be(userAccount.PhoneNumber);
+        actualUserAccount.EmailAddress.Should().Be(userAccount.EmailAddress);
+        actualUserAccount.PhoneNumber.Should().Be(userAccount.PhoneNumber);
         
 #pragma warning restore CS8602
     }
@@ -125,12 +125,12 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
 
         //Assert
         result.Should().BeGreaterThan(0);
-        var actualUserAccount = TestDbContext.UserAccounts
+        var actualUserAccount = await TestDbContext.UserAccounts
             .Include(x => x.OrganisationUserAccounts)
             .FirstAsync(x => x.Id == userAccountDto.Id);
 
-        actualUserAccount.Result.EmailAddress.Should().Be(userAccount.EmailAddress);
-        actualUserAccount.Result.PhoneNumber.Should().Be(userAccount.PhoneNumber);
+        actualUserAccount.EmailAddress.Should().Be(userAccount.EmailAddress);
+        actualUserAccount.PhoneNumber.Should().Be(userAccount.PhoneNumber);
 
 #pragma warning restore CS8602
     }
@@ -153,13 +153,13 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
 
         //Assert
         result.Should().BeTrue();
-        var actualUserAccount = TestDbContext.UserAccounts
+        var actualUserAccount = await TestDbContext.UserAccounts
             .Include(x => x.OrganisationUserAccounts)
             .FirstAsync(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == userAccountDto.OrganisationUserAccounts[0].Organisation.Id));
 
-        actualUserAccount.Result.EmailAddress.Should().Be(userAccount.EmailAddress);
-        actualUserAccount.Result.PhoneNumber.Should().Be(userAccount.PhoneNumber);
-        actualUserAccount?.Result?.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccounts[0].Organisation.Id);
+        actualUserAccount.EmailAddress.Should().Be(userAccount.EmailAddress);
+        actualUserAccount.PhoneNumber.Should().Be(userAccount.PhoneNumber);
+        actualUserAccount.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccounts[0].Organisation.Id);
         
 
 #pragma warning restore CS8602
@@ -193,13 +193,13 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
 
         //Assert
         result.Should().BeTrue();
-        var actualUserAccount = TestDbContext.UserAccounts
+        var actualUserAccount = await TestDbContext.UserAccounts
             .Include(x => x.OrganisationUserAccounts)
             .FirstAsync(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == userAccountDto.OrganisationUserAccounts[0].Organisation.Id));
 
-        actualUserAccount.Result.EmailAddress.Should().Be(userAccount.EmailAddress);
-        actualUserAccount.Result.PhoneNumber.Should().Be(userAccount.PhoneNumber);
-        actualUserAccount?.Result?.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccounts[0].Organisation.Id);
+        actualUserAccount.EmailAddress.Should().Be(userAccount.EmailAddress);
+        actualUserAccount.PhoneNumber.Should().Be(userAccount.PhoneNumber);
+        actualUserAccount.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccounts[0].Organisation.Id);
 
 
 #pragma warning restore CS8602
@@ -231,13 +231,13 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
 
         //Assert
         result.Should().BeTrue();
-        var actualUserAccount = TestDbContext.UserAccounts
+        var actualUserAccount = await TestDbContext.UserAccounts
             .Include(x => x.OrganisationUserAccounts)
             .FirstAsync(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == userAccountDto.OrganisationUserAccounts[0].Organisation.Id));
 
-        actualUserAccount.Result.EmailAddress.Should().Be(userAccount.EmailAddress);
-        actualUserAccount.Result.PhoneNumber.Should().Be(userAccount.PhoneNumber);
-        actualUserAccount?.Result?.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccounts[0].Organisation.Id);
+        actualUserAccount.EmailAddress.Should().Be(userAccount.EmailAddress);
+        actualUserAccount.PhoneNumber.Should().Be(userAccount.PhoneNumber);
+        actualUserAccount.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccounts[0].Organisation.Id);
 
 
 #pragma warning restore CS8602
@@ -257,12 +257,12 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
 
         //Assert
         result.Should().NotBeNull();
-        var actualUserAccount = TestDbContext.UserAccounts
+        var actualUserAccount = await TestDbContext.UserAccounts
             .Include(x => x.OrganisationUserAccounts)
             .FirstAsync(x => x.Id == 1);
 
-        actualUserAccount.Result.EmailAddress.Should().Be(ReferralSeedData.SeedReferral().ElementAt(0).UserAccount.EmailAddress);
-        actualUserAccount.Result.PhoneNumber.Should().Be(ReferralSeedData.SeedReferral().ElementAt(0).UserAccount.PhoneNumber);
+        actualUserAccount.EmailAddress.Should().Be(ReferralSeedData.SeedReferral().ElementAt(0).UserAccount.EmailAddress);
+        actualUserAccount.PhoneNumber.Should().Be(ReferralSeedData.SeedReferral().ElementAt(0).UserAccount.PhoneNumber);
         
 
 
@@ -292,13 +292,13 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
 
         //Assert
         result.Items.Count.Should().BeGreaterThan(0);
-        var actualUserAccount = TestDbContext.UserAccounts
+        var actualUserAccount = await TestDbContext.UserAccounts
             .Include(x => x.OrganisationUserAccounts)
             .FirstAsync(x => x.OrganisationUserAccounts != null && x.OrganisationUserAccounts.Any(x => x.OrganisationId == userAccountDto.OrganisationUserAccounts[0].Organisation.Id));
 
-        actualUserAccount.Result.EmailAddress.Should().Be(userAccount.EmailAddress);
-        actualUserAccount.Result.PhoneNumber.Should().Be(userAccount.PhoneNumber);
-        actualUserAccount?.Result?.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccounts[0].Organisation.Id);
+        actualUserAccount.EmailAddress.Should().Be(userAccount.EmailAddress);
+        actualUserAccount.PhoneNumber.Should().Be(userAccount.PhoneNumber);
+        actualUserAccount.OrganisationUserAccounts[0]?.OrganisationId.Should().Be(userAccountDto.OrganisationUserAccounts[0].Organisation.Id);
 
 
 #pragma warning restore CS8602
