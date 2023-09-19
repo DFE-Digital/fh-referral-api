@@ -30,8 +30,6 @@ public class GetReferralsByReferrerCommand : IRequest<PaginatedList<ReferralDto>
 
 public class GetReferralsByReferrerCommandHandler : GetReferralsHandlerBase, IRequestHandler<GetReferralsByReferrerCommand, PaginatedList<ReferralDto>>
 {
-    
-
     public GetReferralsByReferrerCommandHandler(ApplicationDbContext context, IMapper mapper)
         : base(context, mapper)
     {
@@ -51,12 +49,12 @@ public class GetReferralsByReferrerCommandHandler : GetReferralsHandlerBase, IRe
         {
             entities = entities.Where(x => x.UserAccount.EmailAddress == request.EmailAddress && x.Status.Name != "Declined");
         }
-
+#pragma warning disable S2583
         if (entities == null)
         {
             throw new NotFoundException(nameof(Referral), request.EmailAddress);
         }
-
+#pragma warning restore S2583
         entities = OrderBy(entities, request.OrderBy, request.IsAssending, true);
 
         return await GetPaginatedList(request == null, entities, request?.PageNumber ?? 1, request?.PageSize ?? 10);
