@@ -8,9 +8,12 @@ using FamilyHubs.ReferralService.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.Identity.Client;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Net.Http;
 using System.Security.Claims;
 
 namespace FamilyHubs.Referral.Api.Endpoints;
@@ -129,6 +132,22 @@ public class MinimalReferralEndPoints
             return result;
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referral Statuses", "Get Referral Statuses") { Tags = new[] { "Referrals" } });
+#pragma warning disable S1481
+        app.MapGet("api/referral/recipient", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole + "," + RoleGroups.VcsProfessionalOrDualRole)] async (string? email, string? telephone, string? textphone, string? name, string? postcode, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
+        {
+            (long accountId, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
+
+            if (role is RoleTypes.LaManager or RoleTypes.LaProfessional or RoleTypes.LaDualRole)
+            {
+                GetReferralsByRecipientCommand request = new(email, telephone, textphone, name, postcode);
+                var result = await _mediator.Send(request, cancellationToken);
+                return result;
+            }
+
+            return await SetForbidden<List<ReferralDto>>(httpContext);    
+
+        }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referral By Recipient") { Tags = new[] { "Referrals" } });
+#pragma warning restore S1481
     }
 
     private async Task<T> SetForbidden<T>(HttpContext httpContext)
