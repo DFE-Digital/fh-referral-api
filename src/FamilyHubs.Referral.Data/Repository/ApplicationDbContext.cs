@@ -87,6 +87,12 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         referralEntity.Property(x => x.EngageWithFamily).IsEncrypted();
         referralEntity.Property(x => x.ReasonForDecliningSupport).IsEncrypted();
 
+        var userEntity = modelBuilder.Entity<UserAccount>();
+        userEntity.Property(x => x.EmailAddress).IsRequired().IsEncrypted();
+        userEntity.Property(x => x.Name).IsEncrypted();
+        userEntity.Property(x => x.PhoneNumber).IsEncrypted();
+        userEntity.Property(x => x.Team).IsEncrypted();
+
         modelBuilder.UseEncryption(this._provider);
 
         base.OnModelCreating(modelBuilder);
