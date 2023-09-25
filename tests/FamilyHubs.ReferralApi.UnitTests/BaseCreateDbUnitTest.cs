@@ -1,8 +1,10 @@
 ﻿using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Interceptors;
 using FamilyHubs.Referral.Data.Repository;
+using FamilyHubs.SharedKernel.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System.Security.Claims;
@@ -34,12 +36,23 @@ public class BaseCreateDbUnitTest
 
         mockIHttpContextAccessor.Setup(h => h.HttpContext).Returns(context);
 
+        var inMemorySettings = new Dictionary<string, string?> {
+            {"Crypto:UseKeyVault", "False"},
+            {"Crypto:DbEncryptionKey", "188,7,221,249,250,101,147,86,47,246,21,252,145,56,161,150,195,184,64,43,55,0,196,200,98,220,95,186,225,8,224,75"},
+            {"Crypto:DbEncryptionIVKey", "34,26,215,81,137,34,109,107,236,206,253,62,115,38,65,112"},
+        };
+
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(inMemorySettings)
+            .Build();
+
         var auditableEntitySaveChangesInterceptor = new AuditableEntitySaveChangesInterceptor(mockIHttpContextAccessor.Object);
+        var keyProvider = new KeyProvider(configuration);
 
 #if _USE_EVENT_DISPATCHER
         var mockApplicationDbContext = new ApplicationDbContext(options, new Mock<IDomainEventDispatcher>().Object, auditableEntitySaveChangesInterceptor, configuration);
 #else
-        var mockApplicationDbContext = new ApplicationDbContext(options,  auditableEntitySaveChangesInterceptor);
+        var mockApplicationDbContext = new ApplicationDbContext(options,  auditableEntitySaveChangesInterceptor, keyProvider);
 #endif
         return mockApplicationDbContext;
     }

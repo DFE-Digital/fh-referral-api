@@ -1,6 +1,8 @@
-﻿using FamilyHubs.Referral.Core.Queries.GetReferrals;
+﻿using Ardalis.GuardClauses;
+using FamilyHubs.Referral.Core.Queries.GetReferrals;
 using FamilyHubs.ReferralService.Shared.Enums;
 using FluentAssertions;
+using Newtonsoft.Json.Linq;
 
 namespace FamilyHubs.Referral.Integration.Tests;
 
@@ -93,6 +95,69 @@ public class WhenUsingGetReferral : DataIntegrationTestBase
             options => options.Excluding(x => x.Created).Excluding(x => x.LastModified).Excluding(x => x.Status.SecondrySortOrder));
         var actualService = TestDbContext.Referrals.SingleOrDefault(s => s.Id == referral.Id);
         actualService.Should().NotBeNull();
+
+    }
+
+    [Theory]
+    [InlineData("JoeBlog@email.com", default!, "Email")]
+    [InlineData("078123456", default!, "Telephone")]
+    [InlineData("078123456", default!, "Textphone")]
+    [InlineData("Joe Blogs", "B30 2TV", "Name")]
+    public async Task ThenGetReferralByRecipient(string value1, string value2, string paraType)
+    {
+        await CreateReferral();
+        var referral = TestDataProvider.GetReferralDto();
+
+        GetReferralsByRecipientCommand command = default!;
+        
+        switch(paraType)
+        {
+            case "Email":
+                command = new(value1, null, null, null, null);
+                break;
+
+            case "Telephone":
+                command = new(null, value1, null, null, null);
+                break;
+
+            case "Textphone":
+                command = new(null, null, value1, null, null);
+                break;
+
+            case "Name":
+                command = new(null, null, null, value1, value2);
+                break;
+        }
+
+        GetReferralsByRecipientHandler handler = new(TestDbContext, Mapper);
+
+        //Act
+        var result = await handler.Handle(command, new System.Threading.CancellationToken());
+
+
+
+        //Assert
+        result.Should().NotBeNull();
+        result[0].Should().BeEquivalentTo(referral,
+            options => options.Excluding(x => x.Created).Excluding(x => x.LastModified).Excluding(x => x.Status.SecondrySortOrder));
+        var actualService = TestDbContext.Referrals.SingleOrDefault(s => s.Id == referral.Id);
+        actualService.Should().NotBeNull();
+
+    }
+
+    [Fact]
+    public async Task ThenHandle_WithInvalidData_ReturnsValidationResponse()
+    {
+        // Arrange
+        await CreateReferral();
+        GetReferralsByRecipientCommand command = new(null, null, null, null, null);
+        GetReferralsByRecipientHandler handler = new(TestDbContext, Mapper);
+
+        // Act
+        Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<NotFoundException>();
 
     }
 }

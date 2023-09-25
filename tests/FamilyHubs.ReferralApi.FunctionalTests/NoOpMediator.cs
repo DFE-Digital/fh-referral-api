@@ -14,13 +14,12 @@ public class NoOpMediator : IMediator
     {
         return Task.CompletedTask;
     }
-
+#pragma warning disable S4136, CS8604
     public Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
-#pragma warning disable CS8604 // Possible null reference argument.
         return Task.FromResult<TResponse>(default);
-#pragma warning restore CS8604 // Possible null reference argument.
     }
+#pragma warning restore S4136, CS8604
 
     public Task<object?> Send(object request, CancellationToken cancellationToken = default)
     {

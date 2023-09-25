@@ -1,5 +1,4 @@
-﻿using EncryptColumn.Core.Attribute;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FamilyHubs.Referral.Data.Entities;
 

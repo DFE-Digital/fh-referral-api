@@ -9,13 +9,11 @@ public class ApplicationDbContextInitialiser
 {
     private readonly ILogger<ApplicationDbContextInitialiser> _logger;
     private readonly ApplicationDbContext _context;
-    private readonly ICrypto _crypto;
 
-    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, ICrypto crypto)
+    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context)
     {
         _logger = logger;
         _context = context;
-        _crypto = crypto;
     }
 
     public async Task InitialiseAsync(bool isProduction, bool shouldRestDatabaseOnRestart)
@@ -133,22 +131,6 @@ public class ApplicationDbContextInitialiser
                 {
                     referral.Status = status;
                 }
-
-                referral.ReasonForSupport = await _crypto.EncryptData(referral.ReasonForSupport);
-                referral.EngageWithFamily = await _crypto.EncryptData(referral.EngageWithFamily);
-
-                
-                referral.Recipient.Name = !string.IsNullOrEmpty(referral.Recipient.Name) ? await _crypto.EncryptData(referral.Recipient.Name) : referral.Recipient.Name;
-                referral.Recipient.Email = !string.IsNullOrEmpty(referral.Recipient.Email) ? await _crypto.EncryptData(referral.Recipient.Email) : referral.Recipient.Email;
-                referral.Recipient.Telephone = !string.IsNullOrEmpty(referral.Recipient.Telephone) ? await _crypto.EncryptData(referral.Recipient.Telephone) : referral.Recipient.Telephone;
-                referral.Recipient.TextPhone = !string.IsNullOrEmpty(referral.Recipient.TextPhone) ? await _crypto.EncryptData(referral.Recipient.TextPhone) : referral.Recipient.TextPhone;
-                referral.Recipient.AddressLine1 = !string.IsNullOrEmpty(referral.Recipient.AddressLine1) ? await _crypto.EncryptData(referral.Recipient.AddressLine1) : referral.Recipient.AddressLine1;
-                referral.Recipient.AddressLine2 = !string.IsNullOrEmpty(referral.Recipient.AddressLine2) ? await _crypto.EncryptData(referral.Recipient.AddressLine2) : referral.Recipient.AddressLine2;
-                referral.Recipient.TownOrCity = !string.IsNullOrEmpty(referral.Recipient.TownOrCity) ? await _crypto.EncryptData(referral.Recipient.TownOrCity) : referral.Recipient.TownOrCity;
-                referral.Recipient.County = !string.IsNullOrEmpty(referral.Recipient.County) ? await _crypto.EncryptData(referral.Recipient.County) : referral.Recipient.County;
-                referral.Recipient.PostCode = !string.IsNullOrEmpty(referral.Recipient.PostCode) ? await _crypto.EncryptData(referral.Recipient.PostCode) : referral.Recipient.PostCode;
-
-
             }
 
             _context.Referrals.AddRange(referrals);

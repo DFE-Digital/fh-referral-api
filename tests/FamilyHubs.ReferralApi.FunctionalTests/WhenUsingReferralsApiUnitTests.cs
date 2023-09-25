@@ -2,9 +2,11 @@
 using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Models;
 using FluentAssertions;
+using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Json;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 //Only run locally
 
@@ -487,5 +489,60 @@ public class WhenUsingReferralsApiUnitTests : BaseWhenUsingOpenReferralApiUnitTe
         ArgumentNullException.ThrowIfNull(retVal);
         retVal.Should().NotBeNull();
         retVal.Items.Count.Should().BeGreaterThan(0);
+    }
+
+    [Theory]
+    [InlineData("TestUser@email.com", default!, "Email")]
+    [InlineData("078873456", default!, "Telephone")]
+    [InlineData("078873456", default!, "Textphone")]
+    [InlineData("Test User", "B30 2TV", "Name")]
+    public async Task ThenReferralsByRecipientAreRetrieved(string value1, string value2, string paraType)
+    {
+        if (!IsRunningLocally() || Client == null)
+        {
+            // Skip the test if not running locally
+            Assert.True(true, "Test skipped because it is not running locally.");
+            return;
+        }
+
+        string urlParam = string.Empty;
+
+        switch (paraType)
+        {
+            case "Email":
+                urlParam = $"api/referral/recipient?email={value1}";
+                break;
+
+            case "Telephone":
+                urlParam = $"api/referral/recipient?telephone={value1}";
+                break;
+
+            case "Textphone":
+                urlParam = $"api/referral/recipient?textphone={value1}";
+                break;
+
+            case "Name":
+                urlParam = $"api/referral/recipient?name={value1}&postcode={value2}";
+                break;
+        }
+
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Get,
+            RequestUri = new Uri(Client.BaseAddress + urlParam),
+        };
+
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{new JwtSecurityTokenHandler().WriteToken(_token)}");
+
+        using var response = await Client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        var retVal = await JsonSerializer.DeserializeAsync<List<ReferralDto>>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        ArgumentNullException.ThrowIfNull(retVal);
+        retVal.Should().NotBeNull();
+        retVal.Count.Should().BeGreaterThan(0);
     }
 }
