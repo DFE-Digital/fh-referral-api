@@ -54,7 +54,7 @@ public class GetReferralsByRecipientHandler : IRequestHandler<GetReferralsByReci
 
         var serviceIds = await _context.Organisations.Where(x => x.Id == request.OrganisationId).Select(x => x.ReferralServiceId).ToListAsync(cancellationToken);
 
-        int pageNumber = 0;
+        int pageNumber = 1;
         int currentCount = 0;
         List<ReferralDto> results = new List<ReferralDto>();
 
@@ -85,7 +85,11 @@ public class GetReferralsByRecipientHandler : IRequestHandler<GetReferralsByReci
             }
 
             var mappedList = _mapper.Map<List<ReferralDto>>(entities);
-            results.AddRange(mappedList);
+            if (mappedList.Any())
+            {
+                results.AddRange(mappedList);
+            }
+            
 
         } while(currentCount > 999);
 
