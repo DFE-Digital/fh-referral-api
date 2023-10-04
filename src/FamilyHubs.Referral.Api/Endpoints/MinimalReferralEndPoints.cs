@@ -132,7 +132,7 @@ public class MinimalReferralEndPoints
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referral Statuses", "Get Referral Statuses") { Tags = new[] { "Referrals" } });
 #pragma warning disable S1481
-        app.MapGet("api/referral/recipient", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole + "," + RoleGroups.VcsProfessionalOrDualRole)] async (string? email, string? telephone, string? textphone, string? name, string? postcode, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
+        app.MapGet("api/referral/recipient", [Authorize(Roles = $"{RoleTypes.LaManager},{RoleTypes.LaProfessional},{RoleTypes.LaDualRole}")] async (string? email, string? telephone, string? textphone, string? name, string? postcode, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
         {
             (long accountId, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
 
