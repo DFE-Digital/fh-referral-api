@@ -1,5 +1,6 @@
 ﻿using Ardalis.GuardClauses;
 using FamilyHubs.Referral.Core.Queries.GetReferrals;
+using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.ReferralService.Shared.Enums;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
@@ -113,19 +114,19 @@ public class WhenUsingGetReferral : DataIntegrationTestBase
         switch(paraType)
         {
             case "Email":
-                command = new(value1, null, null, null, null);
+                command = new(referral.ReferralServiceDto.OrganisationDto.Id,value1, null, null, null, null);
                 break;
 
             case "Telephone":
-                command = new(null, value1, null, null, null);
+                command = new(referral.ReferralServiceDto.OrganisationDto.Id,null, value1, null, null, null);
                 break;
 
             case "Textphone":
-                command = new(null, null, value1, null, null);
+                command = new(referral.ReferralServiceDto.OrganisationDto.Id,null, null, value1, null, null);
                 break;
 
             case "Name":
-                command = new(null, null, null, value1, value2);
+                command = new(referral.ReferralServiceDto.OrganisationDto.Id,null, null, null, value1, value2);
                 break;
         }
 
@@ -150,7 +151,7 @@ public class WhenUsingGetReferral : DataIntegrationTestBase
     {
         // Arrange
         await CreateReferral();
-        GetReferralsByRecipientCommand command = new(null, null, null, null, null);
+        GetReferralsByRecipientCommand command = new(TestDataProvider.GetReferralDto().ReferralServiceDto.OrganisationDto.Id, null, null, null, null, null);
         GetReferralsByRecipientHandler handler = new(TestDbContext, Mapper);
 
         // Act
