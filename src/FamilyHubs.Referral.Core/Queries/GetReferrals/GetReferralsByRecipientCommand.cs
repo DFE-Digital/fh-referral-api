@@ -54,7 +54,7 @@ public class GetReferralsByRecipientHandler : IRequestHandler<GetReferralsByReci
 
         var serviceIds = await _context.Organisations.Where(x => x.Id == request.OrganisationId).Select(x => x.ReferralServiceId).ToListAsync(cancellationToken);
 
-        int pageNumber = 1;
+        int pageNumber = 0;
         int currentCount = 0;
         List<ReferralDto> results = new List<ReferralDto>();
 
