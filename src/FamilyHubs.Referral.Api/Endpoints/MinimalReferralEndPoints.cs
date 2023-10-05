@@ -63,8 +63,7 @@ public class MinimalReferralEndPoints
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Organisation Id") { Tags = new[] { "Referrals" } });
 
-        //todo: add new ProfessionalOrDualRole RoleGroup (or LaOrVcsProfessionalOrDualRole)
-        app.MapGet("api/referral/{id}", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole+","+RoleGroups.VcsProfessionalOrDualRole)] async (long id, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
+        app.MapGet("api/referral/{id}", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole+","+RoleGroups.VcsProfessionalOrDualRole+","+ RoleTypes.LaManager)] async (long id, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
         {
             (long accountId, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
            
@@ -79,7 +78,7 @@ public class MinimalReferralEndPoints
                 return await SetForbidden<ReferralDto>(httpContext);
             }
 
-            if (role is RoleTypes.LaManager or RoleTypes.LaProfessional or RoleTypes.LaDualRole
+            if (role is RoleTypes.LaProfessional or RoleTypes.LaDualRole
                 && accountId != result.ReferralUserAccountDto.Id)
             {
                 return await SetForbidden<ReferralDto>(httpContext);
@@ -133,13 +132,13 @@ public class MinimalReferralEndPoints
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referral Statuses", "Get Referral Statuses") { Tags = new[] { "Referrals" } });
 #pragma warning disable S1481
-        app.MapGet("api/referral/recipient", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole + "," + RoleGroups.VcsProfessionalOrDualRole)] async (string? email, string? telephone, string? textphone, string? name, string? postcode, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
+        app.MapGet("api/referral/recipient", [Authorize(Roles = $"{RoleTypes.LaManager},{RoleTypes.LaProfessional},{RoleTypes.LaDualRole}")] async (string? email, string? telephone, string? textphone, string? name, string? postcode, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
         {
             (long accountId, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
 
             if (role is RoleTypes.LaManager or RoleTypes.LaProfessional or RoleTypes.LaDualRole)
             {
-                GetReferralsByRecipientCommand request = new(email, telephone, textphone, name, postcode);
+                GetReferralsByRecipientCommand request = new(organisationId, email, telephone, textphone, name, postcode);
                 var result = await _mediator.Send(request, cancellationToken);
                 return result;
             }

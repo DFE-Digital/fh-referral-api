@@ -249,7 +249,7 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
     {
 #pragma warning disable CS8602
         //Assign 
-        GetUserByIdCommand command = new (1);
+        GetUserByIdCommand command = new (5);
         GetUserByIdCommandHandler handler = new(TestDbContext, Mapper);
 
         //Act
@@ -259,7 +259,7 @@ public class WhenUsingUserAccounts : DataIntegrationTestBase
         result.Should().NotBeNull();
         var actualUserAccount = await TestDbContext.UserAccounts
             .Include(x => x.OrganisationUserAccounts)
-            .FirstAsync(x => x.Id == 1);
+            .FirstAsync(x => x.Id == 5);
 
         actualUserAccount.EmailAddress.Should().Be(ReferralSeedData.SeedReferral().ElementAt(0).UserAccount.EmailAddress);
         actualUserAccount.PhoneNumber.Should().Be(ReferralSeedData.SeedReferral().ElementAt(0).UserAccount.PhoneNumber);

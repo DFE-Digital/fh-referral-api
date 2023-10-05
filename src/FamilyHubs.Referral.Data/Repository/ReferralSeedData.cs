@@ -115,7 +115,7 @@ public static class ReferralSeedData
                 },
                 UserAccount = new UserAccount
                 {
-                    Id = 1,
+                    Id = 5,
                     EmailAddress = "Joe.Professional@email.com",
                     Name = "Joe Professional",
                     PhoneNumber = "011 222 3333",
@@ -163,7 +163,7 @@ public static class ReferralSeedData
                 },
                 UserAccount = new UserAccount
                 {
-                    Id = 1,
+                    Id = 5,
                     EmailAddress = "Joe.Professional@email.com",
                     Name = "Joe Professional",
                     PhoneNumber = "011 222 3333",
