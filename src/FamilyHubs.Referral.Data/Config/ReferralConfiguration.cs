@@ -13,10 +13,15 @@ public class ReferralConfiguration : IEntityTypeConfiguration<Data.Entities.Refe
         builder.Navigation(e => e.ReferralService).AutoInclude();
         builder.Navigation(e => e.Status).AutoInclude();
 
+        builder.Property(t => t.ReferrerTelephone)
+            .HasMaxLength(20);
+
         builder.Property(t => t.Created)
             .IsRequired();
         builder.Property(t => t.CreatedBy)
-            .HasMaxLength(255)
+            .HasMaxLength(320)
             .IsRequired();
+        builder.Property(t => t.LastModifiedBy)
+            .HasMaxLength(320);
     }
 }

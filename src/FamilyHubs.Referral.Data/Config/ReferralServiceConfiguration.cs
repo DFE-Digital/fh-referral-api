@@ -20,11 +20,16 @@ public class ReferralServiceConfiguration : IEntityTypeConfiguration<Entities.Re
             .IsRequired()
             .HasMaxLength(256);
 
+        builder.Property(t => t.Url)
+            .HasMaxLength(2083);
+
         builder.Property(t => t.Created)
             .IsRequired();
         builder.Property(t => t.CreatedBy)
-            .HasMaxLength(255)
+            .HasMaxLength(320)
             .IsRequired();
+        builder.Property(t => t.LastModifiedBy)
+            .HasMaxLength(320);
     }
 }
 
