@@ -64,6 +64,11 @@ public class GetReferralsByRecipientHandler : IRequestHandler<GetReferralsByReci
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return results;
+            }
+
             pageNumber++;
             currentCount = entities.Count;
 
