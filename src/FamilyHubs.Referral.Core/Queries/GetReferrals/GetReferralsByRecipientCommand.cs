@@ -1,5 +1,6 @@
 ﻿using Ardalis.GuardClauses;
 using AutoMapper;
+using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
@@ -52,46 +53,62 @@ public class GetReferralsByRecipientHandler : IRequestHandler<GetReferralsByReci
             throw new NotFoundException(nameof(Referral), "Name");
         }
 
-        var serviceIds = await _context.Organisations.Where(x => x.Id == request.OrganisationId).Select(x => x.ReferralServiceId).ToListAsync(cancellationToken);
-
         int pageNumber = 0;
         int currentCount = 0;
+        List<Recipient> recipients = new List<Recipient>();
         List<ReferralDto> results = new List<ReferralDto>();
 
         do
         {
-            var entities = _context.Referrals.GetAll().Skip(pageNumber).Take(1000)
+            var entities = await _context.Recipients.Skip(pageNumber).Take(1000)
                 .AsNoTracking()
-                .Where(x => serviceIds.Contains(x.ReferralServiceId)).ToList();
+                .ToListAsync(cancellationToken);
 
             pageNumber++;
             currentCount = entities.Count;
 
             if (!string.IsNullOrEmpty(request.Email))
             {
-                entities = entities.Where(x => x.Recipient.Email!.ToLower() == request.Email.ToLower()).ToList();
+                entities = entities.Where(x => x.Email!.ToLower() == request.Email.ToLower()).ToList();
             }
             else if (!string.IsNullOrEmpty(request.Telephone))
             {
-                entities = entities.Where(x => x.Recipient.Telephone == request.Telephone).ToList();
+                entities = entities.Where(x => x.Telephone == request.Telephone).ToList();
             }
             else if (!string.IsNullOrEmpty(request.Textphone))
             {
-                entities = entities.Where(x => x.Recipient.TextPhone == request.Textphone).ToList();
+                entities = entities.Where(x => x.TextPhone == request.Textphone).ToList();
             }
             else if (!string.IsNullOrEmpty(request.Name) && !string.IsNullOrEmpty(request.Postcode))
             {
-                entities = entities.Where(x => x.Recipient.Name.ToLower() == request.Name.ToLower() && x.Recipient.PostCode!.ToUpper() == request.Postcode.ToUpper()).ToList();
+                entities = entities.Where(x => x.Name.ToLower() == request.Name.ToLower() && x.PostCode!.ToUpper() == request.Postcode.ToUpper()).ToList();
             }
 
-            var mappedList = _mapper.Map<List<ReferralDto>>(entities);
-            if (mappedList.Any())
+            if (entities.Any())
             {
-                results.AddRange(mappedList);
+                recipients.AddRange(entities);
             }
-            
 
-        } while(currentCount > 999);
+        } while (currentCount > 999);
+
+        if (recipients.Any()) 
+        {
+            List<long> recipientIds = recipients.Select(x => x.Id).ToList();
+
+            var entities = await _context.Referrals.GetAll()
+                .AsNoTracking()
+                .Where(x => recipientIds.Contains(x.RecipientId)).ToListAsync(cancellationToken);
+
+            if (entities.Any()) 
+            {
+                var mappedList = _mapper.Map<List<ReferralDto>>(entities);
+                if (mappedList.Any())
+                {
+                    results.AddRange(mappedList);
+                }
+            }
+
+        }
 
         return results;
     }

@@ -63,7 +63,7 @@ public class MinimalReferralEndPoints
 
         }).WithMetadata(new SwaggerOperationAttribute("Get Referrals", "Get Referrals By Organisation Id") { Tags = new[] { "Referrals" } });
 
-        app.MapGet("api/referral/{id}", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole+","+RoleGroups.VcsProfessionalOrDualRole)] async (long id, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
+        app.MapGet("api/referral/{id}", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole+","+RoleGroups.VcsProfessionalOrDualRole+","+ RoleTypes.LaManager)] async (long id, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
         {
             (long accountId, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
            
@@ -78,7 +78,7 @@ public class MinimalReferralEndPoints
                 return await SetForbidden<ReferralDto>(httpContext);
             }
 
-            if (role is RoleTypes.LaManager or RoleTypes.LaProfessional or RoleTypes.LaDualRole
+            if (role is RoleTypes.LaProfessional or RoleTypes.LaDualRole
                 && accountId != result.ReferralUserAccountDto.Id)
             {
                 return await SetForbidden<ReferralDto>(httpContext);
