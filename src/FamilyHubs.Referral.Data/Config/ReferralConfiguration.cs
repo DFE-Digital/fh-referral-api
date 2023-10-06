@@ -14,7 +14,7 @@ public class ReferralConfiguration : IEntityTypeConfiguration<Data.Entities.Refe
         builder.Navigation(e => e.Status).AutoInclude();
 
         builder.Property(t => t.ReferrerTelephone)
-            .HasMaxLength(20);
+            .HasMaxLength(50);
 
         builder.Property(t => t.Created)
             .IsRequired();

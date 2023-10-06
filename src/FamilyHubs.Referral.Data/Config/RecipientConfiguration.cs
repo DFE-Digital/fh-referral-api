@@ -12,25 +12,25 @@ public class RecipientConfiguration : IEntityTypeConfiguration<Recipient>
             .IsRequired();
 
         builder.Property(t => t.AddressLine1)
-            .HasMaxLength(100);
+            .HasMaxLength(500);
 
         builder.Property(t => t.AddressLine2)
-            .HasMaxLength(100);
+            .HasMaxLength(500);
 
         builder.Property(t => t.TownOrCity)
-            .HasMaxLength(60);
+            .HasMaxLength(100);
 
         builder.Property(t => t.County)
-            .HasMaxLength(60);
+            .HasMaxLength(100);
 
         builder.Property(t => t.PostCode)
-            .HasMaxLength(15);
+            .HasMaxLength(30);
 
         builder.Property(t => t.Telephone)
-            .HasMaxLength(20);
+            .HasMaxLength(50);
 
         builder.Property(t => t.TextPhone)
-            .HasMaxLength(20);
+            .HasMaxLength(50);
 
         builder.Property(t => t.Created)
             .IsRequired();
