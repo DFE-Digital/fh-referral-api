@@ -8,7 +8,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Azure.Messaging.EventGrid" Version="4.18.0" />
-		<PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="2.0.6" />
+		<PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="2.0.7" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.7.1" />
 		<PackageReference Include="LinqKit.Core" Version="1.2.4" />
 		<PackageReference Include="MediatR" Version="12.1.1" />

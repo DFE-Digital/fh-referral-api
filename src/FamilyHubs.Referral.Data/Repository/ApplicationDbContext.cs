@@ -71,6 +71,22 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         modelBuilder.Entity<Entities.Organisation>().Property(c => c.Id).ValueGeneratedNever();
         modelBuilder.Entity<Entities.UserAccount>().Property(c => c.Id).ValueGeneratedNever();
 
+        var organisationEntity = modelBuilder.Entity<Organisation>();
+        organisationEntity.Property(x => x.CreatedBy).IsEncrypted();
+        organisationEntity.Property(x => x.LastModifiedBy).IsEncrypted();
+
+        var referralServiceEntity = modelBuilder.Entity<Data.Entities.ReferralService>();
+        referralServiceEntity.Property(x => x.CreatedBy).IsEncrypted();
+        referralServiceEntity.Property(x => x.LastModifiedBy).IsEncrypted();
+
+        var roleEntity = modelBuilder.Entity<Data.Entities.Role>();
+        roleEntity.Property(x => x.CreatedBy).IsEncrypted();
+        roleEntity.Property(x => x.LastModifiedBy).IsEncrypted();
+
+        var statusEntity = modelBuilder.Entity<Data.Entities.Status>();
+        statusEntity.Property(x => x.CreatedBy).IsEncrypted();
+        statusEntity.Property(x => x.LastModifiedBy).IsEncrypted();
+
         var recipientEntity = modelBuilder.Entity<Recipient>();
         recipientEntity.Property(x => x.Name).IsRequired().IsEncrypted();
         recipientEntity.Property(x => x.Email).IsEncrypted();
@@ -81,17 +97,35 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         recipientEntity.Property(x => x.TownOrCity).IsEncrypted();
         recipientEntity.Property(x => x.County).IsEncrypted();
         recipientEntity.Property(x => x.PostCode).IsEncrypted();
+        recipientEntity.Property(x => x.CreatedBy).IsEncrypted();
+        recipientEntity.Property(x => x.LastModifiedBy).IsEncrypted();
 
         var referralEntity = modelBuilder.Entity<Data.Entities.Referral>();
         referralEntity.Property(x => x.ReasonForSupport).IsEncrypted();
         referralEntity.Property(x => x.EngageWithFamily).IsEncrypted();
         referralEntity.Property(x => x.ReasonForDecliningSupport).IsEncrypted();
+        referralEntity.Property(x => x.CreatedBy).IsEncrypted();
+        referralEntity.Property(x => x.LastModifiedBy).IsEncrypted();
 
         var userEntity = modelBuilder.Entity<UserAccount>();
         userEntity.Property(x => x.EmailAddress).IsRequired().IsEncrypted();
         userEntity.Property(x => x.Name).IsEncrypted();
         userEntity.Property(x => x.PhoneNumber).IsEncrypted();
         userEntity.Property(x => x.Team).IsEncrypted();
+        userEntity.Property(x => x.CreatedBy).IsEncrypted();
+        userEntity.Property(x => x.LastModifiedBy).IsEncrypted();
+
+        var userAccountOrganisationEntity = modelBuilder.Entity<Data.Entities.UserAccountOrganisation>();
+        userAccountOrganisationEntity.Property(x => x.CreatedBy).IsEncrypted();
+        userAccountOrganisationEntity.Property(x => x.LastModifiedBy).IsEncrypted();
+
+        var userAccountRoleEntity = modelBuilder.Entity<Data.Entities.UserAccountRole>();
+        userAccountRoleEntity.Property(x => x.CreatedBy).IsEncrypted();
+        userAccountRoleEntity.Property(x => x.LastModifiedBy).IsEncrypted();
+
+        var userAccountRoleService = modelBuilder.Entity<Data.Entities.UserAccountService>();
+        userAccountRoleService.Property(x => x.CreatedBy).IsEncrypted();
+        userAccountRoleService.Property(x => x.LastModifiedBy).IsEncrypted();
 
         modelBuilder.UseEncryption(this._provider);
 
