@@ -1,5 +1,6 @@
 ﻿using Ardalis.GuardClauses;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
@@ -106,7 +107,7 @@ public class GetReferralsByRecipientHandler : IRequestHandler<GetReferralsByReci
 
             if (entities.Any()) 
             {
-                var mappedList = _mapper.Map<List<ReferralDto>>(entities);
+                var mappedList = entities.AsQueryable().ProjectTo<ReferralDto>(_mapper.ConfigurationProvider);
                 if (mappedList.Any())
                 {
                     results.AddRange(mappedList);
