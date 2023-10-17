@@ -65,8 +65,10 @@ public class MinimalReferralEndPoints
 
         app.MapGet("api/referral/{id}", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole+","+RoleGroups.VcsProfessionalOrDualRole+","+ RoleTypes.LaManager)] async (long id, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
         {
+#pragma warning disable S1481
             (long accountId, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
-           
+#pragma warning restore S1481
+
             GetReferralByIdCommand request = new(id);
             var result = await _mediator.Send(request, cancellationToken);
 
@@ -74,12 +76,6 @@ public class MinimalReferralEndPoints
             // VcsManagers will be blocked at the endpoint, but the check still makes sense here
             if (role is RoleTypes.VcsManager or RoleTypes.VcsProfessional or RoleTypes.VcsDualRole
                 && result.ReferralServiceDto.OrganisationDto.Id != organisationId)
-            {
-                return await SetForbidden<ReferralDto>(httpContext);
-            }
-
-            if (role is RoleTypes.LaProfessional or RoleTypes.LaDualRole
-                && accountId != result.ReferralUserAccountDto.Id)
             {
                 return await SetForbidden<ReferralDto>(httpContext);
             }
