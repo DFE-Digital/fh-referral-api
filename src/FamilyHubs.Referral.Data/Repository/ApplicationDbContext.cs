@@ -50,7 +50,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     private byte[] ConvertStringToByteArray(string value)
     {
-
         List<byte> bytes = new List<byte>();
         string[] parts = value.Split(',');
         foreach (string part in parts)
@@ -68,8 +67,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         modelBuilder.Entity<Entities.ReferralService>().Property(c => c.Id).ValueGeneratedNever();
-        modelBuilder.Entity<Entities.Organisation>().Property(c => c.Id).ValueGeneratedNever();
-        modelBuilder.Entity<Entities.UserAccount>().Property(c => c.Id).ValueGeneratedNever();
+        modelBuilder.Entity<Organisation>().Property(c => c.Id).ValueGeneratedNever();
+        modelBuilder.Entity<UserAccount>().Property(c => c.Id).ValueGeneratedNever();
 
         var organisationEntity = modelBuilder.Entity<Organisation>();
         organisationEntity.Property(x => x.CreatedBy).IsEncrypted();

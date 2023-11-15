@@ -11,7 +11,10 @@ public class UserAccountRoleConfiguration : IEntityTypeConfiguration<UserAccount
         builder.Property(t => t.Created)
             .IsRequired();
         builder.Property(t => t.CreatedBy)
-            .HasMaxLength(255)
+            .HasMaxLength(Consts.AuditByMaxLength)
             .IsRequired();
+
+        builder.Property(t => t.LastModifiedBy)
+            .HasMaxLength(Consts.AuditByMaxLength);
     }
 }
