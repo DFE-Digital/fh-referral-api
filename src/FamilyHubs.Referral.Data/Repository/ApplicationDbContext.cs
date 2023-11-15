@@ -78,11 +78,11 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         referralServiceEntity.Property(x => x.CreatedBy).IsEncrypted();
         referralServiceEntity.Property(x => x.LastModifiedBy).IsEncrypted();
 
-        var roleEntity = modelBuilder.Entity<Data.Entities.Role>();
+        var roleEntity = modelBuilder.Entity<Role>();
         roleEntity.Property(x => x.CreatedBy).IsEncrypted();
         roleEntity.Property(x => x.LastModifiedBy).IsEncrypted();
 
-        var statusEntity = modelBuilder.Entity<Data.Entities.Status>();
+        var statusEntity = modelBuilder.Entity<Status>();
         statusEntity.Property(x => x.CreatedBy).IsEncrypted();
         statusEntity.Property(x => x.LastModifiedBy).IsEncrypted();
 

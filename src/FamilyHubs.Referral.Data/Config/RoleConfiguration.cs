@@ -15,10 +15,10 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
         builder.Property(t => t.Created)
             .IsRequired();
         builder.Property(t => t.CreatedBy)
-            .HasMaxLength(Consts.AuditByMaxLength)
+            .HasMaxLength(Consts.EmailMaxLength)
             .IsRequired();
 
         builder.Property(t => t.LastModifiedBy)
-            .HasMaxLength(Consts.AuditByMaxLength);
+            .HasMaxLength(Consts.EmailMaxLength);
     }
 }
