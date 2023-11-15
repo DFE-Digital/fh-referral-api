@@ -10,15 +10,15 @@ public class UserAccountConfiguration : IEntityTypeConfiguration<UserAccount>
     {
         builder.Property(t => t.Name)
             .IsRequired()
-            .HasMaxLength(Consts.NameMaxLength);
+            .HasMaxLength(MaxLength.Name);
 
         builder.Property(t => t.Created)
             .IsRequired();
         builder.Property(t => t.CreatedBy)
-            .HasMaxLength(Consts.EmailMaxLength)
+            .HasMaxLength(MaxLength.Email)
             .IsRequired();
 
         builder.Property(t => t.LastModifiedBy)
-            .HasMaxLength(Consts.EmailMaxLength);
+            .HasMaxLength(MaxLength.Email);
     }
 }

@@ -15,10 +15,10 @@ public class ReferralOrganisationConfiguration : IEntityTypeConfiguration<Organi
         builder.Property(t => t.Created)
             .IsRequired();
         builder.Property(t => t.CreatedBy)
-            .HasMaxLength(Consts.EmailMaxLength)
+            .HasMaxLength(MaxLength.Email)
             .IsRequired();
 
         builder.Property(t => t.LastModifiedBy)
-            .HasMaxLength(Consts.EmailMaxLength);
+            .HasMaxLength(MaxLength.Email);
     }
 }
