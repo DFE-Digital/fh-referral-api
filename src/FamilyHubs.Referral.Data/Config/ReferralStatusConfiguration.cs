@@ -18,7 +18,10 @@ public class ReferralStatusConfiguration : IEntityTypeConfiguration<Status>
         builder.Property(t => t.Created)
             .IsRequired();
         builder.Property(t => t.CreatedBy)
-            .HasMaxLength(255)
+            .HasMaxLength(MaxLength.Email)
             .IsRequired();
+
+        builder.Property(t => t.LastModifiedBy)
+            .HasMaxLength(MaxLength.Email);
     }
 }

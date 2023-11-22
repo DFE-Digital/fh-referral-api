@@ -50,7 +50,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     private byte[] ConvertStringToByteArray(string value)
     {
-
         List<byte> bytes = new List<byte>();
         string[] parts = value.Split(',');
         foreach (string part in parts)
@@ -68,8 +67,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         modelBuilder.Entity<Entities.ReferralService>().Property(c => c.Id).ValueGeneratedNever();
-        modelBuilder.Entity<Entities.Organisation>().Property(c => c.Id).ValueGeneratedNever();
-        modelBuilder.Entity<Entities.UserAccount>().Property(c => c.Id).ValueGeneratedNever();
+        modelBuilder.Entity<Organisation>().Property(c => c.Id).ValueGeneratedNever();
+        modelBuilder.Entity<UserAccount>().Property(c => c.Id).ValueGeneratedNever();
 
         var organisationEntity = modelBuilder.Entity<Organisation>();
         organisationEntity.Property(x => x.CreatedBy).IsEncrypted();
@@ -79,11 +78,11 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         referralServiceEntity.Property(x => x.CreatedBy).IsEncrypted();
         referralServiceEntity.Property(x => x.LastModifiedBy).IsEncrypted();
 
-        var roleEntity = modelBuilder.Entity<Data.Entities.Role>();
+        var roleEntity = modelBuilder.Entity<Role>();
         roleEntity.Property(x => x.CreatedBy).IsEncrypted();
         roleEntity.Property(x => x.LastModifiedBy).IsEncrypted();
 
-        var statusEntity = modelBuilder.Entity<Data.Entities.Status>();
+        var statusEntity = modelBuilder.Entity<Status>();
         statusEntity.Property(x => x.CreatedBy).IsEncrypted();
         statusEntity.Property(x => x.LastModifiedBy).IsEncrypted();
 
