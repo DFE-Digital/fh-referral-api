@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FamilyHubs.Referral.Data.Config;
 
-
 public class ReferralServiceConfiguration : IEntityTypeConfiguration<Entities.ReferralService>
 {
     public void Configure(EntityTypeBuilder<Entities.ReferralService> builder)
@@ -23,8 +22,11 @@ public class ReferralServiceConfiguration : IEntityTypeConfiguration<Entities.Re
         builder.Property(t => t.Created)
             .IsRequired();
         builder.Property(t => t.CreatedBy)
-            .HasMaxLength(255)
+            .HasMaxLength(MaxLength.Email)
             .IsRequired();
+
+        builder.Property(t => t.LastModifiedBy)
+            .HasMaxLength(MaxLength.Email);
     }
 }
 

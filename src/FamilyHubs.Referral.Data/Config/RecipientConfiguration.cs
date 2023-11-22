@@ -9,12 +9,19 @@ public class RecipientConfiguration : IEntityTypeConfiguration<Recipient>
     public void Configure(EntityTypeBuilder<Recipient> builder)
     {
         builder.Property(t => t.Name)
+            .HasMaxLength(MaxLength.Name)
             .IsRequired();
+
+        builder.Property(t => t.Email)
+            .HasMaxLength(MaxLength.Email);
 
         builder.Property(t => t.Created)
             .IsRequired();
         builder.Property(t => t.CreatedBy)
-            .HasMaxLength(255)
+            .HasMaxLength(MaxLength.Email)
             .IsRequired();
+
+        builder.Property(t => t.LastModifiedBy)
+            .HasMaxLength(MaxLength.Email);
     }
 }
