@@ -9,7 +9,7 @@ public class MinimalGeneralEndPoints
         app.MapGet("api/info", (ILogger<MinimalGeneralEndPoints> logger) =>
         {
             logger.LogInformation("api/info called");
-            var assembly = typeof(WebMarker).Assembly;
+            var assembly = typeof(MinimalGeneralEndPoints).Assembly;
 
             var creationDate = File.GetCreationTime(assembly.Location);
             var version = FileVersionInfo.GetVersionInfo(assembly.Location).ProductVersion;
