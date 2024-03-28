@@ -75,7 +75,8 @@ public class GetReferralsByRecipientHandler : IRequestHandler<GetReferralsByReci
 
             if (!string.IsNullOrEmpty(request.Email))
             {
-                entities = entities.Where(x => x.Email!.ToLower() == request.Email.ToLower()).ToList();
+                string requestEmail = request.Email.ToLower();
+                entities = entities.Where(x => x.Email?.ToLower() == requestEmail).ToList();
             }
             else if (!string.IsNullOrEmpty(request.Telephone))
             {
