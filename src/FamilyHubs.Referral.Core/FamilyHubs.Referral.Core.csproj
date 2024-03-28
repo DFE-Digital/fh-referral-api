@@ -4,11 +4,12 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Azure.Messaging.EventGrid" Version="4.18.0" />
-		<PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="7.4.0" />
+		<PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="8.1.0" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.7.1" />
 		<PackageReference Include="LinqKit.Core" Version="1.2.4" />
 		<PackageReference Include="MediatR" Version="12.1.1" />
