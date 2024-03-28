@@ -4,7 +4,8 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-	<ImplicitUsings>enable</ImplicitUsings>
+	  <NoWarn>S1135</NoWarn>
+	  <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>FamilyHubs.Referral.Api</RootNamespace>
 	<Version>1.0.0</Version>
 	<UserSecretsId>b091cbeb-017f-42b7-bd1e-f43123e62aa4</UserSecretsId>
@@ -17,6 +18,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.23.0.88079">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
   </ItemGroup>
