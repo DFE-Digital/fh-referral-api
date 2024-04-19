@@ -10,13 +10,13 @@ namespace FamilyHubs.Referral.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
+            // was this migration necessary?
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-
+            // was this migration necessary?
         }
     }
 }
