@@ -137,6 +137,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         }
         return entity;
     }
+
     private async Task<Data.Entities.Referral> AttachExistingService(Data.Entities.Referral entity)
     {
         Data.Entities.ReferralService? referralService = _context.ReferralServices.SingleOrDefault(x => x.Id == entity.ReferralService.Id);
@@ -148,10 +149,24 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
                 throw new ArgumentException($"Failed to return Service from service directory for Id = {entity.ReferralService.Id}");
             }
 
-            ServiceDirectory.Shared.Dto.OrganisationDto? sdOrganisation = await _serviceDirectoryService.GetOrganisationById(sdService.OrganisationId);
-            if (sdOrganisation == null)
+            // check if the organization already exists
+            //todo: do we need to update the organisation from the sd, if it already exists?
+            Organisation? organisation = await _context.Organisations.FindAsync(sdService.OrganisationId);
+            if (organisation == null)
             {
-                throw new ArgumentException($"Failed to return Organisation from service directory for Id = {sdService.OrganisationId}");
+                ServiceDirectory.Shared.Dto.OrganisationDto? sdOrganisation = await _serviceDirectoryService.GetOrganisationById(sdService.OrganisationId);
+                if (sdOrganisation == null)
+                {
+                    throw new ArgumentException($"Failed to return Organisation from service directory for Id = {sdService.OrganisationId}");
+                }
+
+                //todo: Organisation has a ReferralServiceId, but an organisation can have multiple services
+                organisation = new Organisation
+                {
+                    Id = sdOrganisation.Id,
+                    Name = sdOrganisation.Name,
+                    Description = sdOrganisation.Description
+                };
             }
 
             Data.Entities.ReferralService srv = new Data.Entities.ReferralService
@@ -159,13 +174,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
                 Id = sdService.Id,
                 Name = sdService.Name,
                 Description = sdService.Description,
-                Organisation = new Organisation
-                {
-                    Id = sdOrganisation.Id,
-                    ReferralServiceId = sdService.Id,
-                    Name = sdOrganisation.Name,
-                    Description = sdOrganisation.Description,
-                }
+                Organisation = organisation
             };
 
             _context.ReferralServices.Add(srv);
