@@ -160,11 +160,12 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
                     throw new ArgumentException($"Failed to return Organisation from service directory for Id = {sdService.OrganisationId}");
                 }
 
+                //todo: Organisation has a ReferralServiceId, but an organisation can have multiple services
                 organisation = new Organisation
                 {
                     Id = sdOrganisation.Id,
                     Name = sdOrganisation.Name,
-                    Description = sdOrganisation.Description,
+                    Description = sdOrganisation.Description
                 };
             }
 
