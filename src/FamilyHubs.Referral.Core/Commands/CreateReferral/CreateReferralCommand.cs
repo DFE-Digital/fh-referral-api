@@ -150,6 +150,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
             }
 
             // check if the organization already exists
+            //todo: do we need to update the organisation from the sd, if it already exists?
             Organisation? organisation = await _context.Organisations.FindAsync(sdService.OrganisationId);
             if (organisation == null)
             {
