@@ -137,6 +137,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         }
         return entity;
     }
+
     private async Task<Data.Entities.Referral> AttachExistingService(Data.Entities.Referral entity)
     {
         Data.Entities.ReferralService? referralService = _context.ReferralServices.SingleOrDefault(x => x.Id == entity.ReferralService.Id);
@@ -179,4 +180,50 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         }
         return entity;
     }
+
+    //private async Task<Data.Entities.Referral> AttachExistingService(Data.Entities.Referral entity)
+    //{
+    //    Data.Entities.ReferralService? referralService = _context.ReferralServices.SingleOrDefault(x => x.Id == entity.ReferralService.Id);
+    //    if (referralService == null)
+    //    {
+    //        ServiceDirectory.Shared.Dto.ServiceDto? sdService = await _serviceDirectoryService.GetServiceById(entity.ReferralService.Id);
+    //        if (sdService == null)
+    //        {
+    //            throw new ArgumentException($"Failed to return Service from service directory for Id = {entity.ReferralService.Id}");
+    //        }
+
+    //        ServiceDirectory.Shared.Dto.OrganisationDto? sdOrganisation = await _serviceDirectoryService.GetOrganisationById(sdService.OrganisationId);
+    //        if (sdOrganisation == null)
+    //        {
+    //            throw new ArgumentException($"Failed to return Organisation from service directory for Id = {sdService.OrganisationId}");
+    //        }
+
+    //        // check if the organization already exists
+    //        Organisation existingOrganisation = await _context.Organisations.FindAsync(sdOrganisation.Id)
+    //                                            ?? new Organisation
+    //        {
+    //            Id = sdOrganisation.Id,
+    //            Name = sdOrganisation.Name,
+    //            Description = sdOrganisation.Description,
+    //        };
+
+    //        Data.Entities.ReferralService srv = new Data.Entities.ReferralService
+    //        {
+    //            Id = sdService.Id,
+    //            Name = sdService.Name,
+    //            Description = sdService.Description,
+    //            Organisation = existingOrganisation,
+    //        };
+
+    //        _context.ReferralServices.Add(srv);
+    //        await _context.SaveChangesAsync();
+    //        referralService = _context.ReferralServices.SingleOrDefault(x => x.Id == entity.ReferralService.Id);
+    //    }
+
+    //    if (referralService != null)
+    //    {
+    //        entity.ReferralService = referralService;
+    //    }
+    //    return entity;
+    //}
 }
