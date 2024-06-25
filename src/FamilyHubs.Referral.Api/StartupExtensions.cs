@@ -17,8 +17,8 @@ using Serilog.Events;
 using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Security;
-using Microsoft.VisualBasic;
 using FamilyHubs.Referral.Core.ClientServices;
+using FamilyHubs.SharedKernel.Razor.Health;
 
 namespace FamilyHubs.Referral.Api;
 
@@ -69,6 +69,8 @@ public static class StartupExtensions
 
         services.AddBearerAuthentication(configuration);
 
+        services.AddFamilyHubsHealthChecks(configuration);
+
         services.RegisterAppDbContext(configuration);
 
         services.RegisterMinimalEndPoints();
@@ -100,7 +102,6 @@ public static class StartupExtensions
 
     private static void RegisterMinimalEndPoints(this IServiceCollection services)
     {
-        services.AddTransient<MinimalGeneralEndPoints>();
         services.AddTransient<MinimalReferralEndPoints>();
         services.AddTransient<MinimalUserAccountEndPoints>();
     }
@@ -202,15 +203,14 @@ public static class StartupExtensions
 
         webApplication.MapControllers();
 
+        webApplication.MapFamilyHubsHealthChecks(typeof(StartupExtensions).Assembly);
+
         await RegisterEndPoints(webApplication);
     }
 
     private static async Task RegisterEndPoints(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
-
-        var genapi = scope.ServiceProvider.GetService<MinimalGeneralEndPoints>();
-        genapi?.RegisterMinimalGeneralEndPoints(app);
 
         var referralApi = scope.ServiceProvider.GetService<MinimalReferralEndPoints>();
         referralApi?.RegisterReferralEndPoints(app);
