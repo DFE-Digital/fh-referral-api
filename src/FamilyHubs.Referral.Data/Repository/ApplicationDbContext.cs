@@ -1,4 +1,5 @@
 ﻿using FamilyHubs.Referral.Data.Entities;
+using FamilyHubs.Referral.Data.Entities.Metrics;
 using FamilyHubs.Referral.Data.Interceptors;
 using FamilyHubs.SharedKernel.Security;
 using Microsoft.EntityFrameworkCore;
@@ -99,7 +100,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         recipientEntity.Property(x => x.CreatedBy).IsEncrypted();
         recipientEntity.Property(x => x.LastModifiedBy).IsEncrypted();
 
-        var referralEntity = modelBuilder.Entity<Data.Entities.Referral>();
+        var referralEntity = modelBuilder.Entity<Entities.Referral>();
         referralEntity.Property(x => x.ReasonForSupport).IsEncrypted();
         referralEntity.Property(x => x.EngageWithFamily).IsEncrypted();
         referralEntity.Property(x => x.ReasonForDecliningSupport).IsEncrypted();
@@ -114,17 +115,21 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         userEntity.Property(x => x.CreatedBy).IsEncrypted();
         userEntity.Property(x => x.LastModifiedBy).IsEncrypted();
 
-        var userAccountOrganisationEntity = modelBuilder.Entity<Data.Entities.UserAccountOrganisation>();
+        var userAccountOrganisationEntity = modelBuilder.Entity<UserAccountOrganisation>();
         userAccountOrganisationEntity.Property(x => x.CreatedBy).IsEncrypted();
         userAccountOrganisationEntity.Property(x => x.LastModifiedBy).IsEncrypted();
 
-        var userAccountRoleEntity = modelBuilder.Entity<Data.Entities.UserAccountRole>();
+        var userAccountRoleEntity = modelBuilder.Entity<UserAccountRole>();
         userAccountRoleEntity.Property(x => x.CreatedBy).IsEncrypted();
         userAccountRoleEntity.Property(x => x.LastModifiedBy).IsEncrypted();
 
-        var userAccountRoleService = modelBuilder.Entity<Data.Entities.UserAccountService>();
+        var userAccountRoleService = modelBuilder.Entity<UserAccountService>();
         userAccountRoleService.Property(x => x.CreatedBy).IsEncrypted();
         userAccountRoleService.Property(x => x.LastModifiedBy).IsEncrypted();
+
+        var connectionRequestsSentMetricEntity = modelBuilder.Entity<ConnectionRequestsSentMetric>();
+        connectionRequestsSentMetricEntity.Property(x => x.CreatedBy).IsEncrypted();
+        connectionRequestsSentMetricEntity.Property(x => x.LastModifiedBy).IsEncrypted();
 
         modelBuilder.UseEncryption(this._provider);
 
@@ -139,7 +144,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     public DbSet<Organisation> Organisations => Set<Organisation>();
     public DbSet<Recipient> Recipients => Set<Recipient>();
-    public DbSet<Data.Entities.Referral> Referrals => Set<Data.Entities.Referral>(); 
+    public DbSet<Entities.Referral> Referrals => Set<Entities.Referral>();
     public DbSet<Entities.ReferralService> ReferralServices => Set<Entities.ReferralService>();
     public DbSet<Status> Statuses => Set<Status>();
     public DbSet<Role> Roles => Set<Role>();
@@ -147,4 +152,5 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<UserAccountOrganisation> UserAccountOrganisations => Set<UserAccountOrganisation>();
     public DbSet<UserAccountRole> UserAccountRoles => Set<UserAccountRole>();
     public DbSet<UserAccountService> UserAccountServices => Set<UserAccountService>();
+    public DbSet<ConnectionRequestsSentMetric> ConnectionRequestsSentMetric => Set<ConnectionRequestsSentMetric>();
 }
