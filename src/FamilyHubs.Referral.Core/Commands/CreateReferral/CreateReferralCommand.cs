@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Net;
+using AutoMapper;
 using FamilyHubs.Referral.Core.ClientServices;
 using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Data.Entities;
@@ -15,14 +16,16 @@ namespace FamilyHubs.Referral.Core.Commands.CreateReferral;
 
 public class CreateReferralCommand : IRequest<ReferralResponse>, ICreateReferralCommand
 {
-    public CreateReferralCommand(ReferralDto referralDto, FamilyHubsUser familyHubsUser)
+    public CreateReferralCommand(ReferralDto referralDto, string traceIdentifier) //, FamilyHubsUser familyHubsUser)
     {
         ReferralDto = referralDto;
-        FamilyHubsUser = familyHubsUser;
+        TraceIdentifier = traceIdentifier;
+        //FamilyHubsUser = familyHubsUser;
     }
 
     public ReferralDto ReferralDto { get; }
-    public FamilyHubsUser FamilyHubsUser { get; }
+    //public FamilyHubsUser FamilyHubsUser { get; }
+    public string TraceIdentifier { get; }
 }
 
 public class CreateReferralCommandHandler : IRequestHandler<CreateReferralCommand, ReferralResponse>
@@ -41,7 +44,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     public async Task<ReferralResponse> Handle(CreateReferralCommand request, CancellationToken cancellationToken)
     {
-        await WriteCreateReferralMetrics();
+        await WriteCreateReferralMetrics(request);
 
         ReferralResponse referralResponse;
         if (_context.Database.IsSqlServer())
@@ -76,13 +79,21 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         return referralResponse;
     }
 
-    private async Task WriteCreateReferralMetrics()
+    private async Task WriteCreateReferralMetrics(CreateReferralCommand request)
     {
+        //todo: this isn't currently passed
+        long? organisationId = request.ReferralDto.ReferralUserAccountDto.OrganisationUserAccounts?.FirstOrDefault()?.OrganisationId;
+        if (organisationId == null)
+        {
+            //todo: should really be decoupled, but this is simple
+            throw new HttpRequestException("OrganisationId is null", null, HttpStatusCode.BadRequest);
+        }
+
         var metrics = new ConnectionRequestsSentMetric
         {
-            OrganisationId = 0,
-            UserAccountId = 0,
-            RequestTimestamp = default,
+            OrganisationId = organisationId.Value,
+            UserAccountId = request.ReferralDto.ReferralUserAccountDto.Id,
+            RequestTimestamp = DateTime.UtcNow,
             RequestCorrelationId = default,
             ResponseTimestamp = null,
             HttpResponseCode = null,

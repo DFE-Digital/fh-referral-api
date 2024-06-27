@@ -21,7 +21,7 @@ public class MinimalReferralEndPoints
     {
         app.MapPost("api/referrals", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole)] async ([FromBody] ReferralDto request, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
         {
-            CreateReferralCommand command = new(request, httpContext.GetFamilyHubsUser());
+            CreateReferralCommand command = new(request, httpContext.TraceIdentifier);
             var result = await _mediator.Send(command, cancellationToken);
             return result;
             
