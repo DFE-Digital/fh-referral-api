@@ -17,7 +17,6 @@ using Serilog.Events;
 using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Security;
-using Microsoft.VisualBasic;
 using FamilyHubs.Referral.Core.ClientServices;
 
 namespace FamilyHubs.Referral.Api;
