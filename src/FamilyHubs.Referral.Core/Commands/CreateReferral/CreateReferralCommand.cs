@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
 using AutoMapper;
 using FamilyHubs.Referral.Core.ClientServices;
 using FamilyHubs.Referral.Core.Interfaces.Commands;
@@ -7,7 +8,6 @@ using FamilyHubs.Referral.Data.Entities.Metrics;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Models;
-using FamilyHubs.SharedKernel.Identity.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -16,16 +16,12 @@ namespace FamilyHubs.Referral.Core.Commands.CreateReferral;
 
 public class CreateReferralCommand : IRequest<ReferralResponse>, ICreateReferralCommand
 {
-    public CreateReferralCommand(ReferralDto referralDto, string traceIdentifier) //, FamilyHubsUser familyHubsUser)
+    public CreateReferralCommand(ReferralDto referralDto)
     {
         ReferralDto = referralDto;
-        TraceIdentifier = traceIdentifier;
-        //FamilyHubsUser = familyHubsUser;
     }
 
     public ReferralDto ReferralDto { get; }
-    //public FamilyHubsUser FamilyHubsUser { get; }
-    public string TraceIdentifier { get; }
 }
 
 public class CreateReferralCommandHandler : IRequestHandler<CreateReferralCommand, ReferralResponse>
@@ -94,7 +90,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
             OrganisationId = organisationId.Value,
             UserAccountId = request.ReferralDto.ReferralUserAccountDto.Id,
             RequestTimestamp = DateTime.UtcNow,
-            RequestCorrelationId = request.TraceIdentifier,
+            RequestCorrelationId = Activity.Current!.TraceId.ToString(),
             ResponseTimestamp = null,
             HttpResponseCode = null,
             ConnectionRequestId = null,
