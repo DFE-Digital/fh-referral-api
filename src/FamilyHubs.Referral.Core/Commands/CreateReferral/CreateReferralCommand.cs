@@ -77,7 +77,6 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     private async Task WriteCreateReferralMetrics(CreateReferralCommand request)
     {
-        //todo: this isn't currently passed
         long? organisationId = request.ReferralDto.ReferralUserAccountDto.OrganisationUserAccounts?.FirstOrDefault()?.OrganisationId;
         if (organisationId == null)
         {
