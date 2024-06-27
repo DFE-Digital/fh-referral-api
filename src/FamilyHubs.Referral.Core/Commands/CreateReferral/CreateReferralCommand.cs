@@ -94,7 +94,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
             OrganisationId = organisationId.Value,
             UserAccountId = request.ReferralDto.ReferralUserAccountDto.Id,
             RequestTimestamp = DateTime.UtcNow,
-            RequestCorrelationId = default,
+            RequestCorrelationId = request.TraceIdentifier,
             ResponseTimestamp = null,
             HttpResponseCode = null,
             ConnectionRequestId = null,
