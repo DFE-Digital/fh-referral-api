@@ -4,9 +4,10 @@ public class ConnectionRequestsSentMetric : EntityBase<long>
 {
     public long OrganisationId { get; set; }
     public long UserAccountId { get; set; }
-    public DateTime ConnectionRequestSentTimestamp { get; set; }
-    public Guid CorrelationId { get; set; }
+    public DateTime RequestTimestamp { get; set; }
+    public Guid RequestCorrelationId { get; set; }
+    public DateTime? ResponseTimestamp { get; set; }
+    public byte? HttpResponseCode { get; set; }
     public long? ConnectionRequestId { get; set; }
-    public string? ConnectionRequestReference { get; set; }
-    public DateTime? ConnectionRequestReferenceSetTimestamp { get; set; }
+    public string? ConnectionRequestReferenceCode { get; set; }
 }

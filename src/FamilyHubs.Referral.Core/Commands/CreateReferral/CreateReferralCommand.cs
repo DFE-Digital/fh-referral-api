@@ -82,11 +82,12 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         {
             OrganisationId = 0,
             UserAccountId = 0,
-            ConnectionRequestSentTimestamp = default,
-            CorrelationId = default,
+            RequestTimestamp = default,
+            RequestCorrelationId = default,
+            ResponseTimestamp = null,
+            HttpResponseCode = null,
             ConnectionRequestId = null,
-            ConnectionRequestReference = null,
-            ConnectionRequestReferenceSetTimestamp = null
+            ConnectionRequestReferenceCode = null
         };
 
         _context.Add(metrics);

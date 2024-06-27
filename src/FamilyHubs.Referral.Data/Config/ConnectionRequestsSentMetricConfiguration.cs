@@ -8,8 +8,8 @@ public class ConnectionRequestsSentMetricConfiguration : IEntityTypeConfiguratio
 {
     public void Configure(EntityTypeBuilder<ConnectionRequestsSentMetric> builder)
     {
-        builder.Property(t => t.ConnectionRequestReference)
-            .HasMaxLength(10);
+        builder.Property(t => t.ConnectionRequestReferenceCode)
+            .HasColumnType("nchar(6)"); ;
 
         //todo: better to have Created as non-nullable and don't explicitly set it as required?
         builder.Property(t => t.Created)
