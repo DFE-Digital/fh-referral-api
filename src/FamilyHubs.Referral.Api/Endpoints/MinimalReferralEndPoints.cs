@@ -8,12 +8,9 @@ using FamilyHubs.ReferralService.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.Identity.Client;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Net.Http;
 using System.Security.Claims;
 
 namespace FamilyHubs.Referral.Api.Endpoints;
@@ -22,9 +19,9 @@ public class MinimalReferralEndPoints
 {
     public void RegisterReferralEndPoints(WebApplication app)
     {
-        app.MapPost("api/referrals", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole)] async ([FromBody] ReferralDto request, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapPost("api/referrals", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole)] async ([FromBody] ReferralDto request, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
         {
-            CreateReferralCommand command = new(request);
+            CreateReferralCommand command = new(request, httpContext.GetFamilyHubsUser());
             var result = await _mediator.Send(command, cancellationToken);
             return result;
             

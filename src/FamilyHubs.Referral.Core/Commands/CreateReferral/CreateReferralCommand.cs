@@ -2,9 +2,11 @@
 using FamilyHubs.Referral.Core.ClientServices;
 using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Data.Entities;
+using FamilyHubs.Referral.Data.Entities.Metrics;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ReferralService.Shared.Models;
+using FamilyHubs.SharedKernel.Identity.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -13,12 +15,14 @@ namespace FamilyHubs.Referral.Core.Commands.CreateReferral;
 
 public class CreateReferralCommand : IRequest<ReferralResponse>, ICreateReferralCommand
 {
-    public CreateReferralCommand(ReferralDto referralDto)
+    public CreateReferralCommand(ReferralDto referralDto, FamilyHubsUser familyHubsUser)
     {
         ReferralDto = referralDto;
+        FamilyHubsUser = familyHubsUser;
     }
 
     public ReferralDto ReferralDto { get; }
+    public FamilyHubsUser FamilyHubsUser { get; }
 }
 
 public class CreateReferralCommandHandler : IRequestHandler<CreateReferralCommand, ReferralResponse>
@@ -37,6 +41,8 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     public async Task<ReferralResponse> Handle(CreateReferralCommand request, CancellationToken cancellationToken)
     {
+        await WriteCreateReferralMetrics();
+
         ReferralResponse referralResponse;
         if (_context.Database.IsSqlServer())
         {
@@ -68,6 +74,23 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
             
 
         return referralResponse;
+    }
+
+    private async Task WriteCreateReferralMetrics()
+    {
+        var metrics = new ConnectionRequestsSentMetric
+        {
+            OrganisationId = 0,
+            UserAccountId = 0,
+            ConnectionRequestSentTimestamp = default,
+            CorrelationId = default,
+            ConnectionRequestId = null,
+            ConnectionRequestReference = null,
+            ConnectionRequestReferenceSetTimestamp = null
+        };
+
+        _context.Add(metrics);
+        await _context.SaveChangesAsync();
     }
 
     private async Task<ReferralResponse> CreateAndUpdateReferral(CreateReferralCommand request, CancellationToken cancellationToken)
