@@ -18,65 +18,10 @@ namespace FamilyHubs.Referral.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.15")
+                .HasAnnotation("ProductVersion", "7.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Metrics.ConnectionRequestsSentMetric", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<long?>("ConnectionRequestId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("ConnectionRequestReference")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<DateTime?>("ConnectionRequestReferenceSetTimestamp")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ConnectionRequestSentTimestamp")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("CorrelationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("Created")
-                        .IsRequired()
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)")
-                        .HasAnnotation("Microsoft.EntityFrameworkCore.DataEncryption.IsEncrypted", true)
-                        .HasAnnotation("Microsoft.EntityFrameworkCore.DataEncryption.StorageFormat", StorageFormat.Default);
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)")
-                        .HasAnnotation("Microsoft.EntityFrameworkCore.DataEncryption.IsEncrypted", true)
-                        .HasAnnotation("Microsoft.EntityFrameworkCore.DataEncryption.StorageFormat", StorageFormat.Default);
-
-                    b.Property<long>("OrganisationId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("UserAccountId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ConnectionRequestsSentMetric");
-                });
 
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Organisation", b =>
                 {
@@ -120,7 +65,7 @@ namespace FamilyHubs.Referral.Data.Migrations
                         .IsUnique()
                         .HasFilter("[ReferralServiceId] IS NOT NULL");
 
-                    b.ToTable("Organisations");
+                    b.ToTable("Organisations", (string)null);
                 });
 
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Recipient", b =>
@@ -201,7 +146,7 @@ namespace FamilyHubs.Referral.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Recipients");
+                    b.ToTable("Recipients", (string)null);
                 });
 
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Referral", b =>
@@ -274,7 +219,7 @@ namespace FamilyHubs.Referral.Data.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("Referrals");
+                    b.ToTable("Referrals", (string)null);
                 });
 
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.ReferralService", b =>
@@ -315,7 +260,7 @@ namespace FamilyHubs.Referral.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ReferralServices");
+                    b.ToTable("ReferralServices", (string)null);
                 });
 
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Role", b =>
@@ -353,7 +298,7 @@ namespace FamilyHubs.Referral.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Status", b =>
@@ -394,7 +339,7 @@ namespace FamilyHubs.Referral.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Statuses");
+                    b.ToTable("Statuses", (string)null);
                 });
 
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.UserAccount", b =>
@@ -447,7 +392,7 @@ namespace FamilyHubs.Referral.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserAccounts");
+                    b.ToTable("UserAccounts", (string)null);
                 });
 
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.UserAccountOrganisation", b =>
@@ -490,7 +435,7 @@ namespace FamilyHubs.Referral.Data.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("UserAccountOrganisations");
+                    b.ToTable("UserAccountOrganisations", (string)null);
                 });
 
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.UserAccountRole", b =>
@@ -533,7 +478,7 @@ namespace FamilyHubs.Referral.Data.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("UserAccountRoles");
+                    b.ToTable("UserAccountRoles", (string)null);
                 });
 
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.UserAccountService", b =>
@@ -576,7 +521,7 @@ namespace FamilyHubs.Referral.Data.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("UserAccountServices");
+                    b.ToTable("UserAccountServices", (string)null);
                 });
 
             modelBuilder.Entity("FamilyHubs.Referral.Data.Entities.Organisation", b =>
