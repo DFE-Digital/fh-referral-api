@@ -8,6 +8,9 @@ public class ConnectionRequestsSentMetricConfiguration : IEntityTypeConfiguratio
 {
     public void Configure(EntityTypeBuilder<ConnectionRequestsSentMetric> builder)
     {
+        builder.Property(t => t.RequestCorrelationId)
+            .HasMaxLength(50);
+        
         builder.Property(t => t.ConnectionRequestReferenceCode)
             .HasColumnType("nchar(6)"); ;
 
