@@ -1,5 +1,4 @@
-﻿using FamilyHubs.Referral.Core.Commands.CreateReferral;
-using FamilyHubs.Referral.Core.Commands.Metrics.UpdateConnectionRequestsSentMetric;
+﻿using FamilyHubs.Referral.Core.Commands.Metrics.UpdateConnectionRequestsSentMetric;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
 using MediatR;
