@@ -40,7 +40,7 @@ public class UpdateConnectionRequestsSentMetricCommandHandler : IRequestHandler<
         if (request.MetricDto.ConnectionRequestId != null)
         {
             metric.ConnectionRequestId = request.MetricDto.ConnectionRequestId;
-            metric.ConnectionRequestReferenceCode = request.MetricDto.ConnectionRequestId.ToString("X6");
+            metric.ConnectionRequestReferenceCode = request.MetricDto.ConnectionRequestId.Value.ToString("X6");
         }
 
         _context.Update(metric);
