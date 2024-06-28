@@ -1,8 +1,9 @@
 ﻿
+using FamilyHubs.ReferralService.Shared.Dto;
+
 namespace FamilyHubs.Referral.Core.Interfaces.Commands;
 
 public interface IUpdateConnectionRequestsSentMetricCommand
 {
-    byte HttpResponseCode { get; init; }
-    long ConnectionRequestId { get; init; }
+    UpdateConnectionRequestsSentMetricDto MetricDto { get; init; }
 }

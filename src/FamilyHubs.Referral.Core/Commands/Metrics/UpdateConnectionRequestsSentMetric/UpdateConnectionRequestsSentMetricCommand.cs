@@ -1,5 +1,6 @@
 ﻿using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Data.Repository;
+using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
 using System.Diagnostics;
 
@@ -10,7 +11,7 @@ public class UpdateConnectionRequestsSentMetricResponse
 {
 }
 
-public record UpdateConnectionRequestsSentMetricCommand(byte HttpResponseCode, long ConnectionRequestId)
+public record UpdateConnectionRequestsSentMetricCommand(UpdateConnectionRequestsSentMetricDto MetricDto)
     : IRequest<UpdateConnectionRequestsSentMetricResponse>, IUpdateConnectionRequestsSentMetricCommand
 {
 }
@@ -40,9 +41,9 @@ public class UpdateConnectionRequestsSentMetricCommandHandler : IRequestHandler<
         var metric = _context.ConnectionRequestsSentMetric.Single(m => m.RequestCorrelationId == traceId);
 
         metric.ResponseTimestamp = DateTime.UtcNow;
-        metric.HttpResponseCode = request.HttpResponseCode;
-        metric.ConnectionRequestId = request.ConnectionRequestId;
-        metric.ConnectionRequestReferenceCode = request.ConnectionRequestId.ToString("X6");
+        metric.HttpResponseCode = request.MetricDto.HttpResponseCode;
+        metric.ConnectionRequestId = request.MetricDto.ConnectionRequestId;
+        metric.ConnectionRequestReferenceCode = request.MetricDto.ConnectionRequestId.ToString("X6");
 
         _context.Update(metric);
         await _context.SaveChangesAsync();
