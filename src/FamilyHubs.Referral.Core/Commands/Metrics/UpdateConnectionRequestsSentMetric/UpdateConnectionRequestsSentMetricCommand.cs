@@ -8,7 +8,6 @@ namespace FamilyHubs.Referral.Core.Commands.Metrics.UpdateConnectionRequestsSent
 
 //todo: validation?
 
-//todo: a byte isn't big enough to hold http response codes
 public record UpdateConnectionRequestsSentMetricCommand(UpdateConnectionRequestsSentMetricDto MetricDto)
     : IRequest<Unit>, IUpdateConnectionRequestsSentMetricCommand
 {
