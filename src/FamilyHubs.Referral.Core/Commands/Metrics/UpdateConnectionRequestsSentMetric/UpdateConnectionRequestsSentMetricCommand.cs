@@ -1,12 +1,7 @@
-﻿using AutoMapper;
-using FamilyHubs.Referral.Core.ClientServices;
-using FamilyHubs.Referral.Core.Commands.CreateReferral;
-using FamilyHubs.Referral.Core.Interfaces.Commands;
+﻿using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Data.Repository;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using System.Net;
 
 namespace FamilyHubs.Referral.Core.Commands.Metrics.UpdateConnectionRequestsSentMetric;
 
@@ -24,17 +19,10 @@ public class UpdateConnectionRequestsSentMetricCommandHandler : IRequestHandler<
     UpdateConnectionRequestsSentMetricCommand, UpdateConnectionRequestsSentMetricResponse>
 {
     private readonly ApplicationDbContext _context;
-    private readonly IMapper _mapper;
-    private readonly IServiceDirectoryService _serviceDirectoryService;
-    private readonly ILogger<CreateReferralCommandHandler> _logger;
 
-    public UpdateConnectionRequestsSentMetricCommandHandler(ApplicationDbContext context, IMapper mapper,
-        IServiceDirectoryService serviceDirectoryService, ILogger<CreateReferralCommandHandler> logger)
+    public UpdateConnectionRequestsSentMetricCommandHandler(ApplicationDbContext context)
     {
-        _logger = logger;
         _context = context;
-        _mapper = mapper;
-        _serviceDirectoryService = serviceDirectoryService;
     }
 
     public async Task<UpdateConnectionRequestsSentMetricResponse> Handle(
