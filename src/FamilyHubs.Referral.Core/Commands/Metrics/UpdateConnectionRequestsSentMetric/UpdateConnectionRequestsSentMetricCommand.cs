@@ -6,8 +6,6 @@ using System.Diagnostics;
 
 namespace FamilyHubs.Referral.Core.Commands.Metrics.UpdateConnectionRequestsSentMetric;
 
-//todo: validation?
-
 public record UpdateConnectionRequestsSentMetricCommand(UpdateConnectionRequestsSentMetricDto MetricDto)
     : IRequest<Unit>, IUpdateConnectionRequestsSentMetricCommand
 {
