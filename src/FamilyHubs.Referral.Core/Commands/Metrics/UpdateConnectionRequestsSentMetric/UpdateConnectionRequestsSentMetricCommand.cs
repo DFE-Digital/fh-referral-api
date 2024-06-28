@@ -2,7 +2,6 @@
 using FamilyHubs.Referral.Core.ClientServices;
 using FamilyHubs.Referral.Core.Commands.CreateReferral;
 using FamilyHubs.Referral.Core.Interfaces.Commands;
-using FamilyHubs.Referral.Data.Entities.Metrics;
 using FamilyHubs.Referral.Data.Repository;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -14,15 +13,11 @@ namespace FamilyHubs.Referral.Core.Commands.Metrics.UpdateConnectionRequestsSent
 //todo: response belongs in referral shared
 public class UpdateConnectionRequestsSentMetricResponse
 {
-
 }
 
-
-public class UpdateConnectionRequestsSentMetricCommand : IRequest<UpdateConnectionRequestsSentMetricResponse>, IUpdateConnectionRequestsSentMetricCommand
+public record UpdateConnectionRequestsSentMetricCommand(byte HttpResponseCode, long ConnectionRequestId)
+    : IRequest<UpdateConnectionRequestsSentMetricResponse>, IUpdateConnectionRequestsSentMetricCommand
 {
-    public UpdateConnectionRequestsSentMetricCommand()
-    {
-    }
 }
 
 public class UpdateConnectionRequestsSentMetricCommandHandler : IRequestHandler<
@@ -57,10 +52,9 @@ public class UpdateConnectionRequestsSentMetricCommandHandler : IRequestHandler<
         var metric = _context.ConnectionRequestsSentMetric.Single(m => m.RequestCorrelationId == traceId);
 
         metric.ResponseTimestamp = DateTime.UtcNow;
-        metric.HttpResponseCode = (byte)HttpStatusCode.OK;
-        metric.ConnectionRequestId = 1;
-        //or pass down
-        metric.ConnectionRequestReferenceCode = metric.ConnectionRequestId.Value.ToString("X6");
+        metric.HttpResponseCode = request.HttpResponseCode;
+        metric.ConnectionRequestId = request.ConnectionRequestId;
+        metric.ConnectionRequestReferenceCode = request.ConnectionRequestId.ToString("X6");
 
         _context.Update(metric);
         await _context.SaveChangesAsync();
