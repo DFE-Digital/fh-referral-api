@@ -23,7 +23,7 @@ public class MetricEndpoints
                 var result = await mediator.Send(command, cancellationToken);
                 return result;
 
-            }).WithMetadata(new SwaggerOperationAttribute("Referrals", "Create Referral")
-            { Tags = new[] { "Referrals" } });
+            }).WithMetadata(new SwaggerOperationAttribute("Metrics", "Update Connection Requests Sent Metric")
+            { Tags = new[] { "Metrics" } });
     }
 }
