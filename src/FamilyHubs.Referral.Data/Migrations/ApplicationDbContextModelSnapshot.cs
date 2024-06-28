@@ -79,6 +79,9 @@ namespace FamilyHubs.Referral.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("RequestCorrelationId")
+                        .IsUnique();
+
                     b.ToTable("ConnectionRequestsSentMetric");
                 });
 

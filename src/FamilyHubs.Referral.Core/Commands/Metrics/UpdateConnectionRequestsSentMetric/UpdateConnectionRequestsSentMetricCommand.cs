@@ -32,7 +32,6 @@ public class UpdateConnectionRequestsSentMetricCommandHandler : IRequestHandler<
     private async Task WriteCreateReferralUpdateMetrics(UpdateConnectionRequestsSentMetricCommand request)
     {
         string traceId = Activity.Current!.TraceId.ToString();
-        //todo: index on RequestCorrelationId?
         var metric = _context.ConnectionRequestsSentMetric.Single(m => m.RequestCorrelationId == traceId);
 
         metric.ResponseTimestamp = DateTime.UtcNow;

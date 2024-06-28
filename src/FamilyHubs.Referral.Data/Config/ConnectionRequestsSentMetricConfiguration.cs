@@ -8,6 +8,9 @@ public class ConnectionRequestsSentMetricConfiguration : IEntityTypeConfiguratio
 {
     public void Configure(EntityTypeBuilder<ConnectionRequestsSentMetric> builder)
     {
+        builder.HasIndex(u => u.RequestCorrelationId)
+            .IsUnique();
+
         builder.Property(t => t.RequestCorrelationId)
             .HasMaxLength(50);
 

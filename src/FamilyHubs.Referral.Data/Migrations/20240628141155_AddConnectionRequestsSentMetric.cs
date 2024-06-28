@@ -34,6 +34,12 @@ namespace FamilyHubs.Referral.Data.Migrations
                 {
                     table.PrimaryKey("PK_ConnectionRequestsSentMetric", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConnectionRequestsSentMetric_RequestCorrelationId",
+                table: "ConnectionRequestsSentMetric",
+                column: "RequestCorrelationId",
+                unique: true);
         }
 
         /// <inheritdoc />

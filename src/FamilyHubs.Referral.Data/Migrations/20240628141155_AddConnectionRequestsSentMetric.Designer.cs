@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyHubs.Referral.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240628124258_AddConnectionRequestsSentMetric")]
+    [Migration("20240628141155_AddConnectionRequestsSentMetric")]
     partial class AddConnectionRequestsSentMetric
     {
         /// <inheritdoc />
@@ -81,6 +81,9 @@ namespace FamilyHubs.Referral.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RequestCorrelationId")
+                        .IsUnique();
 
                     b.ToTable("ConnectionRequestsSentMetric");
                 });
