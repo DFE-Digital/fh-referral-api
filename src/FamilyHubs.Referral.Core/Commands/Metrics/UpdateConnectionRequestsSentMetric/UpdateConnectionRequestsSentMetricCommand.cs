@@ -8,6 +8,7 @@ namespace FamilyHubs.Referral.Core.Commands.Metrics.UpdateConnectionRequestsSent
 
 //todo: validation?
 
+//todo: a byte isn't big enough to hold http response codes
 public record UpdateConnectionRequestsSentMetricCommand(UpdateConnectionRequestsSentMetricDto MetricDto)
     : IRequest<Unit>, IUpdateConnectionRequestsSentMetricCommand
 {
@@ -38,7 +39,7 @@ public class UpdateConnectionRequestsSentMetricCommandHandler : IRequestHandler<
         var metric = _context.ConnectionRequestsSentMetric.Single(m => m.RequestCorrelationId == traceId);
 
         metric.ResponseTimestamp = DateTime.UtcNow;
-        metric.HttpResponseCode = request.MetricDto.HttpResponseCode;
+        metric.HttpResponseCode = request.MetricDto.HttpStatusCode;
         metric.ConnectionRequestId = request.MetricDto.ConnectionRequestId;
         metric.ConnectionRequestReferenceCode = request.MetricDto.ConnectionRequestId.ToString("X6");
 

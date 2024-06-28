@@ -10,7 +10,11 @@ public class ConnectionRequestsSentMetricConfiguration : IEntityTypeConfiguratio
     {
         builder.Property(t => t.RequestCorrelationId)
             .HasMaxLength(50);
-        
+
+        builder.Property(t => t.HttpResponseCode)
+            .HasConversion<short?>()
+            .HasColumnType("smallint");
+
         builder.Property(t => t.ConnectionRequestReferenceCode)
             .HasColumnType("nchar(6)");
 
