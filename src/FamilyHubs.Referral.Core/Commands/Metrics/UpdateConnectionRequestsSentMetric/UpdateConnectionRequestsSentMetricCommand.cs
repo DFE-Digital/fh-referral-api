@@ -39,8 +39,11 @@ public class UpdateConnectionRequestsSentMetricCommandHandler : IRequestHandler<
 
         metric.ResponseTimestamp = DateTime.UtcNow;
         metric.HttpResponseCode = request.MetricDto.HttpStatusCode;
-        metric.ConnectionRequestId = request.MetricDto.ConnectionRequestId;
-        metric.ConnectionRequestReferenceCode = request.MetricDto.ConnectionRequestId.ToString("X6");
+        if (request.MetricDto.ConnectionRequestId != null)
+        {
+            metric.ConnectionRequestId = request.MetricDto.ConnectionRequestId;
+            metric.ConnectionRequestReferenceCode = request.MetricDto.ConnectionRequestId.ToString("X6");
+        }
 
         _context.Update(metric);
         await _context.SaveChangesAsync();
