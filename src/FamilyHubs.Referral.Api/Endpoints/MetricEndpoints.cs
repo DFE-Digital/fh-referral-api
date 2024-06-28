@@ -19,8 +19,8 @@ public class MetricEndpoints
                 HttpContext httpContext) =>
             {
                 UpdateConnectionRequestsSentMetricCommand command = new(request);
-                var result = await mediator.Send(command, cancellationToken);
-                return result;
+                await mediator.Send(command, cancellationToken);
+                return Results.Ok();
 
             }).WithMetadata(new SwaggerOperationAttribute("Metrics", "Update Connection Requests Sent Metric")
             { Tags = new[] { "Metrics" } });

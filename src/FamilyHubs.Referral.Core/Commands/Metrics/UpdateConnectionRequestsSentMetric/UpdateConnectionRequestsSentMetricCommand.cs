@@ -6,18 +6,15 @@ using System.Diagnostics;
 
 namespace FamilyHubs.Referral.Core.Commands.Metrics.UpdateConnectionRequestsSentMetric;
 
-//todo: response belongs in referral shared
-public class UpdateConnectionRequestsSentMetricResponse
-{
-}
+//todo: validation?
 
 public record UpdateConnectionRequestsSentMetricCommand(UpdateConnectionRequestsSentMetricDto MetricDto)
-    : IRequest<UpdateConnectionRequestsSentMetricResponse>, IUpdateConnectionRequestsSentMetricCommand
+    : IRequest<Unit>, IUpdateConnectionRequestsSentMetricCommand
 {
 }
 
 public class UpdateConnectionRequestsSentMetricCommandHandler : IRequestHandler<
-    UpdateConnectionRequestsSentMetricCommand, UpdateConnectionRequestsSentMetricResponse>
+    UpdateConnectionRequestsSentMetricCommand, Unit>
 {
     private readonly ApplicationDbContext _context;
 
@@ -26,12 +23,12 @@ public class UpdateConnectionRequestsSentMetricCommandHandler : IRequestHandler<
         _context = context;
     }
 
-    public async Task<UpdateConnectionRequestsSentMetricResponse> Handle(
+    public async Task<Unit> Handle(
         UpdateConnectionRequestsSentMetricCommand request, CancellationToken cancellationToken)
     {
         await WriteCreateReferralUpdateMetrics(request);
 
-        return new UpdateConnectionRequestsSentMetricResponse();
+        return Unit.Value;
     }
 
     private async Task WriteCreateReferralUpdateMetrics(UpdateConnectionRequestsSentMetricCommand request)
