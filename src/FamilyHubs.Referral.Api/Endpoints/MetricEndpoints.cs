@@ -12,7 +12,7 @@ public class MetricEndpoints
 {
     public void RegisterReferralEndPoints(WebApplication app)
     {
-        app.MapPost("api/metrics/connection-request", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole)]
+        app.MapPut("api/metrics/connection-request", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole)]
             async ([FromBody] UpdateConnectionRequestsSentMetricDto request,
                 CancellationToken cancellationToken,
                 ISender mediator,
@@ -20,7 +20,7 @@ public class MetricEndpoints
             {
                 UpdateConnectionRequestsSentMetricCommand command = new(request);
                 await mediator.Send(command, cancellationToken);
-                return Results.Ok();
+                return Results.NoContent();
 
             }).WithMetadata(new SwaggerOperationAttribute("Metrics", "Update Connection Requests Sent Metric")
             { Tags = new[] { "Metrics" } });
