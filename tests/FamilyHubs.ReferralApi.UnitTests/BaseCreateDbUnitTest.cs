@@ -7,15 +7,24 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using System.Diagnostics;
 using System.Security.Claims;
 
 namespace FamilyHubs.Referral.UnitTests;
 
 public class BaseCreateDbUnitTest
 {
+    protected string ExpectedRequestCorrelationId { get; set; }
+
     protected BaseCreateDbUnitTest()
     {
+        var activity = new Activity("TestActivity");
+        activity.SetParentId(ActivityTraceId.CreateRandom(), ActivitySpanId.CreateRandom());
+        activity.Start();
+        Activity.Current = activity;
+        ExpectedRequestCorrelationId = Activity.Current!.TraceId.ToString();
     }
+
     protected static ApplicationDbContext GetApplicationDbContext()
     {
         var options = CreateNewContextOptions();
