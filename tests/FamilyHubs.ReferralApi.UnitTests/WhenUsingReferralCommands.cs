@@ -99,11 +99,8 @@ namespace FamilyHubs.Referral.UnitTests
             //Act
             Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
 
-
             //Assert
             await act.Should().ThrowAsync<ArgumentException>().WithMessage("Failed to return Organisation from service directory for Id = 0");
-
-
         }
 
         [Fact]
@@ -131,11 +128,8 @@ namespace FamilyHubs.Referral.UnitTests
             //Act
             Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
 
-
             //Assert
             await act.Should().ThrowAsync<ArgumentException>().WithMessage("Failed to return Service from service directory for Id = 2");
-
-
         }
 
         [Fact]
