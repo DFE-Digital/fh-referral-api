@@ -7,15 +7,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Diagnostics;
+using FamilyHubs.ReferralService.Shared.CreateUpdateDto;
 
 namespace FamilyHubs.Referral.Integration.Tests
 {
+    //todo: unit test to check metrics are created
+
     public class WhenUsingCreateReferralCommand : DataIntegrationTestBase
     {
         [Fact]
         public async Task ThenCreateReferral()
         {
-            var newReferral = TestDataProvider.GetReferralDto();
+            const long userOrganisationId = 123L;
+            var newReferral = new CreateReferralDto(TestDataProvider.GetReferralDto(), new ConnectionRequestsSentMetricDto(userOrganisationId));
             Mock<IServiceDirectoryService> mockServiceDirectory = new Mock<IServiceDirectoryService>();
             mockServiceDirectory.Setup(x => x.GetOrganisationById(It.IsAny<long>())).ReturnsAsync(new ServiceDirectory.Shared.Dto.OrganisationDto
             {
@@ -57,9 +61,11 @@ namespace FamilyHubs.Referral.Integration.Tests
             .SingleOrDefault(s => s.Id == result.Id);
             actualService.Should().NotBeNull();
 
+            //todo: it's a bad idea to use the same code as the unit test uses to create the expected object
+            // it effectively removes the mapping from the test, as if it's wrong, the test will still pass
             var actualReferral = Mapper.Map<ReferralDto>(actualService);
 
-            actualReferral.Should().BeEquivalentTo(newReferral, options =>
+            actualReferral.Should().BeEquivalentTo(newReferral.Referral, options =>
                 options.Excluding((IMemberInfo info) => info.Name.Contains("Id"))
                        .Excluding((IMemberInfo info) => info.Name.Contains("Created"))
                        .Excluding((IMemberInfo info) => info.Name.Contains("CreatedBy"))

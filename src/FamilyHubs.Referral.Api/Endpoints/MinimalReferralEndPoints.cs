@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Security.Claims;
+using FamilyHubs.ReferralService.Shared.CreateUpdateDto;
 
 namespace FamilyHubs.Referral.Api.Endpoints;
 
@@ -19,10 +20,14 @@ public class MinimalReferralEndPoints
 {
     public void RegisterReferralEndPoints(WebApplication app)
     {
-        app.MapPost("api/referrals", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole)] async ([FromBody] ReferralDto request, CancellationToken cancellationToken, ISender _mediator) =>
+        app.MapPost("api/referrals",
+            [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole)] async (
+                [FromBody] CreateReferralDto request,
+                CancellationToken cancellationToken,
+                ISender mediator) =>
         {
             CreateReferralCommand command = new(request);
-            var result = await _mediator.Send(command, cancellationToken);
+            var result = await mediator.Send(command, cancellationToken);
             return result;
             
         }).WithMetadata(new SwaggerOperationAttribute("Referrals", "Create Referral") { Tags = new[] { "Referrals" } });

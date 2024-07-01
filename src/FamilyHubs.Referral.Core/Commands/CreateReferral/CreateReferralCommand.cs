@@ -6,7 +6,7 @@ using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Entities.Metrics;
 using FamilyHubs.Referral.Data.Repository;
-using FamilyHubs.ReferralService.Shared.Dto;
+using FamilyHubs.ReferralService.Shared.CreateUpdateDto;
 using FamilyHubs.ReferralService.Shared.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -16,12 +16,12 @@ namespace FamilyHubs.Referral.Core.Commands.CreateReferral;
 
 public class CreateReferralCommand : IRequest<ReferralResponse>, ICreateReferralCommand
 {
-    public CreateReferralCommand(ReferralDto referralDto)
+    public CreateReferralCommand(CreateReferralDto createReferral)
     {
-        ReferralDto = referralDto;
+        CreateReferral = createReferral;
     }
 
-    public ReferralDto ReferralDto { get; }
+    public CreateReferralDto CreateReferral { get; }
 }
 
 public class CreateReferralCommandHandler : IRequestHandler<CreateReferralCommand, ReferralResponse>
@@ -40,7 +40,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     public async Task<ReferralResponse> Handle(CreateReferralCommand request, CancellationToken cancellationToken)
     {
-        //await WriteCreateReferralMetrics(request);
+        await WriteCreateReferralMetrics(request);
 
         ReferralResponse referralResponse;
         if (_context.Database.IsSqlServer())
@@ -77,17 +77,10 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     private async Task WriteCreateReferralMetrics(CreateReferralCommand request)
     {
-        long? organisationId = request.ReferralDto.ReferralUserAccountDto.OrganisationUserAccounts?.FirstOrDefault()?.OrganisationId;
-        if (organisationId == null)
-        {
-            //todo: should really be decoupled, but this is simple
-            throw new HttpRequestException("OrganisationId is null", null, HttpStatusCode.BadRequest);
-        }
-
         var metrics = new ConnectionRequestsSentMetric
         {
-            OrganisationId = organisationId.Value,
-            UserAccountId = request.ReferralDto.ReferralUserAccountDto.Id,
+            OrganisationId = request.CreateReferral.Metrics.UserOrganisationId,
+            UserAccountId = request.CreateReferral.Referral.ReferralUserAccountDto.Id,
             RequestTimestamp = DateTime.UtcNow,
             RequestCorrelationId = Activity.Current!.TraceId.ToString(),
             ResponseTimestamp = null,
@@ -102,7 +95,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     private async Task<ReferralResponse> CreateAndUpdateReferral(CreateReferralCommand request, CancellationToken cancellationToken)
     {
-        Data.Entities.Referral entity = _mapper.Map<Data.Entities.Referral>(request.ReferralDto);
+        Data.Entities.Referral entity = _mapper.Map<Data.Entities.Referral>(request.CreateReferral.Referral);
         ArgumentNullException.ThrowIfNull(entity);
 
         entity.Recipient.Id = 0;

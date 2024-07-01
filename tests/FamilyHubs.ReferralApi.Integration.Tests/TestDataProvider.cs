@@ -35,19 +35,6 @@ public static class TestDataProvider
                 UserAccountRoles = new List<UserAccountRoleDto>(),
                 ServiceUserAccounts = new List<UserAccountServiceDto>(),
                 OrganisationUserAccounts = new List<UserAccountOrganisationDto>(),
-                //{
-                //    new()
-                //    {
-                //        UserAccount = new UserAccountDto
-                //        {
-                //            EmailAddress = "Bob.Referrer@email.com"
-                //        },
-                //        Organisation = new OrganisationDto
-                //        {
-                //            Id = 123L
-                //        }
-                //    }
-                //}
             },
             Status = new ReferralStatusDto
             {
