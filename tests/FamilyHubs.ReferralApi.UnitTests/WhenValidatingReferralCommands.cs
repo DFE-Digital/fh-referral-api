@@ -83,6 +83,24 @@ public class WhenValidatingReferralCommands
     }
 
     [Fact]
+    public void ThenShouldErrorWhenOrganisationIdIsZero()
+    {
+        //Arrange
+        var testReferral = WhenUsingReferralCommands.GetReferralDto();
+        testReferral.Id = 0;
+        var createReferral = new CreateReferralDto(testReferral, new ConnectionRequestsSentMetricDto(0L));
+
+        var validator = new CreateReferralCommandValidator();
+        var testModel = new CreateReferralCommand(createReferral);
+
+        //Act
+        var result = validator.Validate(testModel);
+
+        //Assert
+        result.Errors.Any().Should().BeTrue();
+    }
+
+    [Fact]
     public void ThenShouldNotErrorWhenUpdateReferralCommandModelIsValid()
     {
         //Arrange
