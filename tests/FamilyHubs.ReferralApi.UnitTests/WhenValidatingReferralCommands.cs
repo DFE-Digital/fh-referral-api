@@ -9,7 +9,6 @@ namespace FamilyHubs.Referral.UnitTests;
 
 public class WhenValidatingReferralCommands
 {
-
     [Fact]
     public void ThenShouldNotErrorWhenCreateReferralCommandModelIsValid()
     {
@@ -29,16 +28,52 @@ public class WhenValidatingReferralCommands
     }
 
     [Fact]
+    public void ThenShouldErrorWhenConnectionReferralIsNull()
+    {
+        //Arrange
+        var testReferral = WhenUsingReferralCommands.GetReferralDto();
+        testReferral.Id = 0;
+        var createReferral = new CreateReferralDto(null!, new ConnectionRequestsSentMetricDto(123L));
+
+        var validator = new CreateReferralCommandValidator();
+        var testModel = new CreateReferralCommand(createReferral);
+
+        //Act
+        var result = validator.Validate(testModel);
+
+        //Assert
+        result.Errors.Any().Should().BeTrue();
+    }
+
+    [Fact]
     public void ThenShouldErrorWhenReferrerIdIsZero()
     {
         //Arrange
         var testReferral = WhenUsingReferralCommands.GetReferralDto();
         testReferral.Id = 0;
+        testReferral.ReferralUserAccountDto.Id = 0;
         var createReferral = new CreateReferralDto(testReferral, new ConnectionRequestsSentMetricDto(123L));
 
         var validator = new CreateReferralCommandValidator();
         var testModel = new CreateReferralCommand(createReferral);
-        testReferral.ReferralUserAccountDto.Id = 0;
+
+        //Act
+        var result = validator.Validate(testModel);
+
+        //Assert
+        result.Errors.Any().Should().BeTrue();
+    }
+
+    [Fact]
+    public void ThenShouldErrorWhenConnectionRequestsSentMetricDtoIsNull()
+    {
+        //Arrange
+        var testReferral = WhenUsingReferralCommands.GetReferralDto();
+        testReferral.Id = 0;
+        var createReferral = new CreateReferralDto(testReferral, null!);
+
+        var validator = new CreateReferralCommandValidator();
+        var testModel = new CreateReferralCommand(createReferral);
 
         //Act
         var result = validator.Validate(testModel);

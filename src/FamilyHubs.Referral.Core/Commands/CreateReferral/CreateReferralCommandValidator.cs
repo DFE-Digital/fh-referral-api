@@ -13,27 +13,33 @@ public class CreateReferralCommandValidator : AbstractValidator<CreateReferralCo
             .NotNull();
 
         RuleFor(v => v.CreateReferral.Metrics.UserOrganisationId)
-            .GreaterThan(0);
+            .GreaterThan(0)
+            .When(v => v.CreateReferral.Metrics != null);
 
         RuleFor(v => v.CreateReferral.Referral)
             .NotNull();
 
         RuleFor(v => v.CreateReferral.Referral.Id)
-            .Equal(0);
+            .Equal(0)
+            .When(v => v.CreateReferral.Referral != null);
 
         RuleFor(v => v.CreateReferral.Referral.ReferralServiceDto)
             .NotNull()
-            .NotEmpty();
+            .NotEmpty()
+            .When(v => v.CreateReferral.Referral != null);
 
         RuleFor(v => v.CreateReferral.Referral.RecipientDto)
             .NotNull()
-            .NotEmpty();
+            .NotEmpty()
+            .When(v => v.CreateReferral.Referral != null);
 
         RuleFor(v => v.CreateReferral.Referral.ReferralUserAccountDto)
             .NotNull()
-            .NotEmpty();
+            .NotEmpty()
+            .When(v => v.CreateReferral.Referral != null);
 
         RuleFor(v => v.CreateReferral.Referral.ReferralUserAccountDto.Id)
-            .GreaterThan(0);
+            .GreaterThan(0)
+            .When(v => v.CreateReferral.Referral != null);
     }
 }
