@@ -4,6 +4,7 @@ namespace FamilyHubs.Referral.Integration.Tests;
 
 public static class TestDataProvider
 {
+    public const long UserId = 1337L;
 
     public static ReferralDto GetReferralDto()
     {
@@ -27,7 +28,7 @@ public static class TestDataProvider
             },
             ReferralUserAccountDto = new UserAccountDto
             {
-                Id = 2,
+                Id = UserId,
                 EmailAddress = "Bob.Referrer@email.com",
                 Name = "Bob Referrer",
                 PhoneNumber = "011 222 5555",
