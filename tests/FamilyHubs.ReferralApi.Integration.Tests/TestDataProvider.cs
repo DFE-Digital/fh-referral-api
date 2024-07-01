@@ -1,7 +1,4 @@
-﻿
-
-using FamilyHubs.Referral.Data.Entities;
-using FamilyHubs.ReferralService.Shared.Dto;
+﻿using FamilyHubs.ReferralService.Shared.Dto;
 
 namespace FamilyHubs.Referral.Integration.Tests;
 
@@ -37,20 +34,20 @@ public static class TestDataProvider
                 Team = "Social Work team North",
                 UserAccountRoles = new List<UserAccountRoleDto>(),
                 ServiceUserAccounts = new List<UserAccountServiceDto>(),
-                OrganisationUserAccounts = new List<UserAccountOrganisationDto>
-                {
-                    new()
-                    {
-                        UserAccount = new UserAccountDto
-                        {
-                            EmailAddress = "Bob.Referrer@email.com"
-                        },
-                        Organisation = new OrganisationDto
-                        {
-                            Id = 123L
-                        }
-                    }
-                }
+                OrganisationUserAccounts = new List<UserAccountOrganisationDto>(),
+                //{
+                //    new()
+                //    {
+                //        UserAccount = new UserAccountDto
+                //        {
+                //            EmailAddress = "Bob.Referrer@email.com"
+                //        },
+                //        Organisation = new OrganisationDto
+                //        {
+                //            Id = 123L
+                //        }
+                //    }
+                //}
             },
             Status = new ReferralStatusDto
             {

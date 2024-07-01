@@ -9,7 +9,7 @@ namespace FamilyHubs.Referral.Integration.Tests;
 public class WhenSettingReferralStatus : DataIntegrationTestBase
 {
     [Fact]
-    public async Task ThenUpdateReferralStsatusToDeclined()
+    public async Task ThenUpdateReferralStatusToDeclined()
     {
         await CreateReferral();
         var testReferral = TestDataProvider.GetReferralDto();
@@ -17,7 +17,7 @@ public class WhenSettingReferralStatus : DataIntegrationTestBase
         SetReferralStatusCommandHandler handler = new(TestDbContext, new Mock<ILogger<SetReferralStatusCommandHandler>>().Object);
 
         //Act
-        var result = await handler.Handle(command, new System.Threading.CancellationToken());
+        var result = await handler.Handle(command, new CancellationToken());
 
         //Assert
         result.Should().Be("Declined");

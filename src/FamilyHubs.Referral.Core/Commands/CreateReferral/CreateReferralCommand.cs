@@ -40,7 +40,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     public async Task<ReferralResponse> Handle(CreateReferralCommand request, CancellationToken cancellationToken)
     {
-        await WriteCreateReferralMetrics(request);
+        //await WriteCreateReferralMetrics(request);
 
         ReferralResponse referralResponse;
         if (_context.Database.IsSqlServer())
