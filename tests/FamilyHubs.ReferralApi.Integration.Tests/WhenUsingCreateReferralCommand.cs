@@ -121,12 +121,17 @@ public class WhenUsingCreateReferralCommand : DataIntegrationTestBase
         result.Should().NotBeNull();
         result.Id.Should().BeGreaterThan(0);
 
-        //var metric =
-        //    TestDbContext.ConnectionRequestsSentMetric.SingleOrDefault(m => m.ConnectionRequestId == result.Id);
         var metric = TestDbContext.ConnectionRequestsSentMetric.SingleOrDefault();
 
         metric.Should().NotBeNull();
         metric!.RequestCorrelationId.Should().Be(expectedRequestCorrelationId);
         metric.UserAccountId.Should().Be(TestDataProvider.UserId);
+        metric.OrganisationId.Should().Be(userOrganisationId);
+        //todo: hacky - when we swap to .net 8, use TimeProvider instead
+        metric.RequestTimestamp.Should().BeCloseTo(DateTime.UtcNow, new TimeSpan(0, 0, 1));
+        metric.ResponseTimestamp.Should().BeNull();
+        metric.HttpResponseCode.Should().BeNull();
+        metric.ConnectionRequestId.Should().BeNull();
+        metric.ConnectionRequestReferenceCode.Should().BeNull();
     }
 }
