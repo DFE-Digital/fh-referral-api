@@ -139,7 +139,7 @@ public class WhenUsingCreateReferralCommand : DataIntegrationTestBase
         metric!.RequestCorrelationId.Should().Be(ExpectedRequestCorrelationId);
         metric.UserAccountId.Should().Be(ExpectedAccountId);
         metric.OrganisationId.Should().Be(ExpectedOrganisationId);
-        metric.RequestTimestamp.Should().Be(RequestTimestamp.Date);
+        metric.RequestTimestamp.Should().Be(RequestTimestamp.DateTime);
         metric.ResponseTimestamp.Should().BeNull();
         metric.HttpResponseCode.Should().BeNull();
         metric.ConnectionRequestId.Should().BeNull();
