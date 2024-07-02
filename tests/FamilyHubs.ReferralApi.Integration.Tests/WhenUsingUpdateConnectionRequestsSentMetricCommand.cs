@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Net;
 using FamilyHubs.Referral.Core.Commands.Metrics.UpdateConnectionRequestsSentMetric;
+using FamilyHubs.Referral.Data.Entities.Metrics;
 using FamilyHubs.ReferralService.Shared.Dto.Metrics;
 using FamilyHubs.SharedKernel.Identity.Models;
 using FluentAssertions;
@@ -36,6 +37,50 @@ public class WhenUsingUpdateConnectionRequestsSentMetricCommand : DataIntegratio
 
     [Fact]
     public async Task ThenMetricIsUpdatedWhenItAlreadyExists()
+    {
+        TestDbContext.ConnectionRequestsSentMetric.Add(new ConnectionRequestsSentMetric
+        {
+            OrganisationId = ExpectedOrganisationId,
+            UserAccountId = ExpectedAccountId,
+            RequestTimestamp = RequestTimestamp.DateTime,
+            RequestCorrelationId = ExpectedRequestCorrelationId
+        });
+
+        await TestDbContext.SaveChangesAsync();
+
+        const HttpStatusCode httpStatusCode = HttpStatusCode.GatewayTimeout;
+        long? connectionRequestId = null;
+        const string? connectionRequestReferenceCode = null;
+
+        // the request timestamp passed to update should be the same that was passed to create referral,
+        // but we pass a different timestamp, so that we can check that the original create referral timestamp isn't updated
+        DateTimeOffset updateRequestTimestamp = new DateTimeOffset(new DateTime(2026, 2, 2, 11, 11, 0));
+
+        UpdateConnectionRequestsSentMetricCommand = new UpdateConnectionRequestsSentMetricCommand(
+            new UpdateConnectionRequestsSentMetricDto(updateRequestTimestamp, httpStatusCode, connectionRequestId),
+            FamilyHubsUser);
+
+        UpdateConnectionRequestsSentMetricCommandHandler handler = new(TestDbContext);
+
+        //Act
+        await handler.Handle(UpdateConnectionRequestsSentMetricCommand, new CancellationToken());
+
+        TestDbContext.ConnectionRequestsSentMetric.Should().NotBeEmpty();
+        var metric = TestDbContext.ConnectionRequestsSentMetric.SingleOrDefault();
+        metric.Should().NotBeNull();
+        metric!.OrganisationId.Should().Be(ExpectedOrganisationId);
+        metric.UserAccountId.Should().Be(ExpectedAccountId);
+        metric.RequestTimestamp.Should().Be(RequestTimestamp.DateTime);
+        metric.RequestCorrelationId.Should().Be(ExpectedRequestCorrelationId);
+        //todo: hacky, change to TimeProvider when we upgrade to .net 8
+        metric.ResponseTimestamp.Should().BeCloseTo(DateTime.UtcNow, new TimeSpan(0, 1, 2));
+        metric.HttpResponseCode.Should().Be(httpStatusCode);
+        metric.ConnectionRequestId.Should().Be(connectionRequestId);
+        metric.ConnectionRequestReferenceCode.Should().Be(connectionRequestReferenceCode);
+    }
+
+    [Fact]
+    public async Task ThenMetricIsCreatedWhenItDoesNotAlreadyExists()
     {
         const HttpStatusCode httpStatusCode = HttpStatusCode.NoContent;
         const long connectionRequestId = 17L;
