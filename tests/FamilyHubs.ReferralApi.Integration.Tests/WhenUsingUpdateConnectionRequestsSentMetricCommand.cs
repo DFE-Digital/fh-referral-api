@@ -36,7 +36,7 @@ public class WhenUsingUpdateConnectionRequestsSentMetricCommand : DataIntegratio
     }
 
     [Fact]
-    public async Task ThenMetricIsUpdatedWhenItAlreadyExists()
+    public async Task ThenMetricIsUpdatedWhenItAlreadyExistsAndCreateReferralReturnedHttpStatusCode()
     {
         TestDbContext.ConnectionRequestsSentMetric.Add(new ConnectionRequestsSentMetric
         {
@@ -48,9 +48,9 @@ public class WhenUsingUpdateConnectionRequestsSentMetricCommand : DataIntegratio
 
         await TestDbContext.SaveChangesAsync();
 
-        const HttpStatusCode httpStatusCode = HttpStatusCode.GatewayTimeout;
-        long? connectionRequestId = null;
-        const string? connectionRequestReferenceCode = null;
+        const HttpStatusCode httpStatusCode = HttpStatusCode.NoContent;
+        const long connectionRequestId = 17L;
+        const string connectionRequestReferenceCode = "000011";
 
         // the request timestamp passed to update should be the same that was passed to create referral,
         // but we pass a different timestamp, so that we can check that the original create referral timestamp isn't updated
@@ -82,9 +82,9 @@ public class WhenUsingUpdateConnectionRequestsSentMetricCommand : DataIntegratio
     [Fact]
     public async Task ThenMetricIsCreatedWhenItDoesNotAlreadyExists()
     {
-        const HttpStatusCode httpStatusCode = HttpStatusCode.NoContent;
-        const long connectionRequestId = 17L;
-        const string connectionRequestReferenceCode = "000011";
+        const HttpStatusCode httpStatusCode = HttpStatusCode.BadGateway;
+        long? connectionRequestId = null;
+        const string? connectionRequestReferenceCode = null;
 
         UpdateConnectionRequestsSentMetricCommand = new UpdateConnectionRequestsSentMetricCommand(
             new UpdateConnectionRequestsSentMetricDto(RequestTimestamp, httpStatusCode, connectionRequestId),
