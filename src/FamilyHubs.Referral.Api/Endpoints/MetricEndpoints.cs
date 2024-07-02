@@ -12,9 +12,6 @@ public class MetricEndpoints
 {
     public void RegisterReferralEndPoints(WebApplication app)
     {
-        //todo: if create referral fails (and throws an exception in the client in the ui)
-        // we won't have an existing row to update, so we need to upsert and handle not null fields
-
         app.MapPut("api/metrics/connection-request", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole)]
             async ([FromBody] UpdateConnectionRequestsSentMetricDto request,
                 CancellationToken cancellationToken,
