@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.EquivalencyExpression;
 using FamilyHubs.Referral.Core;
-using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Interceptors;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
@@ -20,14 +19,12 @@ public abstract class DataIntegrationTestBase : IDisposable, IAsyncDisposable
 {
     public IMapper Mapper { get; }
     public ApplicationDbContext TestDbContext { get; }
-    public static NullLogger<T> GetLogger<T>() => new NullLogger<T>();
 
     protected DataIntegrationTestBase()
     {
         var serviceProvider = CreateNewReferralProvider();
 
         TestDbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
-
 
         Mapper = serviceProvider.GetRequiredService<IMapper>();
 

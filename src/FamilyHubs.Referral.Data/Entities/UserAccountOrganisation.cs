@@ -11,6 +11,4 @@ public class UserAccountOrganisation : EntityBase<long>
     public long OrganisationId { get; set; }
     [ForeignKey("OrganisationId")]
     public virtual Organisation Organisation { get; set; } = null!;
-
-
 }
