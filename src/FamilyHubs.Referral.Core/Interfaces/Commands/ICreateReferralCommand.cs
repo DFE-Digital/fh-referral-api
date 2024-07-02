@@ -1,8 +1,10 @@
 ﻿using FamilyHubs.ReferralService.Shared.CreateUpdateDto;
+using FamilyHubs.SharedKernel.Identity.Models;
 
 namespace FamilyHubs.Referral.Core.Interfaces.Commands;
 
 public interface ICreateReferralCommand
 {
-    public CreateReferralDto CreateReferral { get; }
+    CreateReferralDto CreateReferral { get; }
+    FamilyHubsUser FamilyHubsUser { get; }
 }

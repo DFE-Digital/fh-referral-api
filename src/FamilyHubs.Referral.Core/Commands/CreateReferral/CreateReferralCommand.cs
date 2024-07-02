@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Net;
 using AutoMapper;
 using FamilyHubs.Referral.Core.ClientServices;
 using FamilyHubs.Referral.Core.Interfaces.Commands;
@@ -8,21 +7,26 @@ using FamilyHubs.Referral.Data.Entities.Metrics;
 using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.CreateUpdateDto;
 using FamilyHubs.ReferralService.Shared.Models;
+using FamilyHubs.SharedKernel.Identity.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace FamilyHubs.Referral.Core.Commands.CreateReferral;
 
-public class CreateReferralCommand : IRequest<ReferralResponse>, ICreateReferralCommand
-{
-    public CreateReferralCommand(CreateReferralDto createReferral)
-    {
-        CreateReferral = createReferral;
-    }
+public record CreateReferralCommand(CreateReferralDto CreateReferral, FamilyHubsUser FamilyHubsUser)
+    : IRequest<ReferralResponse>, ICreateReferralCommand;
+//{
 
-    public CreateReferralDto CreateReferral { get; }
-}
+//    public CreateReferralCommand(CreateReferralDto createReferral, FamilyHubsUser familyHubsUser)
+//    {
+//        _familyHubsUser = familyHubsUser;
+//        CreateReferral = createReferral;
+//    }
+
+
+//    public CreateReferralDto CreateReferral { get; }
+//}
 
 public class CreateReferralCommandHandler : IRequestHandler<CreateReferralCommand, ReferralResponse>
 {
@@ -79,8 +83,10 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
     {
         var metrics = new ConnectionRequestsSentMetric
         {
-            OrganisationId = request.CreateReferral.Metrics.UserOrganisationId,
-            UserAccountId = request.CreateReferral.Referral.ReferralUserAccountDto.Id,
+            //OrganisationId = request.CreateReferral.Metrics.UserOrganisationId,
+            //UserAccountId = request.CreateReferral.Referral.ReferralUserAccountDto.Id,
+            OrganisationId = long.Parse(request.FamilyHubsUser.OrganisationId),
+            UserAccountId = long.Parse(request.FamilyHubsUser.AccountId),
             RequestTimestamp = DateTime.UtcNow,
             RequestCorrelationId = Activity.Current!.TraceId.ToString(),
             ResponseTimestamp = null,

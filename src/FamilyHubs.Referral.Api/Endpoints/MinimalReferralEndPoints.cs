@@ -21,16 +21,19 @@ public class MinimalReferralEndPoints
     public void RegisterReferralEndPoints(WebApplication app)
     {
         app.MapPost("api/referrals",
-            [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole)] async (
+            [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole)]
+            async (
                 [FromBody] CreateReferralDto request,
                 CancellationToken cancellationToken,
-                ISender mediator) =>
-        {
-            CreateReferralCommand command = new(request);
-            var result = await mediator.Send(command, cancellationToken);
-            return result;
-            
-        }).WithMetadata(new SwaggerOperationAttribute("Referrals", "Create Referral") { Tags = new[] { "Referrals" } });
+                ISender mediator,
+                HttpContext httpContext) =>
+            {
+                CreateReferralCommand command = new(request, httpContext.GetFamilyHubsUser());
+                var result = await mediator.Send(command, cancellationToken);
+                return result;
+
+            }).WithMetadata(new SwaggerOperationAttribute("Referrals", "Create Referral")
+            { Tags = new[] { "Referrals" } });
 
         app.MapPut("api/referrals/{id}", [Authorize(Policy = "ReferralUser")] async (long id, [FromBody] ReferralDto request, CancellationToken cancellationToken, ISender _mediator, ILogger<MinimalReferralEndPoints> logger) =>
         {
