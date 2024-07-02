@@ -1,137 +1,148 @@
-//using FamilyHubs.Referral.Core.ClientServices;
-//using FamilyHubs.Referral.Core.Commands.CreateReferral;
-//using FamilyHubs.ReferralService.Shared.Dto;
-//using FluentAssertions;
-//using FluentAssertions.Equivalency;
-//using Microsoft.EntityFrameworkCore;
-//using Microsoft.Extensions.Logging;
-//using Moq;
-//using System.Diagnostics;
-//using FamilyHubs.ReferralService.Shared.CreateUpdateDto;
+using FamilyHubs.Referral.Core.ClientServices;
+using FamilyHubs.Referral.Core.Commands.CreateReferral;
+using FamilyHubs.ReferralService.Shared.Dto;
+using FluentAssertions;
+using FluentAssertions.Equivalency;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Moq;
+using System.Diagnostics;
+using FamilyHubs.ReferralService.Shared.Dto.CreateUpdate;
+using FamilyHubs.ReferralService.Shared.Dto.Metrics;
+using FamilyHubs.SharedKernel.Identity.Models;
 
-//namespace FamilyHubs.Referral.Integration.Tests;
+namespace FamilyHubs.Referral.Integration.Tests;
 
-//public class WhenUsingCreateReferralCommand : DataIntegrationTestBase
-//{
-//    [Fact]
-//    public async Task ThenCreateReferral()
-//    {
-//        const long userOrganisationId = 123L;
-//        var newReferral = new CreateReferralDto(TestDataProvider.GetReferralDto(),
-//            new ConnectionRequestsSentMetricDto(userOrganisationId));
-//        Mock<IServiceDirectoryService> mockServiceDirectory = new Mock<IServiceDirectoryService>();
-//        mockServiceDirectory.Setup(x => x.GetOrganisationById(It.IsAny<long>())).ReturnsAsync(
-//            new ServiceDirectory.Shared.Dto.OrganisationDto
-//            {
-//                Id = 2,
-//                Name = "Organisation",
-//                Description = "Organisation Description",
-//                OrganisationType = ServiceDirectory.Shared.Enums.OrganisationType.VCFS,
-//                AdminAreaCode = "AdminAreaCode"
-//            });
+//todo: unit test for update metric, inc. both where initial metric there and not
+public class WhenUsingCreateReferralCommand : DataIntegrationTestBase
+{
+    public DateTimeOffset RequestTimestamp { get; set; }
+    public FamilyHubsUser FamilyHubsUser { get; set; }
+    public const long ExpectedAccountId = 123L;
+    public const long ExpectedOrganisationId = 456L;
+    public string ExpectedRequestCorrelationId { get; set; }
 
-//        mockServiceDirectory.Setup(x => x.GetServiceById(It.IsAny<long>())).ReturnsAsync(
-//            new ServiceDirectory.Shared.Dto.ServiceDto
-//            {
-//                Id = 2,
-//                Name = "Service",
-//                Description = "Service Description",
-//                ServiceType = ServiceDirectory.Shared.Enums.ServiceType.FamilyExperience
-//            });
+    public WhenUsingCreateReferralCommand()
+    {
+        RequestTimestamp = new DateTimeOffset(new DateTime(2025, 1, 1, 12, 0, 0));
 
-//        CreateReferralCommand createCommand = new(newReferral);
-//        CreateReferralCommandHandler createHandler = new(TestDbContext, Mapper, mockServiceDirectory.Object,
-//            new Mock<ILogger<CreateReferralCommandHandler>>().Object);
+        FamilyHubsUser = new FamilyHubsUser
+        {
+            AccountId = ExpectedAccountId.ToString(),
+            OrganisationId = ExpectedOrganisationId.ToString()
+        };
 
-//        var activity = new Activity("TestActivity");
-//        activity.SetParentId(ActivityTraceId.CreateRandom(), ActivitySpanId.CreateRandom());
-//        activity.Start();
-//        Activity.Current = activity;
+        var activity = new Activity("TestActivity");
+        activity.SetParentId(ActivityTraceId.CreateRandom(), ActivitySpanId.CreateRandom());
+        activity.Start();
+        Activity.Current = activity;
+        ExpectedRequestCorrelationId = Activity.Current!.TraceId.ToString();
+    }
 
-//        //Act
-//        var result = await createHandler.Handle(createCommand, new CancellationToken());
+    [Fact]
+    public async Task ThenCreateReferral()
+    {
+        var newReferral = new CreateReferralDto(TestDataProvider.GetReferralDto(),
+            new ConnectionRequestsSentMetricDto(RequestTimestamp));
+        Mock<IServiceDirectoryService> mockServiceDirectory = new Mock<IServiceDirectoryService>();
+        mockServiceDirectory.Setup(x => x.GetOrganisationById(It.IsAny<long>())).ReturnsAsync(
+            new ServiceDirectory.Shared.Dto.OrganisationDto
+            {
+                Id = 2,
+                Name = "Organisation",
+                Description = "Organisation Description",
+                OrganisationType = ServiceDirectory.Shared.Enums.OrganisationType.VCFS,
+                AdminAreaCode = "AdminAreaCode"
+            });
 
-//        //Assert
-//        result.Should().NotBeNull();
-//        var actualService = TestDbContext.Referrals
-//            .Include(x => x.Status)
-//            .Include(x => x.UserAccount)
-//            .Include(x => x.Recipient)
-//            .Include(x => x.ReferralService)
-//            .ThenInclude(x => x.Organisation)
-//            .AsNoTracking()
-//            .SingleOrDefault(s => s.Id == result.Id);
-//        actualService.Should().NotBeNull();
+        mockServiceDirectory.Setup(x => x.GetServiceById(It.IsAny<long>())).ReturnsAsync(
+            new ServiceDirectory.Shared.Dto.ServiceDto
+            {
+                Id = 2,
+                Name = "Service",
+                Description = "Service Description",
+                ServiceType = ServiceDirectory.Shared.Enums.ServiceType.FamilyExperience
+            });
 
-//        //todo: it's a bad idea to use the same code as the unit test uses to create the expected object
-//        // it effectively removes the mapping from the test, as if it's wrong, the test will still pass
-//        var actualReferral = Mapper.Map<ReferralDto>(actualService);
+        CreateReferralCommand createCommand = new(newReferral, FamilyHubsUser);
+        CreateReferralCommandHandler createHandler = new(TestDbContext, Mapper, mockServiceDirectory.Object,
+            new Mock<ILogger<CreateReferralCommandHandler>>().Object);
 
-//        actualReferral.Should().BeEquivalentTo(newReferral.Referral, options =>
-//            options.Excluding((IMemberInfo info) => info.Name.Contains("Id"))
-//                .Excluding((IMemberInfo info) => info.Name.Contains("Created"))
-//                .Excluding((IMemberInfo info) => info.Name.Contains("CreatedBy"))
-//                .Excluding((IMemberInfo info) => info.Name.Contains("LastModified"))
-//                .Excluding((IMemberInfo info) => info.Name.Contains("LastModifiedBy"))
-//                .Excluding((IMemberInfo info) => info.Name.Contains("Url"))
-//        );
-//    }
+        //Act
+        var result = await createHandler.Handle(createCommand, new CancellationToken());
 
-//    [Fact]
-//    public async Task ThenCreateReferralCreatesConnectionRequestsSentMetric()
-//    {
-//        const long userOrganisationId = 123L;
+        //Assert
+        result.Should().NotBeNull();
+        var actualService = TestDbContext.Referrals
+            .Include(x => x.Status)
+            .Include(x => x.UserAccount)
+            .Include(x => x.Recipient)
+            .Include(x => x.ReferralService)
+            .ThenInclude(x => x.Organisation)
+            .AsNoTracking()
+            .SingleOrDefault(s => s.Id == result.Id);
+        actualService.Should().NotBeNull();
 
-//        var newReferral = new CreateReferralDto(TestDataProvider.GetReferralDto(),
-//            new ConnectionRequestsSentMetricDto(userOrganisationId));
-//        Mock<IServiceDirectoryService> mockServiceDirectory = new Mock<IServiceDirectoryService>();
-//        mockServiceDirectory.Setup(x => x.GetOrganisationById(It.IsAny<long>())).ReturnsAsync(
-//            new ServiceDirectory.Shared.Dto.OrganisationDto
-//            {
-//                Id = 2,
-//                Name = "Organisation",
-//                Description = "Organisation Description",
-//                OrganisationType = ServiceDirectory.Shared.Enums.OrganisationType.VCFS,
-//                AdminAreaCode = "AdminAreaCode"
-//            });
+        //todo: it's a bad idea to use the same code as the unit test uses to create the expected object
+        // it effectively removes the mapping from the test, as if it's wrong, the test will still pass
+        var actualReferral = Mapper.Map<ReferralDto>(actualService);
 
-//        mockServiceDirectory.Setup(x => x.GetServiceById(It.IsAny<long>())).ReturnsAsync(
-//            new ServiceDirectory.Shared.Dto.ServiceDto
-//            {
-//                Id = 2,
-//                Name = "Service",
-//                Description = "Service Description",
-//                ServiceType = ServiceDirectory.Shared.Enums.ServiceType.FamilyExperience
-//            });
+        actualReferral.Should().BeEquivalentTo(newReferral.Referral, options =>
+            options.Excluding((IMemberInfo info) => info.Name.Contains("Id"))
+                .Excluding((IMemberInfo info) => info.Name.Contains("Created"))
+                .Excluding((IMemberInfo info) => info.Name.Contains("CreatedBy"))
+                .Excluding((IMemberInfo info) => info.Name.Contains("LastModified"))
+                .Excluding((IMemberInfo info) => info.Name.Contains("LastModifiedBy"))
+                .Excluding((IMemberInfo info) => info.Name.Contains("Url"))
+        );
+    }
 
-//        CreateReferralCommand createCommand = new(newReferral);
-//        CreateReferralCommandHandler createHandler = new(TestDbContext, Mapper, mockServiceDirectory.Object,
-//            new Mock<ILogger<CreateReferralCommandHandler>>().Object);
+    [Fact]
+    public async Task ThenCreateReferralCreatesConnectionRequestsSentMetric()
+    {
+        var newReferral = new CreateReferralDto(TestDataProvider.GetReferralDto(),
+            new ConnectionRequestsSentMetricDto(RequestTimestamp));
+        Mock<IServiceDirectoryService> mockServiceDirectory = new Mock<IServiceDirectoryService>();
+        mockServiceDirectory.Setup(x => x.GetOrganisationById(It.IsAny<long>())).ReturnsAsync(
+            new ServiceDirectory.Shared.Dto.OrganisationDto
+            {
+                Id = 2,
+                Name = "Organisation",
+                Description = "Organisation Description",
+                OrganisationType = ServiceDirectory.Shared.Enums.OrganisationType.VCFS,
+                AdminAreaCode = "AdminAreaCode"
+            });
 
-//        var activity = new Activity("TestActivity");
-//        activity.SetParentId(ActivityTraceId.CreateRandom(), ActivitySpanId.CreateRandom());
-//        activity.Start();
-//        Activity.Current = activity;
-//        string expectedRequestCorrelationId = Activity.Current!.TraceId.ToString();
+        mockServiceDirectory.Setup(x => x.GetServiceById(It.IsAny<long>())).ReturnsAsync(
+            new ServiceDirectory.Shared.Dto.ServiceDto
+            {
+                Id = 2,
+                Name = "Service",
+                Description = "Service Description",
+                ServiceType = ServiceDirectory.Shared.Enums.ServiceType.FamilyExperience
+            });
 
-//        //Act
-//        var result = await createHandler.Handle(createCommand, new CancellationToken());
+        CreateReferralCommand createCommand = new(newReferral, FamilyHubsUser);
+        CreateReferralCommandHandler createHandler = new(TestDbContext, Mapper, mockServiceDirectory.Object,
+            new Mock<ILogger<CreateReferralCommandHandler>>().Object);
 
-//        //Assert
-//        result.Should().NotBeNull();
-//        result.Id.Should().BeGreaterThan(0);
+        //Act
+        var result = await createHandler.Handle(createCommand, new CancellationToken());
 
-//        var metric = TestDbContext.ConnectionRequestsSentMetric.SingleOrDefault();
+        //Assert
+        result.Should().NotBeNull();
+        result.Id.Should().BeGreaterThan(0);
 
-//        metric.Should().NotBeNull();
-//        metric!.RequestCorrelationId.Should().Be(expectedRequestCorrelationId);
-//        metric.UserAccountId.Should().Be(TestDataProvider.UserId);
-//        metric.OrganisationId.Should().Be(userOrganisationId);
-//        //todo: hacky - when we swap to .net 8, use TimeProvider instead
-//        metric.RequestTimestamp.Should().BeCloseTo(DateTime.UtcNow, new TimeSpan(0, 0, 1));
-//        metric.ResponseTimestamp.Should().BeNull();
-//        metric.HttpResponseCode.Should().BeNull();
-//        metric.ConnectionRequestId.Should().BeNull();
-//        metric.ConnectionRequestReferenceCode.Should().BeNull();
-//    }
-//}
+        var metric = TestDbContext.ConnectionRequestsSentMetric.SingleOrDefault();
+
+        metric.Should().NotBeNull();
+        metric!.RequestCorrelationId.Should().Be(ExpectedRequestCorrelationId);
+        metric.UserAccountId.Should().Be(ExpectedAccountId);
+        metric.OrganisationId.Should().Be(ExpectedOrganisationId);
+        metric.RequestTimestamp.Should().Be(RequestTimestamp.Date);
+        metric.ResponseTimestamp.Should().BeNull();
+        metric.HttpResponseCode.Should().BeNull();
+        metric.ConnectionRequestId.Should().BeNull();
+        metric.ConnectionRequestReferenceCode.Should().BeNull();
+    }
+}
