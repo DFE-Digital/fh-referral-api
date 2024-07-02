@@ -13,7 +13,6 @@ using FamilyHubs.SharedKernel.Identity.Models;
 
 namespace FamilyHubs.Referral.Integration.Tests;
 
-//todo: unit test for update metric, inc. both where initial metric there and not
 public class WhenUsingCreateReferralCommand : DataIntegrationTestBase
 {
     public DateTimeOffset RequestTimestamp { get; set; }
