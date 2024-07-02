@@ -36,7 +36,7 @@ public class WhenUsingUpdateConnectionRequestsSentMetricCommand : DataIntegratio
     }
 
     [Fact]
-    public async Task ThenMetricIsUpdatedWhenItAlreadyExistsAndCreateReferralReturnedHttpStatusCode()
+    public async Task ThenMetricIsUpdatedWhenItAlreadyExistsAndCreateReferralSucceeded()
     {
         TestDbContext.ConnectionRequestsSentMetric.Add(new ConnectionRequestsSentMetric
         {
