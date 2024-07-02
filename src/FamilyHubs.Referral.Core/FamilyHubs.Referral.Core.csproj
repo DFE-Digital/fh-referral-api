@@ -16,7 +16,7 @@
 		<PackageReference Include="MediatR" Version="12.1.1" />
 		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
 		<PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
-		<PackageReference Include="SonarAnalyzer.CSharp" Version="9.23.0.88079">
+		<PackageReference Include="SonarAnalyzer.CSharp" Version="9.28.0.94264">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>

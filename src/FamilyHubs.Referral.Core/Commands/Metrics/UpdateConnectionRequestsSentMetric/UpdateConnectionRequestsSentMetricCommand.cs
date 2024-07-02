@@ -48,7 +48,7 @@ public class UpdateConnectionRequestsSentMetricCommandHandler : IRequestHandler<
                 OrganisationId = -1,
                 UserAccountId = -1,
                 //todo: send timestamp from front end for create & update
-                RequestTimestamp = DateTime.MinValue
+                RequestTimestamp = DateTimeOffset.UtcNow.Date
             };
 
             _context.Add(metric);
