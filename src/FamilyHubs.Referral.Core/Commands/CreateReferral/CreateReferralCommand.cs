@@ -76,7 +76,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         {
             OrganisationId = long.Parse(request.FamilyHubsUser.OrganisationId),
             UserAccountId = long.Parse(request.FamilyHubsUser.AccountId),
-            RequestTimestamp = request.CreateReferral.Metrics.RequestTimestamp.Date,
+            RequestTimestamp = request.CreateReferral.Metrics.RequestTimestamp.DateTime,
             RequestCorrelationId = Activity.Current!.TraceId.ToString(),
             ResponseTimestamp = null,
             HttpResponseCode = null,

@@ -48,7 +48,7 @@ public class UpdateConnectionRequestsSentMetricCommandHandler : IRequestHandler<
                 RequestCorrelationId = traceId,
                 OrganisationId = long.Parse(request.FamilyHubsUser.OrganisationId),
                 UserAccountId = long.Parse(request.FamilyHubsUser.AccountId),
-                RequestTimestamp = request.MetricDto.RequestTimestamp.Date
+                RequestTimestamp = request.MetricDto.RequestTimestamp.DateTime
             };
 
             _context.Add(metric);
