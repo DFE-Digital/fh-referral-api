@@ -67,6 +67,7 @@ public class MinimalReferralEndPoints
 
         app.MapGet("api/referral/{id}", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole+","+RoleGroups.VcsProfessionalOrDualRole+","+ RoleTypes.LaManager)] async (long id, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
         {
+            //todo: use HttpContext.GetFamilyHubsUser() instead?
             (long accountId, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
            
             GetReferralByIdCommand request = new(id);
@@ -161,7 +162,7 @@ public class MinimalReferralEndPoints
 
     private (long accountId, string role, long organisationId) GetUserDetailsFromClaims(HttpContext httpContext)
     {
-        //todo: should really throw is claim is missing, rather than defaulting
+        //todo: should really throw if claim is missing, rather than defaulting
         long accountId = -1;
         var accountIdClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == FamilyHubsClaimTypes.AccountId);
         if (accountIdClaim != null)

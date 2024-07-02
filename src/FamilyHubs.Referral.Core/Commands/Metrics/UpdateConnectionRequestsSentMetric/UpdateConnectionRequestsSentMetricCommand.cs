@@ -3,6 +3,7 @@ using FamilyHubs.Referral.Data.Repository;
 using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
 using System.Diagnostics;
+using FamilyHubs.Referral.Data.Entities.Metrics;
 
 namespace FamilyHubs.Referral.Core.Commands.Metrics.UpdateConnectionRequestsSentMetric;
 
@@ -32,7 +33,30 @@ public class UpdateConnectionRequestsSentMetricCommandHandler : IRequestHandler<
     private async Task WriteCreateReferralUpdateMetrics(UpdateConnectionRequestsSentMetricCommand request)
     {
         string traceId = Activity.Current!.TraceId.ToString();
-        var metric = _context.ConnectionRequestsSentMetric.Single(m => m.RequestCorrelationId == traceId);
+        var metric = _context.ConnectionRequestsSentMetric.SingleOrDefault(m => m.RequestCorrelationId == traceId);
+
+        if (metric == null)
+        {
+            // even though we write the metric out in its own transaction, before creating the referral in another transaction,
+            // we still might not have an existing metric, if the original create referral call fails before the metric row is created (e.g. a transitory network issue calling the endpoint),
+            // but the call to update the metric from the exception handler is ok
+            metric = new ConnectionRequestsSentMetric
+            {
+                RequestCorrelationId = traceId,
+                // these are non-nullable, so we'll have to put in dummy values,
+                // although we could get them from the user claims
+                OrganisationId = -1,
+                UserAccountId = -1,
+                //todo: send timestamp from front end for create & update
+                RequestTimestamp = DateTime.MinValue
+            };
+
+            _context.Add(metric);
+        }
+        else
+        {
+            _context.Update(metric);
+        }
 
         metric.ResponseTimestamp = DateTime.UtcNow;
         metric.HttpResponseCode = request.MetricDto.HttpStatusCode;
@@ -42,7 +66,6 @@ public class UpdateConnectionRequestsSentMetricCommandHandler : IRequestHandler<
             metric.ConnectionRequestReferenceCode = request.MetricDto.ConnectionRequestId.Value.ToString("X6");
         }
 
-        _context.Update(metric);
         await _context.SaveChangesAsync();
     }
 }
