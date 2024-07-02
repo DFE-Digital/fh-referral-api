@@ -1,9 +1,9 @@
 ﻿using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Data.Repository;
-using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
 using System.Diagnostics;
 using FamilyHubs.Referral.Data.Entities.Metrics;
+using FamilyHubs.ReferralService.Shared.Dto.Metrics;
 
 namespace FamilyHubs.Referral.Core.Commands.Metrics.UpdateConnectionRequestsSentMetric;
 

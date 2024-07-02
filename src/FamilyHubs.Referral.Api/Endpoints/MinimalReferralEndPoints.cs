@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Security.Claims;
-using FamilyHubs.ReferralService.Shared.CreateUpdateDto;
+using FamilyHubs.ReferralService.Shared.Dto.CreateUpdate;
 
 namespace FamilyHubs.Referral.Api.Endpoints;
 

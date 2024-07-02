@@ -12,10 +12,6 @@ public class CreateReferralCommandValidator : AbstractValidator<CreateReferralCo
         RuleFor(v => v.CreateReferral.Metrics)
             .NotNull();
 
-        RuleFor(v => v.CreateReferral.Metrics.UserOrganisationId)
-            .GreaterThan(0)
-            .When(v => v.CreateReferral.Metrics != null);
-
         RuleFor(v => v.CreateReferral.Referral)
             .NotNull();
 

@@ -1,5 +1,4 @@
-﻿
-using FamilyHubs.ReferralService.Shared.Dto;
+﻿using FamilyHubs.ReferralService.Shared.Dto.Metrics;
 
 namespace FamilyHubs.Referral.Core.Interfaces.Commands;
 

@@ -5,7 +5,7 @@ using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.Referral.Data.Entities.Metrics;
 using FamilyHubs.Referral.Data.Repository;
-using FamilyHubs.ReferralService.Shared.CreateUpdateDto;
+using FamilyHubs.ReferralService.Shared.Dto.CreateUpdate;
 using FamilyHubs.ReferralService.Shared.Models;
 using FamilyHubs.SharedKernel.Identity.Models;
 using MediatR;
@@ -16,17 +16,6 @@ namespace FamilyHubs.Referral.Core.Commands.CreateReferral;
 
 public record CreateReferralCommand(CreateReferralDto CreateReferral, FamilyHubsUser FamilyHubsUser)
     : IRequest<ReferralResponse>, ICreateReferralCommand;
-//{
-
-//    public CreateReferralCommand(CreateReferralDto createReferral, FamilyHubsUser familyHubsUser)
-//    {
-//        _familyHubsUser = familyHubsUser;
-//        CreateReferral = createReferral;
-//    }
-
-
-//    public CreateReferralDto CreateReferral { get; }
-//}
 
 public class CreateReferralCommandHandler : IRequestHandler<CreateReferralCommand, ReferralResponse>
 {
@@ -34,6 +23,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
     private readonly IMapper _mapper;
     private readonly IServiceDirectoryService _serviceDirectoryService;
     private readonly ILogger<CreateReferralCommandHandler> _logger;
+
     public CreateReferralCommandHandler(ApplicationDbContext context, IMapper mapper, IServiceDirectoryService serviceDirectoryService, ILogger<CreateReferralCommandHandler> logger)
     {
         _logger = logger;
@@ -46,6 +36,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
     {
         await WriteCreateReferralMetrics(request);
 
+        //todo: I don't think these explicit transactions are necessary
         ReferralResponse referralResponse;
         if (_context.Database.IsSqlServer())
         {
@@ -83,11 +74,9 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
     {
         var metrics = new ConnectionRequestsSentMetric
         {
-            //OrganisationId = request.CreateReferral.Metrics.UserOrganisationId,
-            //UserAccountId = request.CreateReferral.Referral.ReferralUserAccountDto.Id,
             OrganisationId = long.Parse(request.FamilyHubsUser.OrganisationId),
             UserAccountId = long.Parse(request.FamilyHubsUser.AccountId),
-            RequestTimestamp = DateTime.UtcNow,
+            RequestTimestamp = request.CreateReferral.Metrics.RequestTimestamp.Date,
             RequestCorrelationId = Activity.Current!.TraceId.ToString(),
             ResponseTimestamp = null,
             HttpResponseCode = null,

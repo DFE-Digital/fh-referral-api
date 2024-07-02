@@ -1,5 +1,5 @@
 ﻿using FamilyHubs.Referral.Core.Commands.Metrics.UpdateConnectionRequestsSentMetric;
-using FamilyHubs.ReferralService.Shared.Dto;
+using FamilyHubs.ReferralService.Shared.Dto.Metrics;
 using FamilyHubs.SharedKernel.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

@@ -1,4 +1,4 @@
-﻿using FamilyHubs.ReferralService.Shared.CreateUpdateDto;
+﻿using FamilyHubs.ReferralService.Shared.Dto.CreateUpdate;
 using FamilyHubs.SharedKernel.Identity.Models;
 
 namespace FamilyHubs.Referral.Core.Interfaces.Commands;
