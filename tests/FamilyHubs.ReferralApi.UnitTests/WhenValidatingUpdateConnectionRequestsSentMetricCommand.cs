@@ -25,7 +25,7 @@ public class WhenValidatingUpdateConnectionRequestsSentMetricCommand
     }
 
     [Fact]
-    public void ThenShouldNotErrorWhenModelIsValid()
+    public void ThenShouldNotErrorWhenModelIsValidAndRepresentsSuccessfulReferralCreation()
     {
         var dto = new UpdateConnectionRequestsSentMetricDto(RequestTimestamp, HttpStatusCode.NoContent, 1L);
 
@@ -37,5 +37,50 @@ public class WhenValidatingUpdateConnectionRequestsSentMetricCommand
 
         //Assert
         result.Errors.Any().Should().BeFalse();
+    }
+
+    [Fact]
+    public void ThenShouldNotErrorWhenModelIsValidAndRepresentsUnsuccessfulReferralCreation()
+    {
+        var dto = new UpdateConnectionRequestsSentMetricDto(RequestTimestamp, HttpStatusCode.InternalServerError, null);
+
+        var validator = new UpdateConnectionRequestsSentMetricCommandValidator();
+        var testModel = new UpdateConnectionRequestsSentMetricCommand(dto, FamilyHubsUser);
+
+        //Act
+        var result = validator.Validate(testModel);
+
+        //Assert
+        result.Errors.Any().Should().BeFalse();
+    }
+
+    [Fact]
+    public void ThenShouldNotErrorWhenModelIsValidAndRepresentsUnsuccessfulReferralCreationWithNoStatusCode()
+    {
+        var dto = new UpdateConnectionRequestsSentMetricDto(RequestTimestamp, null, null);
+
+        var validator = new UpdateConnectionRequestsSentMetricCommandValidator();
+        var testModel = new UpdateConnectionRequestsSentMetricCommand(dto, FamilyHubsUser);
+
+        //Act
+        var result = validator.Validate(testModel);
+
+        //Assert
+        result.Errors.Any().Should().BeFalse();
+    }
+
+    [Fact]
+    public void ThenShouldNotErrorWhenModelIsValidAndRepresentsUnsuccessfulReferralCreationWithUnknownStatusCode()
+    {
+        var dto = new UpdateConnectionRequestsSentMetricDto(RequestTimestamp, (HttpStatusCode)666, null);
+
+        var validator = new UpdateConnectionRequestsSentMetricCommandValidator();
+        var testModel = new UpdateConnectionRequestsSentMetricCommand(dto, FamilyHubsUser);
+
+        //Act
+        var result = validator.Validate(testModel);
+
+        //Assert
+        result.Errors.Any().Should().BeTrue();
     }
 }

@@ -12,6 +12,7 @@ public class UpdateConnectionRequestsSentMetricCommandValidator : AbstractValida
 
         RuleFor(v => v.MetricDto.HttpStatusCode)
             .Must(httpStatusCode => Enum.IsDefined(typeof(HttpStatusCode), httpStatusCode))
-            .WithMessage("Invalid HttpStatusCode value.");
+            .WithMessage("Invalid HttpStatusCode value.")
+            .When(v => v.MetricDto.HttpStatusCode != null);
     }
 }
