@@ -21,13 +21,7 @@ public class MetricEndpoints
                 ISender mediator,
                 HttpContext httpContext) =>
             {
-#pragma warning disable
-                var user = httpContext.GetFamilyHubsUser();
-
-                //var user = httpContext.GetFamilyHubsUser();
-                //(long accountId, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
-
-                UpdateConnectionRequestsSentMetricCommand command = new(request);
+                UpdateConnectionRequestsSentMetricCommand command = new(request, httpContext.GetFamilyHubsUser());
                 await mediator.Send(command, cancellationToken);
                 return Results.NoContent();
 

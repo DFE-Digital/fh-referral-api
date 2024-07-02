@@ -4,10 +4,13 @@ using MediatR;
 using System.Diagnostics;
 using FamilyHubs.Referral.Data.Entities.Metrics;
 using FamilyHubs.ReferralService.Shared.Dto.Metrics;
+using FamilyHubs.SharedKernel.Identity.Models;
 
 namespace FamilyHubs.Referral.Core.Commands.Metrics.UpdateConnectionRequestsSentMetric;
 
-public record UpdateConnectionRequestsSentMetricCommand(UpdateConnectionRequestsSentMetricDto MetricDto)
+public record UpdateConnectionRequestsSentMetricCommand(
+    UpdateConnectionRequestsSentMetricDto MetricDto,
+    FamilyHubsUser FamilyHubsUser)
     : IRequest<Unit>, IUpdateConnectionRequestsSentMetricCommand
 {
 }
@@ -43,12 +46,9 @@ public class UpdateConnectionRequestsSentMetricCommandHandler : IRequestHandler<
             metric = new ConnectionRequestsSentMetric
             {
                 RequestCorrelationId = traceId,
-                // these are non-nullable, so we'll have to put in dummy values,
-                // although we could get them from the user claims
-                OrganisationId = -1,
-                UserAccountId = -1,
-                //todo: send timestamp from front end for create & update
-                RequestTimestamp = DateTimeOffset.UtcNow.Date
+                OrganisationId = long.Parse(request.FamilyHubsUser.OrganisationId),
+                UserAccountId = long.Parse(request.FamilyHubsUser.AccountId),
+                RequestTimestamp = request.MetricDto.RequestTimestamp.Date
             };
 
             _context.Add(metric);
