@@ -2,16 +2,11 @@
 using FamilyHubs.Referral.Core.Commands.CreateUserAccount;
 using FamilyHubs.Referral.Core.Commands.UpdateUserAccount;
 using FamilyHubs.Referral.Core.Queries.GetUserAccounts;
-using FamilyHubs.Referral.Data.Models;
 using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Text.Json;
-using System.Threading;
 
 namespace FamilyHubs.Referral.Api.Endpoints;
 public class MinimalUserAccountEndPoints

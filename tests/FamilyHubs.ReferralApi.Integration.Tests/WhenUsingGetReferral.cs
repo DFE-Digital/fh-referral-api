@@ -1,9 +1,7 @@
 ﻿using Ardalis.GuardClauses;
 using FamilyHubs.Referral.Core.Queries.GetReferrals;
-using FamilyHubs.Referral.Data.Entities;
 using FamilyHubs.ReferralService.Shared.Enums;
 using FluentAssertions;
-using Newtonsoft.Json.Linq;
 
 namespace FamilyHubs.Referral.Integration.Tests;
 

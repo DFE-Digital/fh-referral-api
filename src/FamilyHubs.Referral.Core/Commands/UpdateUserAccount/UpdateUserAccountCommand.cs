@@ -10,8 +10,6 @@ using Microsoft.Extensions.Logging;
 
 namespace FamilyHubs.Referral.Core.Commands.UpdateUserAccount;
 
-
-
 public class UpdateUserAccountCommand : IRequest<bool>, IUpdateUserAccountCommand
 {
     public UpdateUserAccountCommand(long userAccountId, UserAccountDto userAccount)
@@ -27,7 +25,6 @@ public class UpdateUserAccountCommand : IRequest<bool>, IUpdateUserAccountComman
 
 public class UpdateUserAccountCommandHandler : BaseUserAccountHandler, IRequestHandler<UpdateUserAccountCommand, bool>
 {
-    
     private readonly IMapper _mapper;
     private readonly ILogger<UpdateUserAccountCommandHandler> _logger;
     public UpdateUserAccountCommandHandler(ApplicationDbContext context, IMapper mapper, ILogger<UpdateUserAccountCommandHandler> logger)

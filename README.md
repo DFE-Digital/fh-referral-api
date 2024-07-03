@@ -40,4 +40,3 @@ open powershell at ..\fh-referral-api\tests\cypress
 <br />
  npx cypress open 
 <br />
-
