@@ -17,8 +17,8 @@ using Serilog.Events;
 using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Security;
-using Microsoft.VisualBasic;
 using FamilyHubs.Referral.Core.ClientServices;
+using FamilyHubs.SharedKernel.Razor.Health;
 
 namespace FamilyHubs.Referral.Api;
 
@@ -69,6 +69,8 @@ public static class StartupExtensions
 
         services.AddBearerAuthentication(configuration);
 
+        services.AddFamilyHubsHealthChecks(configuration);
+
         services.RegisterAppDbContext(configuration);
 
         services.RegisterMinimalEndPoints();
@@ -100,9 +102,9 @@ public static class StartupExtensions
 
     private static void RegisterMinimalEndPoints(this IServiceCollection services)
     {
-        services.AddTransient<MinimalGeneralEndPoints>();
         services.AddTransient<MinimalReferralEndPoints>();
         services.AddTransient<MinimalUserAccountEndPoints>();
+        services.AddTransient<MetricEndpoints>();
     }
 
     private static void RegisterAutoMapper(this IServiceCollection services)
@@ -202,6 +204,8 @@ public static class StartupExtensions
 
         webApplication.MapControllers();
 
+        webApplication.MapFamilyHubsHealthChecks(typeof(StartupExtensions).Assembly);
+
         await RegisterEndPoints(webApplication);
     }
 
@@ -209,14 +213,26 @@ public static class StartupExtensions
     {
         using var scope = app.Services.CreateScope();
 
-        var genapi = scope.ServiceProvider.GetService<MinimalGeneralEndPoints>();
-        genapi?.RegisterMinimalGeneralEndPoints(app);
-
         var referralApi = scope.ServiceProvider.GetService<MinimalReferralEndPoints>();
-        referralApi?.RegisterReferralEndPoints(app);
+        if (referralApi == null)
+        {
+            throw new InvalidOperationException("MinimalReferralEndPoints is not registered");
+        }
+        referralApi.RegisterReferralEndPoints(app);
 
         var userAccountsApi = scope.ServiceProvider.GetService<MinimalUserAccountEndPoints>();
-        userAccountsApi?.RegisterUserAccountEndPoints(app);
+        if (userAccountsApi == null)
+        {
+            throw new InvalidOperationException("MinimalUserAccountEndPoints is not registered");
+        }
+        userAccountsApi.RegisterUserAccountEndPoints(app);
+
+        var metricEndpoints = scope.ServiceProvider.GetService<MetricEndpoints>();
+        if (metricEndpoints == null)
+        {
+            throw new InvalidOperationException("MetricEndpoints is not registered");
+        }
+        metricEndpoints.RegisterReferralEndPoints(app);
 
         try
         {

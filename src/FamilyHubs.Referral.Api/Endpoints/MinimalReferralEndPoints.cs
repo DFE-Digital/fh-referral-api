@@ -8,13 +8,11 @@ using FamilyHubs.ReferralService.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.Identity.Client;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Net.Http;
 using System.Security.Claims;
+using FamilyHubs.ReferralService.Shared.Dto.CreateUpdate;
 
 namespace FamilyHubs.Referral.Api.Endpoints;
 
@@ -22,13 +20,20 @@ public class MinimalReferralEndPoints
 {
     public void RegisterReferralEndPoints(WebApplication app)
     {
-        app.MapPost("api/referrals", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole)] async ([FromBody] ReferralDto request, CancellationToken cancellationToken, ISender _mediator) =>
-        {
-            CreateReferralCommand command = new(request);
-            var result = await _mediator.Send(command, cancellationToken);
-            return result;
-            
-        }).WithMetadata(new SwaggerOperationAttribute("Referrals", "Create Referral") { Tags = new[] { "Referrals" } });
+        app.MapPost("api/referrals",
+            [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole)]
+            async (
+                [FromBody] CreateReferralDto request,
+                CancellationToken cancellationToken,
+                ISender mediator,
+                HttpContext httpContext) =>
+            {
+                CreateReferralCommand command = new(request, httpContext.GetFamilyHubsUser());
+                var result = await mediator.Send(command, cancellationToken);
+                return result;
+
+            }).WithMetadata(new SwaggerOperationAttribute("Referrals", "Create Referral")
+            { Tags = new[] { "Referrals" } });
 
         app.MapPut("api/referrals/{id}", [Authorize(Policy = "ReferralUser")] async (long id, [FromBody] ReferralDto request, CancellationToken cancellationToken, ISender _mediator, ILogger<MinimalReferralEndPoints> logger) =>
         {
@@ -65,6 +70,7 @@ public class MinimalReferralEndPoints
 
         app.MapGet("api/referral/{id}", [Authorize(Roles = RoleGroups.LaProfessionalOrDualRole+","+RoleGroups.VcsProfessionalOrDualRole+","+ RoleTypes.LaManager)] async (long id, CancellationToken cancellationToken, ISender _mediator, HttpContext httpContext) =>
         {
+            //todo: use HttpContext.GetFamilyHubsUser() instead?
             (long accountId, string role, long organisationId) = GetUserDetailsFromClaims(httpContext);
            
             GetReferralByIdCommand request = new(id);
@@ -159,7 +165,7 @@ public class MinimalReferralEndPoints
 
     private (long accountId, string role, long organisationId) GetUserDetailsFromClaims(HttpContext httpContext)
     {
-        //todo: should really throw is claim is missing, rather than defaulting
+        //todo: should really throw if claim is missing, rather than defaulting
         long accountId = -1;
         var accountIdClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == FamilyHubsClaimTypes.AccountId);
         if (accountIdClaim != null)

@@ -1,7 +1,5 @@
 ﻿using Ardalis.GuardClauses;
-using Ardalis.Specification;
 using AutoMapper;
-using Azure.Core;
 using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Core.Queries;
 using FamilyHubs.Referral.Data.Entities;
@@ -10,7 +8,6 @@ using FamilyHubs.ReferralService.Shared.Dto;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Threading;
 
 namespace FamilyHubs.Referral.Core.Commands.UpdateReferral;
 

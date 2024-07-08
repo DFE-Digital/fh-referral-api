@@ -1,25 +1,21 @@
-﻿using AutoMapper;
+﻿using System.Diagnostics;
+using AutoMapper;
 using FamilyHubs.Referral.Core.ClientServices;
 using FamilyHubs.Referral.Core.Interfaces.Commands;
 using FamilyHubs.Referral.Data.Entities;
+using FamilyHubs.Referral.Data.Entities.Metrics;
 using FamilyHubs.Referral.Data.Repository;
-using FamilyHubs.ReferralService.Shared.Dto;
+using FamilyHubs.ReferralService.Shared.Dto.CreateUpdate;
 using FamilyHubs.ReferralService.Shared.Models;
+using FamilyHubs.SharedKernel.Identity.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace FamilyHubs.Referral.Core.Commands.CreateReferral;
 
-public class CreateReferralCommand : IRequest<ReferralResponse>, ICreateReferralCommand
-{
-    public CreateReferralCommand(ReferralDto referralDto)
-    {
-        ReferralDto = referralDto;
-    }
-
-    public ReferralDto ReferralDto { get; }
-}
+public record CreateReferralCommand(CreateReferralDto CreateReferral, FamilyHubsUser FamilyHubsUser)
+    : IRequest<ReferralResponse>, ICreateReferralCommand;
 
 public class CreateReferralCommandHandler : IRequestHandler<CreateReferralCommand, ReferralResponse>
 {
@@ -27,6 +23,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
     private readonly IMapper _mapper;
     private readonly IServiceDirectoryService _serviceDirectoryService;
     private readonly ILogger<CreateReferralCommandHandler> _logger;
+
     public CreateReferralCommandHandler(ApplicationDbContext context, IMapper mapper, IServiceDirectoryService serviceDirectoryService, ILogger<CreateReferralCommandHandler> logger)
     {
         _logger = logger;
@@ -37,6 +34,9 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     public async Task<ReferralResponse> Handle(CreateReferralCommand request, CancellationToken cancellationToken)
     {
+        await WriteCreateReferralMetrics(request);
+
+        //todo: I don't think these explicit transactions are necessary
         ReferralResponse referralResponse;
         if (_context.Database.IsSqlServer())
         {
@@ -70,9 +70,27 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         return referralResponse;
     }
 
+    private async Task WriteCreateReferralMetrics(CreateReferralCommand request)
+    {
+        var metrics = new ConnectionRequestsSentMetric
+        {
+            OrganisationId = long.Parse(request.FamilyHubsUser.OrganisationId),
+            UserAccountId = long.Parse(request.FamilyHubsUser.AccountId),
+            RequestTimestamp = request.CreateReferral.Metrics.RequestTimestamp.DateTime,
+            RequestCorrelationId = Activity.Current!.TraceId.ToString(),
+            ResponseTimestamp = null,
+            HttpResponseCode = null,
+            ConnectionRequestId = null,
+            ConnectionRequestReferenceCode = null
+        };
+
+        _context.Add(metrics);
+        await _context.SaveChangesAsync();
+    }
+
     private async Task<ReferralResponse> CreateAndUpdateReferral(CreateReferralCommand request, CancellationToken cancellationToken)
     {
-        Data.Entities.Referral entity = _mapper.Map<Data.Entities.Referral>(request.ReferralDto);
+        Data.Entities.Referral entity = _mapper.Map<Data.Entities.Referral>(request.CreateReferral.Referral);
         ArgumentNullException.ThrowIfNull(entity);
 
         entity.Recipient.Id = 0;

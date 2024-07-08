@@ -10,11 +10,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="Ardalis.GuardClauses" Version="4.1.1" />
-		<PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="7.0.0" />
 		<PackageReference Include="AutoMapper.Collection.EntityFrameworkCore" Version="9.0.0" />
 		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
-		<PackageReference Include="FamilyHubs.ReferralService.Shared" Version="1.0.15" />
-		<PackageReference Include="FamilyHubs.SharedKernel" Version="2.3.0" />
+		<PackageReference Include="FamilyHubs.ReferralService.Shared" Version="1.1.5" />
+		<PackageReference Include="FamilyHubs.SharedKernel" Version="2.3.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.11" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.14" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.14" />
@@ -24,7 +23,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="NETStandard.Library" Version="2.0.3" />
-		<PackageReference Include="SonarAnalyzer.CSharp" Version="9.23.0.88079">
+		<PackageReference Include="SonarAnalyzer.CSharp" Version="9.28.0.94264">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
