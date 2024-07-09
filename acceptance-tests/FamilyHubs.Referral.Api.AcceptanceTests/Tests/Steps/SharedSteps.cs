@@ -18,7 +18,7 @@ public class SharedSteps
     }
 
     public string bearerToken { get; private set; }
-    
+
     #region Given
 
     public void GenerateBearerToken(string role)

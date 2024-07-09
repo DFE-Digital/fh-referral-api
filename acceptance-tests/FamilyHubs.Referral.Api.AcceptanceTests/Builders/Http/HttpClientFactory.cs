@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 
 namespace FamilyHubs.Referral.Api.AcceptanceTests.Builders.Http;
+
 //This static factory ensures that we are using one HttpClient per BaseUrl used in the solution.
 //This prevents a large number sockets being left open after the tests are run
 public static class HttpClientFactory

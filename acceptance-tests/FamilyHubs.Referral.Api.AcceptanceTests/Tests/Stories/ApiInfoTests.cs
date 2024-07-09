@@ -20,7 +20,7 @@ public class ApiInfoTests
     [TestMethod]
     public void Api_Info_Returned()
     {
-        this.When(s => _steps.ICheckTheApiInfo())
+        this.When(s => _steps.CheckTheApiInfo())
             .Then(s => _sharedSteps.VerifyStatusCode(_steps.lastResponse, HttpStatusCode.OK))
             .BDDfy();
     }

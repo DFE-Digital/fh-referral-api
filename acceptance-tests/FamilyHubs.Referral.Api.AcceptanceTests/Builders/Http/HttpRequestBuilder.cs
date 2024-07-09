@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 
 namespace FamilyHubs.Referral.Api.AcceptanceTests.Builders.Http;
+
 public class HttpRequestBuilder
 {
     private HttpMethod _method = null!;

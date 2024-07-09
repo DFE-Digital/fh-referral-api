@@ -1,8 +1,9 @@
-namespace FamilyHubs.Referral.Api.AcceptanceTests.Models;
-
-public class ConnectionRequest
+namespace FamilyHubs.Referral.Api.AcceptanceTests.Models
 {
-    public int connectionRequestId { get; set;}
-    public int httpResponseCode { get; set;}
-    public DateTime requestTimestamp { get; set;}
+    public class ConnectionRequest
+    {
+        public int connectionRequestId { get; set;}
+        public int httpResponseCode { get; set;}
+        public DateTime requestTimestamp { get; set;}
+    }
 }

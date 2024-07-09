@@ -11,46 +11,51 @@ namespace FamilyHubs.Referral.Api.AcceptanceTests.Tests.Steps;
 /// </summary>
 public class MetricsConnectionRequestsSteps
 {
-  private readonly string _baseUrl;
-  private ConnectionRequest _request;
-  private HttpResponseMessage _lastResponse;
-  private HttpStatusCode _statusCode;
-  private const string connectionRequestPath = "api/metrics/connection-request";
-  public MetricsConnectionRequestsSteps()
-  {
-      _baseUrl = ConfigAccessor.GetApplicationConfiguration().BaseUrl;
-  }
-  private static string ResponseNotExpectedMessage(HttpMethod method, System.Uri requestUri, HttpStatusCode statusCode)
-  {
-      return $"Response from {method} {requestUri} {statusCode} was not as expected";
-  }
-  #region Step Definitions
+    private readonly string _baseUrl;
+    private ConnectionRequest _request;
+    private HttpStatusCode _statusCode;
+    public HttpResponseMessage lastResponse { get; private set; }
+    public MetricsConnectionRequestsSteps()
+    {
+        _baseUrl = ConfigAccessor.GetApplicationConfiguration().BaseUrl;
+        lastResponse = new HttpResponseMessage();
+    }
 
-  #region Given
-  
-  public void GivenIHaveASearchServiceRequest(int connectionRequestId, int statusCode)
-  {
-      DateTime time = DateTime.UtcNow;
-      _request = new ConnectionRequest()
-      {
-          connectionRequestId = connectionRequestId,
-          httpResponseCode = statusCode,
-          requestTimestamp = time,
-      };
-  }
+    private static string ResponseNotExpectedMessage(HttpMethod method, System.Uri requestUri,
+        HttpStatusCode statusCode)
+    {
+        return $"Response from {method} {requestUri} {statusCode} was not as expected";
+    }
 
-  #endregion Given
+    #region Step Definitions
 
-  #region When
-  public async Task<HttpStatusCode> WhenISendARequest()
-  {
-      _lastResponse = await HttpRequestFactory.Put(_baseUrl, connectionRequestPath, _request, _bearerToken, null, null);
-      _statusCode = _lastResponse.StatusCode;
-    
-      return _statusCode;
-  }
+    #region Given
 
-  #endregion When
+    public void GivenIHaveAConnectionMetricsRequest(int connectionRequestId, int statusCode)
+    {
+        DateTime time = DateTime.UtcNow;
+        _request = new ConnectionRequest()
+        {
+            connectionRequestId = connectionRequestId,
+            httpResponseCode = statusCode,
+            requestTimestamp = time,
+        };
+    }
 
-  #endregion Step Definitions
+    #endregion Given
+
+    #region When
+
+    public async Task<HttpStatusCode> WhenISendARequest(string bearerToken)
+    {
+        lastResponse = await HttpRequestFactory.Put(_baseUrl, "api/metrics/connection-request", _request, bearerToken,
+            null, null);
+        _statusCode = lastResponse.StatusCode;
+
+        return _statusCode;
+    }
+
+    #endregion When
+
+    #endregion Step Definitions
 }

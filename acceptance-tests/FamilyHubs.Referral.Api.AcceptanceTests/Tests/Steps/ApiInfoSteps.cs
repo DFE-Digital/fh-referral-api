@@ -5,18 +5,18 @@ namespace FamilyHubs.Referral.Api.AcceptanceTests.Tests.Steps;
 
 public class ApiInfoSteps
 {
-    readonly ConfigModel config;
-    readonly string baseUrl;
+    readonly string _baseUrl;
     public HttpResponseMessage lastResponse { get; private set; }
 
     public ApiInfoSteps()
     {
-        config = ConfigAccessor.GetApplicationConfiguration();
-        baseUrl = config.BaseUrl;
+        ConfigModel config = ConfigAccessor.GetApplicationConfiguration();
+        _baseUrl = config.BaseUrl;
         lastResponse = new HttpResponseMessage();
     }
-    public async Task ICheckTheApiInfo()
+
+    public async Task CheckTheApiInfo()
     {
-        lastResponse = await HttpRequestFactory.Get(baseUrl, "api/info", null, null, null);
+        lastResponse = await HttpRequestFactory.Get(_baseUrl, "api/info", null, null, null);
     }
 }
