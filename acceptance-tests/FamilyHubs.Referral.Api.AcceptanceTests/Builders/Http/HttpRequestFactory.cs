@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -50,7 +50,7 @@ public class HttpRequestFactory
         //if the content is not empty, then create HttpContent with the Accept header set to 'application/json'
         else
         {
-            var json = JsonConvert.SerializeObject(content);
+            var json = System.Text.Json.JsonSerializer.Serialize(content);
             var result = new ByteArrayContent(Encoding.UTF8.GetBytes(json));
             result.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             return result;

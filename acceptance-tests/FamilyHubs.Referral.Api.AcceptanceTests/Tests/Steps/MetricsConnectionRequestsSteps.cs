@@ -31,9 +31,9 @@ public class MetricsConnectionRequestsSteps
 
     #region Given
 
-    public void GivenIHaveAConnectionMetricsRequest(int connectionRequestId, int statusCode)
+    public void GivenIHaveAConnectionMetricsRequest(long connectionRequestId, HttpStatusCode statusCode)
     {
-        DateTime time = DateTime.UtcNow;
+        DateTimeOffset time = DateTimeOffset.UtcNow;
         _request = new ConnectionRequest()
         {
             connectionRequestId = connectionRequestId,
