@@ -22,21 +22,36 @@ public class MetricsConnectionRequestsTests
         _sharedSteps = new SharedSteps();
     }
 
-    //Add all tests that make up the story to this class.
     [Theory]
-    [InlineData("LaProfessional", 2, HttpStatusCode.OK, HttpStatusCode.OK)] // Happy path as LA professional
-    [InlineData("LaDualUser", 10, HttpStatusCode.InternalServerError, HttpStatusCode.OK)] // Happy path as La Dual user
-    [InlineData("LaProfessional", 2, 2, HttpStatusCode.BadRequest)] // Invalid statusCode //nullable
-    [InlineData("LaProfessional", '0', HttpStatusCode.BadRequest, HttpStatusCode.BadRequest)] // Invalid connectionRequestId
+    [InlineData("LaProfessional", 2, HttpStatusCode.OK, HttpStatusCode.NoContent)] // Happy path as LA professional
+    [InlineData("LaDualRole", 10, HttpStatusCode.InternalServerError,
+        HttpStatusCode.NoContent)] // Happy path as La Dual user
+    [InlineData("LaProfessional", 2, 2, HttpStatusCode.BadRequest)] // Invalid statusCode
+    [InlineData("LaProfessional", "0", HttpStatusCode.BadRequest,
+        HttpStatusCode.BadRequest)] // Invalid connectionRequestId
     [InlineData("LaManager", 2, HttpStatusCode.OK, HttpStatusCode.Forbidden)] // Unauthorised as LA manager
     [InlineData("VcsProfessional", 2, HttpStatusCode.OK, HttpStatusCode.Forbidden)] // Unauthorised as VCS professional
-    [InlineData("VcsDualUser", 2, HttpStatusCode.OK, HttpStatusCode.Forbidden)] // Unauthorised as VCS Dual User
+    [InlineData("VcsDualRole", 2, HttpStatusCode.OK, HttpStatusCode.Forbidden)] // Unauthorised as VCS Dual User
     [InlineData("VcsManager", 2, HttpStatusCode.OK, HttpStatusCode.Forbidden)] // Unauthorised as VCS Manager
     [InlineData("DfeAdmin", 2, HttpStatusCode.OK, HttpStatusCode.Forbidden)] // Unauthorised as DfeAdmin
-    public void Service_Connection_Metrics_Endpoint_Returns_Expected_Status_Code(string role, int connectionRequestId,
+    public void Service_Connection_Metrics_Endpoint_Returns_Expected_Status_Code(string role, long connectionRequestId,
         HttpStatusCode statusCode, HttpStatusCode expectedStatusCode)
     {
         this.Given(s => _sharedSteps.GenerateBearerToken(role))
+            .And(s =>
+                _steps.GivenIHaveAConnectionMetricsRequest(connectionRequestId, statusCode))
+            .When(s => _steps.WhenISendARequest(_sharedSteps.bearerToken))
+            .Then(s => _sharedSteps.VerifyStatusCode(_steps.lastResponse, expectedStatusCode))
+            .BDDfy();
+    }
+
+    //Add all tests that make up the story to this class.
+    [Theory]
+    [InlineData(2, HttpStatusCode.OK, HttpStatusCode.Unauthorized)] // Happy path as LA professional
+    public void Service_Connection_Metrics_Endpoint_Errors_Invalid_Bearer_Token(long connectionRequestId,
+        HttpStatusCode statusCode, HttpStatusCode expectedStatusCode)
+    {
+        this.Given(s => _sharedSteps.HaveAnInvalidBearerToken())
             .And(s =>
                 _steps.GivenIHaveAConnectionMetricsRequest(connectionRequestId, statusCode))
             .When(s => _steps.WhenISendARequest(_sharedSteps.bearerToken))

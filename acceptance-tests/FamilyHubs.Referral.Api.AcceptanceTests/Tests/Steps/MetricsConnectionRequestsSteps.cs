@@ -48,8 +48,11 @@ public class MetricsConnectionRequestsSteps
 
     public async Task<HttpStatusCode> WhenISendARequest(string bearerToken)
     {
+        Dictionary<string, string> headers = new Dictionary<string, string>() { };
+        headers.Add("traceparent", new Guid().ToString());
+        
         lastResponse = await HttpRequestFactory.Put(_baseUrl, "api/metrics/connection-request", _request, bearerToken,
-            null, null);
+            headers, null);
         _statusCode = lastResponse.StatusCode;
 
         return _statusCode;

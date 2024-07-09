@@ -17,8 +17,7 @@ public class BearerTokenGenerator
 
     public string CreateBearerToken(string role)
     {
-        List<Claim> claims = new List<Claim> { new("role", role) };
-        ClaimsIdentity identity = new ClaimsIdentity(claims, "Test");
+        List<Claim> claims = new List<Claim> { new("role", role), new( "OrganisationId", "6"), new("AccountId", "3") };        ClaimsIdentity identity = new ClaimsIdentity(claims, "Test");
         ClaimsPrincipal user = new ClaimsPrincipal(identity);
 
         SymmetricSecurityKey key =
