@@ -19,6 +19,7 @@ using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Security;
 using FamilyHubs.Referral.Core.ClientServices;
 using FamilyHubs.SharedKernel.Razor.Health;
+using FluentValidation;
 
 namespace FamilyHubs.Referral.Api;
 
@@ -167,6 +168,8 @@ public static class StartupExtensions
         });
 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+        services.AddValidatorsFromAssemblyContaining<CreateReferralCommand>();
 
         services.AddTransient<CorrelationMiddleware>();
         services.AddTransient<ExceptionHandlingMiddleware>();
