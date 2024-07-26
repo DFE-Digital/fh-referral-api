@@ -19,7 +19,6 @@ using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Security;
 using FamilyHubs.Referral.Core.ClientServices;
 using FamilyHubs.SharedKernel.Razor.Health;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace FamilyHubs.Referral.Api;
 
