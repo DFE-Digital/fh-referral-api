@@ -24,7 +24,8 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
     private readonly IServiceDirectoryService _serviceDirectoryService;
     private readonly ILogger<CreateReferralCommandHandler> _logger;
 
-    public CreateReferralCommandHandler(ApplicationDbContext context, IMapper mapper, IServiceDirectoryService serviceDirectoryService, ILogger<CreateReferralCommandHandler> logger)
+    public CreateReferralCommandHandler(ApplicationDbContext context, IMapper mapper,
+        IServiceDirectoryService serviceDirectoryService, ILogger<CreateReferralCommandHandler> logger)
     {
         _logger = logger;
         _context = context;
@@ -34,7 +35,9 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
     public async Task<ReferralResponse> Handle(CreateReferralCommand request, CancellationToken cancellationToken)
     {
-        await WriteCreateReferralMetrics(request);
+        Data.Entities.Referral entity = _mapper.Map<Data.Entities.Referral>(request.CreateReferral.Referral);
+
+        await WriteCreateReferralMetrics(request, entity.ReferralService.Organisation.Id);
 
         //todo: I don't think these explicit transactions are necessary
         ReferralResponse referralResponse;
@@ -43,7 +46,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
             await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
             try
             {
-                referralResponse = await CreateAndUpdateReferral(request, cancellationToken);
+                referralResponse = await CreateAndUpdateReferral(entity, cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
             }
             catch (Exception ex)
@@ -57,7 +60,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         {
             try
             {
-                referralResponse = await CreateAndUpdateReferral(request, cancellationToken);
+                referralResponse = await CreateAndUpdateReferral(entity, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -65,17 +68,18 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
                 throw;
             }
         }
-            
+
 
         return referralResponse;
     }
 
-    private async Task WriteCreateReferralMetrics(CreateReferralCommand request)
+    private async Task WriteCreateReferralMetrics(CreateReferralCommand request, long vcsOrgId)
     {
         var metrics = new ConnectionRequestsSentMetric
         {
             OrganisationId = long.Parse(request.FamilyHubsUser.OrganisationId),
             UserAccountId = long.Parse(request.FamilyHubsUser.AccountId),
+            VcsOrganisationId = vcsOrgId,
             RequestTimestamp = request.CreateReferral.Metrics.RequestTimestamp.DateTime,
             RequestCorrelationId = Activity.Current!.TraceId.ToString(),
             ResponseTimestamp = null,
@@ -88,9 +92,8 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         await _context.SaveChangesAsync();
     }
 
-    private async Task<ReferralResponse> CreateAndUpdateReferral(CreateReferralCommand request, CancellationToken cancellationToken)
+    private async Task<ReferralResponse> CreateAndUpdateReferral(Data.Entities.Referral entity, CancellationToken cancellationToken)
     {
-        Data.Entities.Referral entity = _mapper.Map<Data.Entities.Referral>(request.CreateReferral.Referral);
         ArgumentNullException.ThrowIfNull(entity);
 
         entity.Recipient.Id = 0;
@@ -118,26 +121,29 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         {
             entity.Status = referralStatus;
         }
+
         return entity;
     }
 
     private Data.Entities.Referral AttachExistingUserAccount(Data.Entities.Referral entity)
     {
         UserAccount? professional = _context.UserAccounts.SingleOrDefault(x => x.Id == entity.UserAccount.Id);
-        if (professional != null) 
+        if (professional != null)
         {
             entity.UserAccount = professional;
         }
         else
         {
-            if (entity.UserAccount != null && entity.UserAccount.UserAccountRoles != null) 
+            if (entity.UserAccount != null && entity.UserAccount.UserAccountRoles != null)
             {
                 for (int i = 0; i < entity.UserAccount.UserAccountRoles.Count; i++)
                 {
-                    Role? role = _context.Roles.SingleOrDefault(x => x.Name == entity.UserAccount.UserAccountRoles[i].Role.Name);
+                    Role? role =
+                        _context.Roles.SingleOrDefault(x => x.Name == entity.UserAccount.UserAccountRoles[i].Role.Name);
                     if (role != null)
                     {
-                        UserAccountRole? userAccountRole = _context.UserAccountRoles.SingleOrDefault(x => x.RoleId == role.Id && x.UserAccountId == entity.UserAccount.Id);
+                        UserAccountRole? userAccountRole = _context.UserAccountRoles.SingleOrDefault(x =>
+                            x.RoleId == role.Id && x.UserAccountId == entity.UserAccount.Id);
                         if (userAccountRole != null)
                         {
                             entity.UserAccount.UserAccountRoles[i] = userAccountRole;
@@ -148,23 +154,25 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
                         entity.UserAccount.UserAccountRoles[i].RoleId = role.Id;
                         entity.UserAccount.UserAccountRoles[i].UserAccountId = entity.UserAccount.Id;
                     }
-
                 }
             }
-            
         }
+
         return entity;
     }
 
     private async Task<Data.Entities.Referral> AttachExistingService(Data.Entities.Referral entity)
     {
-        Data.Entities.ReferralService? referralService = _context.ReferralServices.SingleOrDefault(x => x.Id == entity.ReferralService.Id);
+        Data.Entities.ReferralService? referralService =
+            _context.ReferralServices.SingleOrDefault(x => x.Id == entity.ReferralService.Id);
         if (referralService == null)
         {
-            ServiceDirectory.Shared.Dto.ServiceDto? sdService = await _serviceDirectoryService.GetServiceById(entity.ReferralService.Id);
+            ServiceDirectory.Shared.Dto.ServiceDto? sdService =
+                await _serviceDirectoryService.GetServiceById(entity.ReferralService.Id);
             if (sdService == null)
             {
-                throw new ArgumentException($"Failed to return Service from service directory for Id = {entity.ReferralService.Id}");
+                throw new ArgumentException(
+                    $"Failed to return Service from service directory for Id = {entity.ReferralService.Id}");
             }
 
             // check if the organization already exists
@@ -172,10 +180,12 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
             Organisation? organisation = await _context.Organisations.FindAsync(sdService.OrganisationId);
             if (organisation == null)
             {
-                ServiceDirectory.Shared.Dto.OrganisationDto? sdOrganisation = await _serviceDirectoryService.GetOrganisationById(sdService.OrganisationId);
+                ServiceDirectory.Shared.Dto.OrganisationDto? sdOrganisation =
+                    await _serviceDirectoryService.GetOrganisationById(sdService.OrganisationId);
                 if (sdOrganisation == null)
                 {
-                    throw new ArgumentException($"Failed to return Organisation from service directory for Id = {sdService.OrganisationId}");
+                    throw new ArgumentException(
+                        $"Failed to return Organisation from service directory for Id = {sdService.OrganisationId}");
                 }
 
                 //todo: Organisation has a ReferralServiceId, but an organisation can have multiple services
@@ -204,6 +214,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         {
             entity.ReferralService = referralService;
         }
+
         return entity;
     }
 }
