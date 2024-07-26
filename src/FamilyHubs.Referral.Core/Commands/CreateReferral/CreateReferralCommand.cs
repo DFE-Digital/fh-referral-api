@@ -71,8 +71,8 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
             RequestCorrelationId = Activity.Current!.TraceId.ToString(),
             ResponseTimestamp = referralResponse == null ? null : DateTime.UtcNow,
             HttpResponseCode = referralResponse == null ? HttpStatusCode.InternalServerError : HttpStatusCode.OK,
-            ConnectionRequestId = referralResponse?.Id ?? null,
-            ConnectionRequestReferenceCode = referralResponse?.Id.ToString("X6") ?? null
+            ConnectionRequestId = referralResponse?.Id,
+            ConnectionRequestReferenceCode = referralResponse?.Id.ToString("X6")
         };
 
         _context.Add(metrics);
