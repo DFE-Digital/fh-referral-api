@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Net;
 using AutoMapper;
 using FamilyHubs.Referral.Core.ClientServices;
 using FamilyHubs.Referral.Core.Interfaces.Commands;
@@ -37,10 +38,8 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
     {
         Data.Entities.Referral entity = _mapper.Map<Data.Entities.Referral>(request.CreateReferral.Referral);
 
-        await WriteCreateReferralMetrics(request, entity.ReferralService.Organisation.Id);
-
         //todo: I don't think these explicit transactions are necessary
-        ReferralResponse referralResponse;
+        ReferralResponse? referralResponse;
         if (_context.Database.IsSqlServer())
         {
             await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
@@ -69,11 +68,12 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
             }
         }
 
+        await WriteCreateReferralMetrics(request, entity.ReferralService.Organisation.Id, referralResponse);
 
         return referralResponse;
     }
 
-    private async Task WriteCreateReferralMetrics(CreateReferralCommand request, long vcsOrgId)
+    private async Task WriteCreateReferralMetrics(CreateReferralCommand request, long vcsOrgId, ReferralResponse? referralResponse)
     {
         var metrics = new ConnectionRequestsSentMetric
         {
@@ -82,10 +82,10 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
             VcsOrganisationId = vcsOrgId,
             RequestTimestamp = request.CreateReferral.Metrics.RequestTimestamp.DateTime,
             RequestCorrelationId = Activity.Current!.TraceId.ToString(),
-            ResponseTimestamp = null,
-            HttpResponseCode = null,
-            ConnectionRequestId = null,
-            ConnectionRequestReferenceCode = null
+            ResponseTimestamp = DateTime.UtcNow,
+            HttpResponseCode = HttpStatusCode.OK,
+            ConnectionRequestId = referralResponse?.Id ?? null,
+            ConnectionRequestReferenceCode = referralResponse?.Id.ToString("X6") ?? null
         };
 
         _context.Add(metrics);
