@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Diagnostics;
+using System.Net;
 using FamilyHubs.ReferralService.Shared.Dto.CreateUpdate;
 using FamilyHubs.ReferralService.Shared.Dto.Metrics;
 using FamilyHubs.SharedKernel.Identity.Models;
@@ -135,13 +136,16 @@ public class WhenUsingCreateReferralCommand : DataIntegrationTestBase
         var metric = TestDbContext.ConnectionRequestsSentMetric.SingleOrDefault();
 
         metric.Should().NotBeNull();
+
+        string expectedConnectionReferenceCode = result.Id.ToString("X6");
+
         metric!.RequestCorrelationId.Should().Be(ExpectedRequestCorrelationId);
         metric.UserAccountId.Should().Be(ExpectedAccountId);
         metric.OrganisationId.Should().Be(ExpectedOrganisationId);
         metric.RequestTimestamp.Should().Be(RequestTimestamp.DateTime);
-        metric.ResponseTimestamp.Should().BeNull();
-        metric.HttpResponseCode.Should().BeNull();
-        metric.ConnectionRequestId.Should().BeNull();
-        metric.ConnectionRequestReferenceCode.Should().BeNull();
+        metric.ResponseTimestamp.Should().NotBeNull();
+        metric.HttpResponseCode.Should().Be(HttpStatusCode.OK);
+        metric.ConnectionRequestId.Should().Be(result.Id);
+        metric.ConnectionRequestReferenceCode.Should().Be(expectedConnectionReferenceCode);
     }
 }
