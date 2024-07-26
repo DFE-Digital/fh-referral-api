@@ -40,32 +40,18 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
 
         //todo: I don't think these explicit transactions are necessary
         ReferralResponse referralResponse;
-        if (_context.Database.IsSqlServer())
+
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        try
         {
-            await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
-            try
-            {
-                referralResponse = await CreateAndUpdateReferral(entity, cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync(cancellationToken);
-                _logger.LogError(ex, "An error occurred creating referral. {exceptionMessage}", ex.Message);
-                throw;
-            }
+            referralResponse = await CreateAndUpdateReferral(entity, cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
         }
-        else
+        catch (Exception ex)
         {
-            try
-            {
-                referralResponse = await CreateAndUpdateReferral(entity, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred creating referral. {exceptionMessage}", ex.Message);
-                throw;
-            }
+            await transaction.RollbackAsync(cancellationToken);
+            _logger.LogError(ex, "An error occurred creating referral. {exceptionMessage}", ex.Message);
+            throw;
         }
 
         await WriteCreateReferralMetrics(request, entity.ReferralService.Organisation.Id, referralResponse);
