@@ -39,7 +39,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         Data.Entities.Referral entity = _mapper.Map<Data.Entities.Referral>(request.CreateReferral.Referral);
 
         //todo: I don't think these explicit transactions are necessary
-        ReferralResponse? referralResponse;
+        ReferralResponse referralResponse;
         if (_context.Database.IsSqlServer())
         {
             await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
@@ -73,7 +73,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
         return referralResponse;
     }
 
-    private async Task WriteCreateReferralMetrics(CreateReferralCommand request, long vcsOrgId, ReferralResponse? referralResponse)
+    private async Task WriteCreateReferralMetrics(CreateReferralCommand request, long vcsOrgId, ReferralResponse referralResponse)
     {
         var metrics = new ConnectionRequestsSentMetric
         {
@@ -84,8 +84,8 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
             RequestCorrelationId = Activity.Current!.TraceId.ToString(),
             ResponseTimestamp = DateTime.UtcNow,
             HttpResponseCode = HttpStatusCode.OK,
-            ConnectionRequestId = referralResponse?.Id ?? null,
-            ConnectionRequestReferenceCode = referralResponse?.Id.ToString("X6") ?? null
+            ConnectionRequestId = referralResponse.Id,
+            ConnectionRequestReferenceCode = referralResponse.Id.ToString("X6")
         };
 
         _context.Add(metrics);
