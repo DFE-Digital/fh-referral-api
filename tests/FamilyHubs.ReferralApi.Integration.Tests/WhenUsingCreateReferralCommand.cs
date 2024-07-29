@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Diagnostics;
+using System.Net;
 using FamilyHubs.ReferralService.Shared.Dto.CreateUpdate;
 using FamilyHubs.ReferralService.Shared.Dto.Metrics;
 using FamilyHubs.SharedKernel.Identity.Models;
@@ -19,6 +20,7 @@ public class WhenUsingCreateReferralCommand : DataIntegrationTestBase
     public FamilyHubsUser FamilyHubsUser { get; set; }
     public const long ExpectedAccountId = 123L;
     public const long ExpectedOrganisationId = 456L;
+    private const long ExpectedVcsOrganisationId = 2L;
     public string ExpectedRequestCorrelationId { get; set; }
 
     public WhenUsingCreateReferralCommand()
@@ -132,16 +134,20 @@ public class WhenUsingCreateReferralCommand : DataIntegrationTestBase
         result.Should().NotBeNull();
         result.Id.Should().BeGreaterThan(0);
 
+        string expectedConnectionReferenceCode = result.Id.ToString("X6");
+
         var metric = TestDbContext.ConnectionRequestsSentMetric.SingleOrDefault();
 
         metric.Should().NotBeNull();
+
         metric!.RequestCorrelationId.Should().Be(ExpectedRequestCorrelationId);
         metric.UserAccountId.Should().Be(ExpectedAccountId);
         metric.OrganisationId.Should().Be(ExpectedOrganisationId);
+        metric.VcsOrganisationId.Should().Be(ExpectedVcsOrganisationId);
         metric.RequestTimestamp.Should().Be(RequestTimestamp.DateTime);
-        metric.ResponseTimestamp.Should().BeNull();
-        metric.HttpResponseCode.Should().BeNull();
-        metric.ConnectionRequestId.Should().BeNull();
-        metric.ConnectionRequestReferenceCode.Should().BeNull();
+        metric.ResponseTimestamp.Should().NotBeNull();
+        metric.HttpResponseCode.Should().Be(HttpStatusCode.OK);
+        metric.ConnectionRequestId.Should().Be(result.Id);
+        metric.ConnectionRequestReferenceCode.Should().Be(expectedConnectionReferenceCode);
     }
 }

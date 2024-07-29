@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System.Diagnostics;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace FamilyHubs.Referral.UnitTests;
 
@@ -78,7 +79,8 @@ public class BaseCreateDbUnitTest
         // InMemory database and the new service provider.
         var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
         builder.UseInMemoryDatabase("ReferralDb")
-               .UseInternalServiceProvider(serviceProvider);
+            .ConfigureWarnings(x => x.Ignore(InMemoryEventId.TransactionIgnoredWarning))
+            .UseInternalServiceProvider(serviceProvider);
 
         return builder.Options;
     }

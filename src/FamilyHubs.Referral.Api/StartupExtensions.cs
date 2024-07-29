@@ -104,7 +104,6 @@ public static class StartupExtensions
     {
         services.AddTransient<MinimalReferralEndPoints>();
         services.AddTransient<MinimalUserAccountEndPoints>();
-        services.AddTransient<MetricEndpoints>();
     }
 
     private static void RegisterAutoMapper(this IServiceCollection services)
@@ -226,13 +225,6 @@ public static class StartupExtensions
             throw new InvalidOperationException("MinimalUserAccountEndPoints is not registered");
         }
         userAccountsApi.RegisterUserAccountEndPoints(app);
-
-        var metricEndpoints = scope.ServiceProvider.GetService<MetricEndpoints>();
-        if (metricEndpoints == null)
-        {
-            throw new InvalidOperationException("MetricEndpoints is not registered");
-        }
-        metricEndpoints.RegisterReferralEndPoints(app);
 
         try
         {
