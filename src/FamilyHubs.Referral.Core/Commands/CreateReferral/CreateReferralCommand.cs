@@ -64,7 +64,7 @@ public class CreateReferralCommandHandler : IRequestHandler<CreateReferralComman
     {
         var metrics = new ConnectionRequestsSentMetric
         {
-            OrganisationId = long.Parse(request.FamilyHubsUser.OrganisationId),
+            LaOrganisationId = long.Parse(request.FamilyHubsUser.OrganisationId),
             UserAccountId = long.Parse(request.FamilyHubsUser.AccountId),
             VcsOrganisationId = vcsOrgId,
             RequestTimestamp = request.CreateReferral.Metrics.RequestTimestamp.DateTime,

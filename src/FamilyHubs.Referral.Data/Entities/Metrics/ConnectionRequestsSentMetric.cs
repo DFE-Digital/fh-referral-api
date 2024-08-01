@@ -4,7 +4,7 @@ namespace FamilyHubs.Referral.Data.Entities.Metrics;
 
 public class ConnectionRequestsSentMetric : EntityBase<long>
 {
-    public required long OrganisationId { get; init; }
+    public required long LaOrganisationId { get; init; }
     public required long UserAccountId { get; init; }
     public required long VcsOrganisationId { get; init; }
     public required DateTime RequestTimestamp { get; init; }
