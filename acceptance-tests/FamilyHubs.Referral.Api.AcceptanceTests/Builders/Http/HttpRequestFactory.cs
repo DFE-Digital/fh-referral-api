@@ -21,7 +21,7 @@ public class HttpRequestFactory
             .SendAsync();
     }
 
-    public static async Task<HttpResponseMessage> Put<TContent>(
+    public static async Task<HttpResponseMessage> Post<TContent>(
         string baseUrl,
         string? path,
         TContent? body,
@@ -30,7 +30,7 @@ public class HttpRequestFactory
         Dictionary<string, string>? parameters)
     {
         return await new HttpRequestBuilder()
-            .AddMethod(HttpMethod.Put)
+            .AddMethod(HttpMethod.Post)
             .AddRequestUri(baseUrl, path)
             .AddBearerToken(authToken)
             .AddContent(CreateHttpContent(body))
